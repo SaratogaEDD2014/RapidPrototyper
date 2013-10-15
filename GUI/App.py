@@ -1,15 +1,16 @@
 import wx
 import copy
+import AppSettings
 import UMToolbar
 import DataEntryRegion
 import ShapesRegion
 
-class Ultimaker(wx.Frame):
+class ProtoFrame(wx.Frame):
     
     
     def __init__(self, parent, id, title):
         wx.Frame.__init__(self, parent, id, title, wx.DefaultPosition, wx.Size(800, 510))
-        self.imagePath='/Users/Scott/Documents/Design/Ultimaker/GUI/images/'
+        self.imagePath=AppSettings.IMAGE_PATH
         self.title=title
         
         toolbar=UMToolbar.UMToolbar(self, -1)
@@ -26,7 +27,7 @@ class Ultimaker(wx.Frame):
 
 class MyApp(wx.App):
     def OnInit(self):
-        frame = Ultimaker(None, -1, 'Ultimaker')
+        frame = ProtoFrame(None, -1, 'ProtoApp')
         frame.Show(True)
         return True
 
