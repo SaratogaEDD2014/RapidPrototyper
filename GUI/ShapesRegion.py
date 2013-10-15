@@ -6,7 +6,7 @@ import AppSettings
 class ShapesRegion(wx.Panel):
     def __init__(self, parent, id=-1, position=wx.DefaultPosition, size=(390,390)):
         wx.Panel.__init__(self, parent, id, position, size)
-        self.imagePath=AppSettings.IMAGE_PATH
+        self.imagePath=AppSettings.IMAGE_PATH+"Main/"
         self.buttonList=[BubbleMenu.BubbleButton(   self, wx.Bitmap(self.imagePath+"buttonTemplate1.png"), wx.Bitmap(self.imagePath+"buttonPressed1.png")),
                             BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"buttonTemplate2.png"), wx.Bitmap(self.imagePath+"buttonPressed2.png")),
                             BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"buttonTemplate3.png"), wx.Bitmap(self.imagePath+"buttonPressed3.png")),
