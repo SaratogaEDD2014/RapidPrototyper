@@ -12,7 +12,7 @@ class BubbleMenu(wx.Window):
         self.button.Disable()
         self.childIndex=0
         self.blank=wx.Panel(self, size=(90,90))
-        self.SetBackgroundColor(AppSettings.backgroundColor)
+        self.SetBackgroundColour(AppSettings.backgroundColor)
         """Stupid Idea
         self.ZERO= [0,wx.ALIGN_RIGHT | wx.ALIGN_BOTTOM]
         self.ONE=  [1,wx.ALIGN_CENTER]
