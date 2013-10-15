@@ -1,12 +1,13 @@
 import wx
 import copy
 import ToolbarButton
+import AppSettings
 
 class UMToolbar(wx.Panel):
     
     
     def __init__(self, parent, id, position=wx.DefaultPosition, size=wx.Size(800,40)):
-        self.imagePath='/Users/Scott/Documents/Design/Ultimaker/GUI/images/'
+        self.imagePath=AppSettings.IMAGE_PATH+"Main/"
         
         wx.Panel.__init__(self, parent, id, position, size)
         self.parent=parent
