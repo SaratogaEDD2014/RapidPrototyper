@@ -6,28 +6,28 @@ import DataEntryRegion
 import ShapesRegion
 
 class ProtoFrame(wx.Frame):
-    
-    
+
+
     def __init__(self, parent, id, title):
         wx.Frame.__init__(self, parent, id, title, wx.DefaultPosition, wx.Size(800, 510))
         self.imagePath=AppSettings.IMAGE_PATH
         self.title=title
-        
+
         toolbar=UMToolbar.UMToolbar(self, -1)
         shapes=ShapesRegion.ShapesRegion(self)
         dataEntry=DataEntryRegion.DataEntryRegion(self)
-        
+
         sizer=wx.BoxSizer(wx.VERTICAL)
         sizer.Add(toolbar)                 #,        (0,0),  (4,80))
         sizer.Add(shapes)             #,      (4, 41),(39,39))
         sizer.Add(dataEntry)       #,(44,41),(4,39))
         self.SetSizer(sizer)
-        
+
 
 
 class MyApp(wx.App):
     def OnInit(self):
-        frame = ProtoFrame(None, -1, 'ProtoApp')
+        frame = ProtoFrame(None, -1, 'Blue Streaks EDD')
         frame.Show(True)
         return True
 
