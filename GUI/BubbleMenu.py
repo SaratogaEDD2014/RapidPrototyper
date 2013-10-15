@@ -1,4 +1,5 @@
 import wx
+import AppSettings
 
 class BubbleMenu(wx.Window):
     def __init__(self, parent, bitmap, name="", children=[], id=-1, position=(0,40),size=(360, 360)):
@@ -11,6 +12,7 @@ class BubbleMenu(wx.Window):
         self.button.Disable()
         self.childIndex=0
         self.blank=wx.Panel(self, size=(90,90))
+        self.SetBackgroundColor(AppSettings.backgroundColor)
         """Stupid Idea
         self.ZERO= [0,wx.ALIGN_RIGHT | wx.ALIGN_BOTTOM]
         self.ONE=  [1,wx.ALIGN_CENTER]
