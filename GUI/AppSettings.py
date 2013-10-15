@@ -2,6 +2,7 @@ import wx
 
 #UI
 defaultColor=wx.Colour(0,0,0)
+backgroundColor=wx.Colour(50,150,250)
 
 #PATH="/home/ubuntu/Documents/RapidPrototyper/GUI/"  #Ubuntu
 PATH="/Users/Scott/Documents/EDD/RapidPrototyper/GUI/" #MAC
