@@ -15,7 +15,7 @@ class ShapesRegion(wx.Panel):
                             BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"buttonTemplate6.png"), wx.Bitmap(self.imagePath+"buttonPressed6.png")),]
         self.menu=BubbleMenu.BubbleMenu(self, wx.Bitmap(self.imagePath+"BubbleTitle.png"), "Shape Menu", self.buttonList)
         sizer=wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.menu)
+        sizer.AddMany(self.menu)
         self.SetSizer(sizer)
 
         

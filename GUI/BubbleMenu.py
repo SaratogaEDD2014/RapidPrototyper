@@ -53,20 +53,26 @@ class BubbleMenu(wx.Window):
             self.updateChildren()
         
     def Add(self, button):
-        self.children.append(button)
+        self.AddMany([button])
+    
+    def AddMany(self, buttonList):
+        for butt in buttonList:
+            self.children.append(butt)
         self.updateChildren()
 
-    def AddMany(self, buttonList):
-        self.Add(buttonList)
+    def setChildren(self, buttonList):
+        self.children=[]
+        self.AddMany(buttonList)
 
     def updateChildren(self):
+        self.childIndex=0
         if len(self.children)>0:
             sizer=wx.GridSizer(3,3)
             for i in range(9):
                 if (self.posIndices[len(self.children)-1].count(i)>0):
-                    sizer.Add(self.nextChild(), 1, self.alignIndices[i])
+                    sizer.Add(self.nextChild(), flag=self.alignIndices[i])
                 else:
-                    sizer.Add(wx.Window(self, id=1000+i),1,self.alignIndices[i])
+                    sizer.Add(wx.Window(self, id=1000+i), flag=self.alignIndices[i])
             sizer.Remove(4)
             sizer.Insert(4, self.button)
             self.SetSizer(sizer)
