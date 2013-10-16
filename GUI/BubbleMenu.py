@@ -2,7 +2,7 @@ import wx
 import AppSettings
 
 class BubbleMenu(wx.Window):
-    def __init__(self, parent, bitmap, name="", children=[], id=-1, position=(0,40),size=(360, 360)):
+    def __init__(self, parent, bitmap, name="", children=[], id=-1, position=(0,40), size=(360, 360)):
         wx.Window.__init__(self, parent, id, wx.DefaultPosition, size=size)
         self.bitmap=bitmap
         self.name=name
@@ -51,10 +51,10 @@ class BubbleMenu(wx.Window):
 
         if len(self.children)>0:
             self.updateChildren()
-        
+
     def Add(self, button):
         self.AddMany([button])
-    
+
     def AddMany(self, buttonList):
         for butt in buttonList:
             self.children.append(butt)
@@ -76,7 +76,7 @@ class BubbleMenu(wx.Window):
             sizer.Remove(4)
             sizer.Insert(4, self.button)
             self.SetSizer(sizer)
-    
+
     def nextChild(self):
         self.childIndex+=1
         return self.children[self.childIndex-1]
@@ -103,27 +103,27 @@ class BubbleButton(wx.PyControl):
         self.Bind(wx.EVT_LEFT_UP, self.on_left_up)
         self.Bind(wx.EVT_MOTION, self.on_motion)
         self.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave_window)
-    
+
     def DoGetBestSize(self):
         return self.normal.GetSize()
-    
+
     def post_event(self):
         event = wx.CommandEvent()
         event.SetEventObject(self)
         event.SetEventType(wx.EVT_BUTTON.typeId)
         wx.PostEvent(self, event)
-    
+
     def Enable(self, *args, **kwargs):
         super(BubbleButton, self).Enable(*args, **kwargs)
         self.Refresh()
     def Disable(self, *args, **kwargs):
         super(BubbleButton, self).Disable(*args, **kwargs)
         self.Refresh()
-    
+
     def on_size(self, event):
         event.Skip()
         self.Refresh()
-    
+
     def on_paint(self, event):
         dc = wx.AutoBufferedPaintDC(self)
         dc.SetBackground(wx.Brush(self.GetParent().GetBackgroundColour()))
@@ -132,37 +132,37 @@ class BubbleButton(wx.PyControl):
         if self.clicked:
             bitmap = self.pressed or bitmap
         dc.DrawBitmap(bitmap, 0, 0)
-    
+
     def set_clicked(self, clicked):
         if clicked != self._clicked:
             self._clicked = clicked
             self.Refresh()
-    
+
     def get_clicked(self):
         return self._clicked
-    
+
     clicked = property(get_clicked, set_clicked)
-    
+
     def on_left_down(self, event):
         x, y = event.GetPosition()
         if self.region.Contains(x, y):
             self.clicked = True
-    
+
     def on_left_dclick(self, event):
         self.on_left_down(event)
-    
+
     def on_left_up(self, event):
         if self.clicked:
             x, y = event.GetPosition()
             if self.region.Contains(x, y):
                 self.post_event()
         self.clicked = False
-    
+
     def on_motion(self, event):
         if self.clicked:
             x, y = event.GetPosition()
             if not self.region.Contains(x, y):
                 self.clicked = False
-    
+
     def on_leave_window(self, event):
         self.clicked = False
