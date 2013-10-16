@@ -11,10 +11,11 @@ class MainMenu(BubbleMenu.BubbleMenu):
     def __init__(self, parent):
         BubbleMenu.BubbleMenu.__init__(self, parent, wx.Bitmap(AppSettings.IMAGE_PATH+"Main/"+"BubbleTitle.png"), "Shape Menu", size=wx.DefaultSize)
         self.imagePath=AppSettings.IMAGE_PATH+"Main/"
-        self.buttonList=[BubbleMenu.BubbleButton(   self, wx.Bitmap(self.imagePath+"buttonTemplate1.png"), wx.Bitmap(self.imagePath+"buttonPressed1.png")),
-                            BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"buttonTemplate2.png"), wx.Bitmap(self.imagePath+"buttonPressed2.png")),
-                            BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"buttonTemplate3.png"), wx.Bitmap(self.imagePath+"buttonPressed3.png")),
-                            BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"buttonTemplate4.png"), wx.Bitmap(self.imagePath+"buttonPressed4.png")),
-                            BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"buttonTemplate5.png"), wx.Bitmap(self.imagePath+"buttonPressed5.png")),
-                            BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"buttonTemplate6.png"), wx.Bitmap(self.imagePath+"buttonPressed6.png"))]
+
+        self.quickPrint=BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"QuickPrint.png"), wx.Bitmap(self.imagePath+"QuickPrintPress.png"))
+        self.advancedSetup=BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"AdvancedSetup.png"), wx.Bitmap(self.imagePath+"AdvancedSetupPress.png"))
+        self.templates=BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"Templates.png"), wx.Bitmap(self.imagePath+"TemplatesPress.png"))
+        self.openRecent=BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"OpenRecent.png"), wx.Bitmap(self.imagePath+"OpenRecentPress.png"))
+
+        self.buttonList=[quickPrint, advancedSetup, templates, openRecent]
         self.AddMany(self.buttonList)
