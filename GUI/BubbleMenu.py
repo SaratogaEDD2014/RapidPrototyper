@@ -13,32 +13,17 @@ class BubbleMenu(wx.Window):
         self.childIndex=0
         self.blank=wx.Panel(self, size=(90,90))
         self.SetBackgroundColour(AppSettings.backgroundColor)
-        """Stupid Idea
-        self.ZERO= [0,wx.ALIGN_RIGHT | wx.ALIGN_BOTTOM]
-        self.ONE=  [1,wx.ALIGN_CENTER]
-        self.TWO=  [2,wx.ALIGN_LEFT | wx.ALIGN_BOTTOM]
-        self.THREE=[3,wx.ALIGN_CENTER]
-        self.FIVE= [5,wx.ALIGN_CENTER]
-        self.SIX=  [6,wx.ALIGN_RIGHT | wx.ALIGN_TOP]
-        self.SEVEN=[7,wx.ALIGN_CENTER]
-        self.EIGHT=[8,wx.ALIGN_LEFT | wx.ALIGN_TOP]
-        self.positions=[[self.SEVEN],
-                        [self.THREE,self.FIVE],
-                        [self.SIX,self.ONE,self.EIGHT],
-                        [self.ZERO,self.TWO,self.SIX,self.EIGHT],
-                        [self.THREE,self.FIVE,self.SIX,self.SEVEN,self.EIGHT],
-                        [self.ZERO,self.THREE,self.SIX,self.TWO,self.FIVE,self.EIGHT],
-                        [self.ZERO,self.TWO,self.THREE,self.FIVE,self.SIX,self.SEVEN,self.EIGHT],
-                        [self.ZERO,self.ONE,self.TWO,self.THREE,self.FIVE,self.SIX,self.SEVEN,self.EIGHT]]
-        """
+        
+        #Givent a number of elements in the menu, this gives the best indices to put them at
         self.posIndices=[[7],
                         [3,5],
                         [6,1,8],
                         [0,2,6,8],
-                        [3,5,6,7,8],
-                        [0,3,6,2,5,8],
+                        [0,2,6,7,8],
+                        [0,2,3,5,6,8],
                         [0,2,3,5,6,7,8],
                         [0,1,2,3,5,6,7,8]]
+        #This gives the alignment flages for a given index in the grid to give the most circular look
         self.alignIndices=[wx.ALIGN_RIGHT | wx.ALIGN_BOTTOM,
                            wx.ALIGN_CENTER,
                            wx.ALIGN_LEFT | wx.ALIGN_BOTTOM,
@@ -80,16 +65,18 @@ class BubbleMenu(wx.Window):
     def nextChild(self):
         self.childIndex+=1
         return self.children[self.childIndex-1]
+    def getClick
 
 
 
 class BubbleButton(wx.PyControl):
-    def __init__(self, parent, normal, pressed=None, name=""):
+    def __init__(self, parent, normal, pressed=None, name="", target=None):
         super(BubbleButton, self).__init__(parent, -1, style=wx.BORDER_NONE)
         self.style=wx.BORDER_NONE
         self.normal = normal
         self.pressed = pressed
         self.name=name
+        self.target=target
         #Region is the area that is "clickable"
         #It consists of the PNG minus the transparent areas
         self.region = wx.RegionFromBitmapColour(normal, wx.Colour(0, 0, 0, 0))
