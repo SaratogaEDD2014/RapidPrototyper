@@ -18,7 +18,6 @@ class ProtoFrame(wx.Frame):
 
     def setView(self, viewPanel):
         if(viewPanel!=None):
-            print("Tried to show this: ",viewPanel)
             AppSettings.previousPage=AppSettings.currentPage
             if (AppSettings.previousPage != None):
                 AppSettings.previousPage.Show(False)
