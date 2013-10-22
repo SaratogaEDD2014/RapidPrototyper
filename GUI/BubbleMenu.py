@@ -1,9 +1,11 @@
 import wx
+import BubbleEvent
 import AppSettings
 
 class BubbleMenu(wx.Window):
     def __init__(self, parent, bitmap, name="", children=[], id=-1, position=(0,40), size=(360, 360)):
         wx.Window.__init__(self, parent, id, wx.DefaultPosition, size=size)
+        self.Show(False)
         self.bitmap=bitmap
         self.name=name
         self.children=children
@@ -12,8 +14,10 @@ class BubbleMenu(wx.Window):
         self.button.Disable()
         self.childIndex=0
         self.blank=wx.Panel(self, size=(90,90))
-        self.SetBackgroundColour(AppSettings.backgroundColor)
-        #Givent a number of elements in the menu, this gives the best indices to put them at
+        self.blank.Show(False)
+        self.SetBackgroundColour(AppSettings.defaultBackground)
+
+        #Gives the best positions to put the buttons given a certain number of them
         self.posIndices=[[7],
                         [3,5],
                         [6,1,8],
@@ -22,7 +26,8 @@ class BubbleMenu(wx.Window):
                         [0,2,3,5,6,8],
                         [0,2,3,5,6,7,8],
                         [0,1,2,3,5,6,7,8]]
-        #This gives the alignment flages for a given index in the grid to give the most circular look
+
+        #Gives the best alignment flags for each index to give the menu a "circular" look
         self.alignIndices=[wx.ALIGN_RIGHT | wx.ALIGN_BOTTOM,
                            wx.ALIGN_CENTER,
                            wx.ALIGN_LEFT | wx.ALIGN_BOTTOM,
@@ -35,6 +40,7 @@ class BubbleMenu(wx.Window):
 
         if len(self.children)>0:
             self.updateChildren()
+        self.Bind(wx.EVT_BUTTON, self.onClick)
 
     def Add(self, button):
         self.AddMany([button])
@@ -58,13 +64,18 @@ class BubbleMenu(wx.Window):
                 else:
                     sizer.Add(wx.Window(self, id=1000+i), flag=self.alignIndices[i])
             sizer.Remove(4)
-            sizer.Insert(4, self.button)
+            sizer.Insert(4, self.button, flag=wx.ALIGN_CENTER)
             self.SetSizer(sizer)
 
     def nextChild(self):
         self.childIndex+=1
         return self.children[self.childIndex-1]
-    def getClick
+
+    def onClick(self, event):
+        source=event.GetEventObject()
+        if source in self.children:
+            #So if this menu is the parent
+            self.parent.setView(source.target)
 
 
 
@@ -94,9 +105,7 @@ class BubbleButton(wx.PyControl):
         return self.normal.GetSize()
 
     def post_event(self):
-        event = wx.CommandEvent()
-        event.SetEventObject(self)
-        event.SetEventType(wx.EVT_BUTTON.typeId)
+        event = BubbleEvent.BubbleEvent(self, self.target)
         wx.PostEvent(self, event)
 
     def Enable(self, *args, **kwargs):
