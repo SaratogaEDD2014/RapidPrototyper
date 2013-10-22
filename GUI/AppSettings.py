@@ -10,8 +10,8 @@ currentPage=None
 
 #PATH="/home/ubuntu/Documents/RapidPrototyper/GUI/"  #Ubuntu
 #PATH="/Users/Scott/Documents/EDD/RapidPrototyper/GUI/" #MAC
-#PATH="C:\\Users\\krulciks14\\Documents\\Github\\RapidPrototyper\\GUI\\" #PC (Microsoft)
-PATH= "/Volumes/813-2937/RapidPrototyper/GUI/"
+PATH="C:\\Users\\krulciks14\\Documents\\Github\\RapidPrototyper\\GUI\\" #PC (Microsoft)
+#PATH= "/Volumes/813-2937/RapidPrototyper/GUI/"
 
 IMAGE_PATH=PATH+"images/"
 userFilePath=PATH
