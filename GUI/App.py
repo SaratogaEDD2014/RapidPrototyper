@@ -2,43 +2,33 @@ import wx
 import copy
 import AppSettings
 import BubbleMenu
+import ProtoToolbar
 import MainMenu
+
 
 class ProtoFrame(wx.Frame):
     def __init__(self, parent, id, title):
         wx.Frame.__init__(self, parent, id, title, wx.DefaultPosition, wx.Size(800, 510))
         self.imagePath=AppSettings.IMAGE_PATH+"Main/"
         self.title=title
-<<<<<<< HEAD
-        self.menu=MainMenu.MainMenu(self)
-        sizer=wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.menu)
-        self.SetSizer(sizer)
-=======
-        
-        #Top toolbar for back and quit operations
         self.toolbar=ProtoToolbar.ProtoToolbar(self)
-        
-        #Main bubble menu to select next events
-        self.menu=BubbleMenu.BubbleMenu(self, wx.Bitmap(self.imagePath+"BubbleTitle.png"), "Shape Menu")
-        self.buttonList=[BubbleMenu.BubbleButton(   self.menu, wx.Bitmap(self.imagePath+"buttonTemplate1.png"), wx.Bitmap(self.imagePath+"buttonPressed1.png")),
-                            BubbleMenu.BubbleButton(self.menu, wx.Bitmap(self.imagePath+"buttonTemplate2.png"), wx.Bitmap(self.imagePath+"buttonPressed2.png")),
-                            BubbleMenu.BubbleButton(self.menu, wx.Bitmap(self.imagePath+"buttonTemplate3.png"), wx.Bitmap(self.imagePath+"buttonPressed3.png")),
-                            BubbleMenu.BubbleButton(self.menu, wx.Bitmap(self.imagePath+"buttonTemplate4.png"), wx.Bitmap(self.imagePath+"buttonPressed4.png")),
-                            BubbleMenu.BubbleButton(self.menu, wx.Bitmap(self.imagePath+"buttonTemplate5.png"), wx.Bitmap(self.imagePath+"buttonPressed5.png")),
-                            BubbleMenu.BubbleButton(self.menu, wx.Bitmap(self.imagePath+"buttonTemplate6.png"), wx.Bitmap(self.imagePath+"buttonPressed6.png")),]
-        self.menu.AddMany(self.buttonList)
-        self.SetView(self.menu)
->>>>>>> Testing switching between pages
+        self.toolbar.Show(True)
+        self.menu=MainMenu.MainMenu(self)
+        self.setView(self.menu)
 
-    def SetView(self, viewPanel):
-        if(viewPanel != None):
+    def setView(self, viewPanel):
+        if(viewPanel!=None):
+            print("Tried to show this: ",viewPanel)
             AppSettings.previousPage=AppSettings.currentPage
+            if (AppSettings.previousPage != None):
+                AppSettings.previousPage.Show(False)
             AppSettings.currentPage=viewPanel
+            AppSettings.currentPage.Show(True)
             sizer=wx.BoxSizer(wx.VERTICAL)
             sizer.Add(self.toolbar)
             sizer.Add(viewPanel)
             self.SetSizer(sizer)
+
 
 def main():
     ProtoApp = wx.App()

@@ -13,7 +13,6 @@ class BubbleMenu(wx.Window):
         self.childIndex=0
         self.blank=wx.Panel(self, size=(90,90))
         self.SetBackgroundColour(AppSettings.backgroundColor)
-        
         #Givent a number of elements in the menu, this gives the best indices to put them at
         self.posIndices=[[7],
                         [3,5],
