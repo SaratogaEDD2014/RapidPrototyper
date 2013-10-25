@@ -8,7 +8,7 @@ import MainMenu
 
 class ProtoFrame(wx.Frame):
     def __init__(self, parent, id, title):
-        wx.Frame.__init__(self, parent, id, title, wx.DefaultPosition, wx.Size(800, 510))
+        super(ProtoFrame, self).__init__(parent, id, title, wx.DefaultPosition, wx.Size(800, 510))
         self.imagePath=AppSettings.IMAGE_PATH+"Main/"
         self.title=title
         self.toolbar=ProtoToolbar.ProtoToolbar(self)
