@@ -13,8 +13,6 @@ class BubbleMenu(wx.Window):
         self.button=BubbleButton(self, bitmap)
         self.button.Disable()
         self.childIndex=0
-        self.blank=wx.Panel(self, size=(90,90))
-        self.blank.Show(False)
         self.SetBackgroundColour(AppSettings.defaultBackground)
 
         #Gives the best positions to put the buttons given a certain number of them
@@ -62,7 +60,7 @@ class BubbleMenu(wx.Window):
                 if (self.posIndices[len(self.children)-1].count(i)>0):
                     sizer.Add(self.nextChild(), flag=self.alignIndices[i])
                 else:
-                    sizer.Add(wx.Window(self, id=1000+i), flag=self.alignIndices[i])
+                    sizer.Add(wx.Panel(self, size=(90,90), id=1000+i), flag=self.alignIndices[i])
             sizer.Remove(4)
             sizer.Insert(4, self.button, flag=wx.ALIGN_CENTER)
             self.SetSizer(sizer)
