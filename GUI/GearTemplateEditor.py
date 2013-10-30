@@ -23,6 +23,8 @@ class TemplateEditor(wx.Panel):
         self.sc2 = wx.SpinCtrl(self, -1, str(0), (80, 65), (60, -1))
         wx.Button(self, 1, 'Update', (20, 120))
 
+        DrawingView(self)
+
         self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
         self.Centre()
 
@@ -31,32 +33,22 @@ class TemplateEditor(wx.Panel):
         print("Number of Teeth", self.sc1.GetValue())
         print("Bore Diameter", self.sc2.GetValue())
 
-class DrawingView(wx.Panel):
-    def __init__(self, parent, lines=[plot.PolyLine([(1,2), (2,3), (3,5), (4,6), (5,8), (6,8), (10,10)])]):
+class DrawingView(plot.PlotCanvas):
+    def __init__(self, parent, lines=[plot.PolyLine([(1,2), (2,3), (3,5), (4,6), (5,8), (6,8), (10,10)]),plot.PolyLine([(-4,2), (-2,3), (-1,5), (1,8), (2,8), (4,10)])]):
         super(DrawingView, self).__init__(parent)
-        self.Show(False)
         self.lines=lines
+        self.draw(self.lines)
 
-    def draw(lines):
-        self.client = plot.PlotCanvas(self)
-        self.gc = plot.PlotGraphics(lines, 'Line Graph', 'X Axis', 'Y Axis')
-        self.client.Draw(gc)#,  xAxis= (0,15), yAxis= (0,15))
-        self.sizer=wx.BoxSizer(wx.HORIZONTAL)
-        self.sizer.Add(client)
-        self.SetSizer(self.sizer)
+    def draw(self, lines=None):
+        if lines== None: lines=self.lines
+        gc = plot.PlotGraphics(lines, 'Gear')
+        self.Draw(gc,  xAxis= (0,15), yAxis= (0,15))
 
 def main():
     ProtoApp = wx.App()
-    frame = wx.Frame(None, -1, 'Blue Streaks EDD')
-    valueEditor=TemplateEditor(frame)
-    display=DrawingView(frame)
-
-    """sizer=wx.BoxSizer(wx.HORIZONTAL)
-    sizer.Add(display)
-    sizer.Add(valueEditor)
-    frame.SetSizer(sizer)"""
-    valueEditor.Show(True)
-    frame.Show(True)
+    frm = wx.Frame(None, -1, 'line', size=(600,450))
+    DrawingView(frm)
+    frm.Show(True)
     ProtoApp.MainLoop()
 
 if __name__ == '__main__':
