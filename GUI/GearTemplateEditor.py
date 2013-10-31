@@ -9,6 +9,7 @@
 import wx
 import plotcopy as plot
 import AppSettings
+import math
 
 class TemplateEditor(wx.Panel):
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.Size(400,400)):
@@ -38,7 +39,34 @@ class DrawingView(plot.PlotCanvas):
 
     def defaultDraw(self):
         gc = plot.PlotGraphics(self.lines, 'Gear')
-        self.Draw(gc,  xAxis= (0,15), yAxis= (0,15))
+        self.Draw(gc)#,  xAxis= (0,15), yAxis= (0,15))
+
+numTeeth=40
+pitchDistance=.2
+diameter=2.5 #in inches
+
+def drange(start, stop, step):
+    r = start
+    while r <= stop:
+        yield r
+        r += step
+
+def GenerateGear(numTeeth, pitchDistance, diameter):
+    outerDiameter=diameter+pitchDistance/2
+    innerDiameter=diameter-pitchDistance/2
+
+    outerCircle=[]
+    inc=math.pi/numTeeth/2 #Angle increment
+    for theta in drange(0,2*math.pi, inc*2):
+        x=round(outerDiameter*math.cos(theta),4)
+        y=round(outerDiameter*math.sin(theta),4)
+        theta+=inc
+        x1=round(outerDiameter*math.cos(theta),4)
+        y1=round(outerDiameter*math.sin(theta),4)
+        outerCircle.append(plot.PolyLine([(x,y), (x1,y1)]))
+        #theta+=inc
+    print(outerCircle)
+    return outerCircle
 
 def main():
     ProtoApp = wx.App()
@@ -46,6 +74,7 @@ def main():
 
     sizer=wx.BoxSizer(wx.HORIZONTAL)
     drawing=DrawingView(frm)
+    drawing.lines=GenerateGear(numTeeth, pitchDistance, diameter)
     drawing.defaultDraw()
     sizer.Add(drawing)
     sizer.Add(TemplateEditor(frm))
