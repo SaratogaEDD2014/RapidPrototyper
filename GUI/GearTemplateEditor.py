@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Name:        module1
+# Name:        GearTemplateEditor
 # Purpose:
 #
 # Author:      scott Krulcik
@@ -54,19 +54,31 @@ def drange(start, stop, step):
 def GenerateGear(numTeeth, pitchDistance, diameter):
     outerDiameter=diameter+pitchDistance/2
     innerDiameter=diameter-pitchDistance/2
-
-    outerCircle=[]
+    gear=[]
     inc=math.pi/numTeeth/2 #Angle increment
     for theta in drange(0,2*math.pi, inc*2):
+        #Get outer two points of first arc of circle
         x=round(outerDiameter*math.cos(theta),4)
         y=round(outerDiameter*math.sin(theta),4)
         theta+=inc
         x1=round(outerDiameter*math.cos(theta),4)
         y1=round(outerDiameter*math.sin(theta),4)
-        outerCircle.append(plot.PolyLine([(x,y), (x1,y1)]))
-        #theta+=inc
-    print(outerCircle)
-    return outerCircle
+        
+        #get outer two points of arc of inner circle
+        #theta2=theta+inc
+        x2=round(innerDiameter*math.cos(theta),4)
+        y2=round(innerDiameter*math.sin(theta),4)
+        theta+=inc
+        x3=round(innerDiameter*math.cos(theta),4)
+        y3=round(innerDiameter*math.sin(theta),4)
+        
+        #Create tooth of gear
+        gear.append(plot.PolyLine([(x,y), (x1,y1)]))#peak
+        gear.append(plot.PolyLine([ (x1,y1) , (x2,y2) ]))
+        gear.append(plot.PolyLine([(x2,y2), (x3,y3)]))#trough
+        
+    print(gear)
+    return gear
 
 def main():
     ProtoApp = wx.App()
