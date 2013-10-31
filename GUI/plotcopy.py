@@ -548,26 +548,22 @@ class PlotCanvas(wx.Panel):
     
         wx.Panel.__init__(self, parent, id, pos, size, style, name)
 
-        sizer = wx.FlexGridSizer(2,2,0,0)
-        self.canvas = wx.Window(self, -1)
-        self.sb_vert = wx.ScrollBar(self, -1, style=wx.SB_VERTICAL)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.canvas = wx.Window(self, -1, size=(400,400))
+        self.sb_vert = wx.ScrollBar(self, -1, size=(10,400),style=wx.SB_VERTICAL)
         self.sb_vert.SetScrollbar(0,1000,1000,1000)
-        self.sb_hor = wx.ScrollBar(self, -1, style=wx.SB_HORIZONTAL)
+        self.sb_hor = wx.ScrollBar(self, -1, size=(400,10),style=wx.SB_HORIZONTAL)
         self.sb_hor.SetScrollbar(0,1000,1000,1000)
-
-        sizer.Add(self.canvas, 1, wx.EXPAND)
-        sizer.Add(self.sb_vert, 0, wx.EXPAND)
-        sizer.Add(self.sb_hor, 0, wx.EXPAND)
-        sizer.Add((0,0))
-        
-        sizer.AddGrowableRow(0, 1)
-        sizer.AddGrowableCol(0, 1)
+    
+        sizer.Add(self.canvas)
+        sizer.Add(self.sb_vert)
+        sizer.Add(self.sb_hor)
 
         self.sb_vert.Show(False)
         self.sb_hor.Show(False)
         
         self.SetSizer(sizer)
-        self.Fit()
+        #self.Fit()
 
         self.border = (1,1)
 
