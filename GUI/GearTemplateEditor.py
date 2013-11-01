@@ -44,6 +44,9 @@ class DrawingView(plot.PlotCanvas):
         super(DrawingView, self).__init__(parent, pos=pos, size=size)
         self.lines=lines
 
+    def SetLines(self, lines):
+        self.lines=lines
+
     def defaultDraw(self):
         gc = plot.PlotGraphics(self.lines, 'Gear')
         self.Draw(gc)#,  xAxis= (0,15), yAxis= (0,15))
