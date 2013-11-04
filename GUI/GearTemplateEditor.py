@@ -7,10 +7,17 @@
 # Created:     24/10/2013
 #-------------------------------------------------------------------------------
 import wx
-import plotcopy as plot
+#import plotcopy as plot
 import AppSettings
 import math
 
+def drange(start, stop, step):
+    r = start
+    while r < stop:
+        yield r
+        r += step
+
+"""
 class TemplateEditor(wx.Panel):
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.Size(400,400), numTeeth=25, pitchDistance=.15, pitchDiameter=3.0, bore=1.0):
         super(TemplateEditor, self).__init__(parent, id, pos, size)
@@ -52,15 +59,8 @@ class DrawingView(plot.PlotCanvas):
         self.Draw(gc)#,  xAxis= (0,15), yAxis= (0,15))
 
 
-def drange(start, stop, step):
-    r = start
-    while r <= stop:
-        yield r
-        r += step
-
 def GenerateGear(numTeeth, pitchDistance, diameter, bore):
-    tri()
-    """outerRadius=diameter/2+pitchDistance/2
+    outerRadius=diameter/2+pitchDistance/2
     innerRadius=diameter/2-pitchDistance/2
     gear=[]
     inc=math.pi/numTeeth/2 #Angle increment
@@ -97,51 +97,49 @@ def GenerateGear(numTeeth, pitchDistance, diameter, bore):
         boreCircle.append((round(bore*math.cos(theta),4), round(bore*math.sin(theta),4)))
     gear.append(plot.PolyLine(boreCircle))
 
-    print(gear)
     return gear"""
 
-shapes={"triangle":tri, "rectangle":rect, "trapezoid":trap}
-gearDim={"pitchDiameter":3, "pitchDepth":.25, "bore":1, "numTeeth":25, "shape":"triangle"}
+gearDim={"pitchDiameter":3.0, "pitchDepth":.25, "bore":1.0, "numTeeth":25.0, "shape":"triangle"}
 
 def tri():
-    inr=(gearDim["pitchDiameter"]/2) - gearDim["pitchDepth"] #inner radius
-    outr=(gearDim["pitchDiameter"]/2) + gearDim["pitchDepth"]#outer radius
+    inr=(gearDim["pitchDiameter"]/2.0) - gearDim["pitchDepth"] #inner radius
+    outr=(gearDim["pitchDiameter"]/2.0) + gearDim["pitchDepth"]#outer radius
     inc=2*math.pi/gearDim["numTeeth"]
     gear=[]
-    for theta in range(0, 2*math.pi, inc):
+    for theta in drange(0, 2*math.pi, inc):
         points=[]
         r=outr
-        points.append([math.round(r*trig(theta)) for trig in [math.cos, math.sin]])
+        points.append([round(r*trig(theta),2) for trig in [math.cos, math.sin]])
         if gearDim["shape"]!="trapezoid":
             #for rect and tri
-            theta+=inc/2
+            theta+=inc/2.0
             if gearDim["shape"]=="triangle":
                 r=inr
         else:
             #trapezoid
-            theta+=inc/4
-        points.append([math.round(r*trig(theta)) for trig in [math.cos, math.sin]])
+            theta+=inc/4.0
+        points.append([round(r*trig(theta),2) for trig in [math.cos, math.sin]])
         if gearDim["shape"]=="triangle":
-            theta+=inc/2
+            theta+=inc/2.0
             r=outr
         else:
             r=inr
             if gearDim["shape"]=="trapezoid":
-                theta+=inc/4
-        points.append([math.round(r*trig(theta)) for trig in [math.cos, math.sin]])
+                theta+=inc/4.0
+        points.append([round(r*trig(theta),2) for trig in [math.cos, math.sin]])
         #done with triangle
         if gearDim["shape"]!="triangle":
             #r is still inr
             if gearDim["shape"]=="trapezoid":
-                theta += inc/4
+                theta += inc/4.0
             else:
-                theta+=inc/2
-            points.append([math.round(r*trig(theta)) for trig in [math.cos, math.sin]])
+                theta+=inc/2.0
+            points.append([round(r*trig(theta),2) for trig in [math.cos, math.sin]])
             if gearDim["shape"]=="trapezoid":
                 r=outr
-                theta+=inc/4
-                points.append([math.round(r*trig(theta)) for trig in [math.cos, math.sin]])
-        gear.append(plot.PolyLine(points))
+                theta+=inc/4.0
+                points.append([round(r*trig(theta),2) for trig in [math.cos, math.sin]])
+        gear.append(points)#plot.PolyLine(points))
     print(gear)
     return gear
 
@@ -154,7 +152,7 @@ def rect():
 
 
 def main():
-    ProtoApp = wx.App()
+    """ProtoApp = wx.App()
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,450))
 
     sizer=wx.BoxSizer(wx.HORIZONTAL)
@@ -169,7 +167,8 @@ def main():
 
     frm.SetSizer(sizer)
     frm.Show(True)
-    ProtoApp.MainLoop()
+    ProtoApp.MainLoop()"""
+    print(tri())
 
 
 if __name__ == '__main__':
