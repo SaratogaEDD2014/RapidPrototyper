@@ -59,7 +59,8 @@ def drange(start, stop, step):
         r += step
 
 def GenerateGear(numTeeth, pitchDistance, diameter, bore):
-    outerRadius=diameter/2+pitchDistance/2
+    tri()
+    """outerRadius=diameter/2+pitchDistance/2
     innerRadius=diameter/2-pitchDistance/2
     gear=[]
     inc=math.pi/numTeeth/2 #Angle increment
@@ -97,7 +98,60 @@ def GenerateGear(numTeeth, pitchDistance, diameter, bore):
     gear.append(plot.PolyLine(boreCircle))
 
     print(gear)
+    return gear"""
+
+shapes={"triangle":tri, "rectangle":rect, "trapezoid":trap}
+gearDim={"pitchDiameter":3, "pitchDepth":.25, "bore":1, "numTeeth":25, "shape":"triangle"}
+
+def tri():
+    inr=(gearDim["pitchDiameter"]/2) - gearDim["pitchDepth"] #inner radius
+    outr=(gearDim["pitchDiameter"]/2) + gearDim["pitchDepth"]#outer radius
+    inc=2*math.pi/gearDim["numTeeth"]
+    gear=[]
+    for theta in range(0, 2*math.pi, inc):
+        points=[]
+        r=outr
+        points.append([math.round(r*trig(theta)) for trig in [math.cos, math.sin]])
+        if gearDim["shape"]!="trapezoid":
+            #for rect and tri
+            theta+=inc/2
+            if gearDim["shape"]=="triangle":
+                r=inr
+        else:
+            #trapezoid
+            theta+=inc/4
+        points.append([math.round(r*trig(theta)) for trig in [math.cos, math.sin]])
+        if gearDim["shape"]=="triangle":
+            theta+=inc/2
+            r=outr
+        else:
+            r=inr
+            if gearDim["shape"]=="trapezoid":
+                theta+=inc/4
+        points.append([math.round(r*trig(theta)) for trig in [math.cos, math.sin]])
+        #done with triangle
+        if gearDim["shape"]!="triangle":
+            #r is still inr
+            if gearDim["shape"]=="trapezoid":
+                theta += inc/4
+            else:
+                theta+=inc/2
+            points.append([math.round(r*trig(theta)) for trig in [math.cos, math.sin]])
+            if gearDim["shape"]=="trapezoid":
+                r=outr
+                theta+=inc/4
+                points.append([math.round(r*trig(theta)) for trig in [math.cos, math.sin]])
+        gear.append(plot.PolyLine(points))
+    print(gear)
     return gear
+
+
+def trap():
+    pass
+
+def rect():
+    pass
+
 
 def main():
     ProtoApp = wx.App()
