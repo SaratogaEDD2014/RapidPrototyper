@@ -7,7 +7,7 @@
 # Created:     24/10/2013
 #-------------------------------------------------------------------------------
 import wx
-#import plotcopy as plot
+import plotcopy as plot
 import AppSettings
 import math
 
@@ -17,7 +17,7 @@ def drange(start, stop, step):
         yield r
         r += step
 
-"""
+
 class TemplateEditor(wx.Panel):
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.Size(400,400), numTeeth=25, pitchDistance=.15, pitchDiameter=3.0, bore=1.0):
         super(TemplateEditor, self).__init__(parent, id, pos, size)
@@ -97,9 +97,9 @@ def GenerateGear(numTeeth, pitchDistance, diameter, bore):
         boreCircle.append((round(bore*math.cos(theta),4), round(bore*math.sin(theta),4)))
     gear.append(plot.PolyLine(boreCircle))
 
-    return gear"""
+    return gear
 
-gearDim={"pitchDiameter":3.0, "pitchDepth":.25, "bore":1.0, "numTeeth":25.0, "shape":"triangle"}
+gearDim={"pitchDiameter":4.0, "pitchDepth":.15, "bore":1.0, "numTeeth":32, "shape":"trapezoid", "thickness":.24}
 
 def tri():
     inr=(gearDim["pitchDiameter"]/2.0) - gearDim["pitchDepth"] #inner radius
@@ -139,8 +139,8 @@ def tri():
                 r=outr
                 theta+=inc/4.0
                 points.append([round(r*trig(theta),2) for trig in [math.cos, math.sin]])
-        gear.append(points)#plot.PolyLine(points))
-    print(gear)
+        gear.append(plot.PolyLine(points))
+    #add stuff to hub
     return gear
 
 
@@ -152,13 +152,13 @@ def rect():
 
 
 def main():
-    """ProtoApp = wx.App()
+    ProtoApp = wx.App()
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,450))
 
     sizer=wx.BoxSizer(wx.HORIZONTAL)
     drawing=DrawingView(frm)
     template=TemplateEditor(frm)
-    drawing.lines=GenerateGear(template.numTeeth, template.pitchDistance, template.pitchDiameter, template.bore)
+    drawing.lines=tri()#GenerateGear(template.numTeeth, template.pitchDistance, template.pitchDiameter, template.bore)
     drawing.defaultDraw()
     sizer.Add(drawing)
     sizer.Add(template)
@@ -167,7 +167,7 @@ def main():
 
     frm.SetSizer(sizer)
     frm.Show(True)
-    ProtoApp.MainLoop()"""
+    ProtoApp.MainLoop()
     print(tri())
 
 
