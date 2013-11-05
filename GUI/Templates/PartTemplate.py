@@ -5,10 +5,10 @@ import AppSettings
 class PartTemplate():
     def __init__(self, lines=[], editor=None):
         if editor==None:
-            editor=wx.Panel(None, size=)
+            editor=wx.Panel(None, size=(800,400))
         self.editor=editor
         self.lines=lines
-        
+
     def getEditor(self):
         self.editor.SetBackgroundColour(AppSetings.defaultBackground)
         return self.editor

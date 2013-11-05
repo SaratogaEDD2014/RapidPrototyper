@@ -99,17 +99,23 @@ def GenerateGear(numTeeth, pitchDistance, diameter, bore):
 
     return gear
 
-gearDim={"pitchDiameter":4.0, "pitchDepth":.15, "bore":1.0, "numTeeth":32, "shape":"trapezoid", "thickness":.24}
+gearDim={"pitchDiameter":4.0, "numTeeth":40, "bore":1.0, "shape":"trapezoid", "thickness":.25}
+
+#Addendum = 1 / Pd
+#Dedendum = 1.157 / Pd
 
 def tri():
-    inr=(gearDim["pitchDiameter"]/2.0) - gearDim["pitchDepth"] #inner radius
-    outr=(gearDim["pitchDiameter"]/2.0) + gearDim["pitchDepth"]#outer radius
+    pitch=gearDim["numTeeth"]/gearDim["pitchDiameter"]
+    addendum = 1 /  pitch
+    dedendum = 1.157 / pitch
+    inr=(gearDim["pitchDiameter"]/2.0) - dedendum #inner radius
+    outr=(gearDim["pitchDiameter"]/2.0) + addendum #outer radius
     inc=2*math.pi/gearDim["numTeeth"]
     gear=[]
     for theta in drange(0, 2*math.pi, inc):
         points=[]
         r=outr
-        points.append([round(r*trig(theta),2) for trig in [math.cos, math.sin]])
+        points.append([r*trig(theta) for trig in [math.cos, math.sin]])
         if gearDim["shape"]!="trapezoid":
             #for rect and tri
             theta+=inc/2.0
@@ -118,7 +124,7 @@ def tri():
         else:
             #trapezoid
             theta+=inc/4.0
-        points.append([round(r*trig(theta),2) for trig in [math.cos, math.sin]])
+        points.append([r*trig(theta) for trig in [math.cos, math.sin]])
         if gearDim["shape"]=="triangle":
             theta+=inc/2.0
             r=outr
@@ -126,7 +132,7 @@ def tri():
             r=inr
             if gearDim["shape"]=="trapezoid":
                 theta+=inc/4.0
-        points.append([round(r*trig(theta),2) for trig in [math.cos, math.sin]])
+        points.append([r*trig(theta) for trig in [math.cos, math.sin]])
         #done with triangle
         if gearDim["shape"]!="triangle":
             #r is still inr
@@ -134,11 +140,11 @@ def tri():
                 theta += inc/4.0
             else:
                 theta+=inc/2.0
-            points.append([round(r*trig(theta),2) for trig in [math.cos, math.sin]])
+            points.append([r*trig(theta) for trig in [math.cos, math.sin]])
             if gearDim["shape"]=="trapezoid":
-                r=outr
                 theta+=inc/4.0
-                points.append([round(r*trig(theta),2) for trig in [math.cos, math.sin]])
+            r=outr
+            points.append([r*trig(theta) for trig in [math.cos, math.sin]])
         gear.append(plot.PolyLine(points))
     #add stuff to hub
     return gear
@@ -153,7 +159,7 @@ def rect():
 
 def main():
     ProtoApp = wx.App()
-    frm = wx.Frame(None, -1, 'Gear Display', size=(800,450))
+    frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
 
     sizer=wx.BoxSizer(wx.HORIZONTAL)
     drawing=DrawingView(frm)
