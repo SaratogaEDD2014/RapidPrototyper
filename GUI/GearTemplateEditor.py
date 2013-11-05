@@ -7,7 +7,7 @@
 # Created:     24/10/2013
 #-------------------------------------------------------------------------------
 import wx
-import plotcopy as plot
+import util.plot as plot
 import AppSettings
 import math
 
