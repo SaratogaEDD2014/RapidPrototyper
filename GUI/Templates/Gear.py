@@ -86,6 +86,14 @@ class Gear(PartTemplate.PartTemplate):
                 r=outr
                 points.append([r*trig(theta) for trig in [math.cos, math.sin]])
             gear.append(plot.PolyLine(points))
+            
+        #generate bore circle
+        bore=getDim("bore")/2 #convert diameter to radius
+        boreCircle=[]
+        for theta in drange(0,2*math.pi, bore*math.pi/100):
+            boreCircle.append((round(bore*math.cos(theta),4), round(bore*math.sin(theta),4)))
+        gear.append(plot.PolyLine(boreCircle))
+        
         #add stuff to hub
         return gear
 
