@@ -1,10 +1,10 @@
 import wx
 from Templates import Gear
 import AppSettings
-import wx.lib.plot as plot
+import uti.plot as plot
 
 class TemplateEditor(wx.Panel):
-    def __init__(self, parent, template=Gear.Gear(3,20) ,id=-1, position=wx.DefaultPosition, size=wx.Size(800,400)):
+    def __init__(self, parent, template=Gear.Gear(self) ,id=-1, position=wx.DefaultPosition, size=wx.Size(800,400)):
         wx.Panel.__init__(self, parent, id, position, size)
         self.Show(False)
         self.shape=template
@@ -14,7 +14,7 @@ class TemplateEditor(wx.Panel):
     def drawPart(self):
         client = plot.PlotCanvas(self)
         lines=[]
-        for line in self.shape.getData():
+        for line in self.shape.getLines():
             print("Adding this data: ", line)
             lines.append(plot.PolyLine(line, legend='', colour='pink', width=1))
         gc = plot.PlotGraphics(lines)#, self.shape.getDescription())
