@@ -4,7 +4,7 @@ import AppSettings
 import uti.plot as plot
 
 class TemplateEditor(wx.Panel):
-    def __init__(self, parent, template=Gear.Gear(self) ,id=-1, position=wx.DefaultPosition, size=wx.Size(800,400)):
+    def __init__(self, parent, template=Gear.Gear() ,id=-1, position=wx.DefaultPosition, size=wx.Size(800,400)):
         wx.Panel.__init__(self, parent, id, position, size)
         self.Show(False)
         self.shape=template
