@@ -1,4 +1,6 @@
 import wx
+import sys
+import os
 
 #UI------------------------------------------------------------------------
 #Colors
@@ -14,11 +16,9 @@ previousPage=None
 currentPage=None
 
 #Resources:
-#PATH="/home/ubuntu/Documents/RapidPrototyper/GUI/"  #Ubuntu
-#PATH="/Users/Scott/Documents/EDD/RapidPrototyper/GUI/" #MAC
-PATH="C:\\Users\\krulciks14\\Documents\\Github\\RapidPrototyper\\GUI\\" #PC (Microsoft)
-#PATH= "/Volumes/813-2937/RapidPrototyper/GUI/"
+PATH=os.getcwd()+"/"
 IMAGE_PATH=PATH+"images/"
+sys.path.append("/path/to/dir")
 
 userFilePath=PATH
 recentFiles=[PATH+"examples/teapot.stl",

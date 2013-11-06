@@ -1,34 +1,38 @@
 import wx
 from Templates import Gear
 import AppSettings
-import uti.plot as plot
+import util.plot as plot
 
 class TemplateEditor(wx.Panel):
-    def __init__(self, parent, template=Gear.Gear() ,id=-1, position=wx.DefaultPosition, size=wx.Size(800,400)):
+    def __init__(self, parent, template=None ,id=-1, position=wx.DefaultPosition, size=wx.Size(800,400)):
         wx.Panel.__init__(self, parent, id, position, size)
         self.Show(False)
         self.shape=template
         self.SetBackgroundColour(AppSettings.defaultBackground)
+
+    def setShape(self, shape):
+        self.shape=shape
         self.drawPart()
+
+    def getShape():
+        return self.shape
 
     def drawPart(self):
         client = plot.PlotCanvas(self)
-        lines=[]
-        for line in self.shape.getLines():
-            print("Adding this data: ", line)
-            lines.append(plot.PolyLine(line, legend='', colour='pink', width=1))
-        gc = plot.PlotGraphics(lines)#, self.shape.getDescription())
+        gc = plot.PlotGraphics(self.shape.getLines())#, self.shape.getDescription())
         sizer=wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(client)
-        self.SetSizer(sizer)
         client.Draw(gc, xAxis=(-10,10), yAxis=(-10,20))
-        self.Show(True)
+        sizer.Add(client)
+        sizer.Add(self.shape.getGearDimensionEditor())
+        self.SetSizer(sizer)
 
 def main():
     ProtoApp = wx.App()
-    frame = wx.Frame(None, -1, 'Blue Streaks EDD')
+    frame = wx.Frame(None, -1, 'Blue Streaks EDD', size=(800,400))
     sizer=wx.BoxSizer(wx.VERTICAL)
-    sizer.Add(TemplateEditor(frame))
+    gearEditor=TemplateEditor(frame)
+    gearEditor.setShape(Gear.Gear(gearEditor))
+    sizer.Add(gearEditor)
     frame.SetSizer(sizer)
     frame.Show(True)
     ProtoApp.MainLoop()
