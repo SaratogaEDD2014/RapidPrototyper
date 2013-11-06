@@ -6,7 +6,7 @@ import math
 
 
 class Gear(PartTemplate.PartTemplate):
-    def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, pitchDistance=.15, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="triangle"):
+    def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="triangle"):
         super(Gear, self).__init__()
         self.gearDim={}#dict for standard gear values
         self.hubDim={} #dict for hub dimensions
