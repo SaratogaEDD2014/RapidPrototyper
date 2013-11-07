@@ -18,7 +18,7 @@ currentPage=None
 #Resources:
 PATH=os.getcwd()+"/"
 IMAGE_PATH=PATH+"images/"
-sys.path.append("/path/to/dir")
+sys.path.append(os.getcwd())
 
 userFilePath=PATH
 recentFiles=[PATH+"examples/teapot.stl",
