@@ -1,10 +1,19 @@
+#-------------------------------------------------------------------------------
+# Name:        GearTemplate
+# Purpose:     This is a panel for generating a gear. It contains window objects to edit parameters and can return a list of points representing the gear object
+#
+# Author:      Scott Krulcik
+#
+# Created:     11/2013
+#-------------------------------------------------------------------------------
+
 #Scott Krulcik 10/29
 
 import PartTemplate
-import GUI.util.labeledEditors as lbl
 import math
 import wx
 import util.plot as plot
+import wx.lib.agw.floatspin as fs
 
 def drange(start, stop, step):
     r = start
@@ -12,22 +21,29 @@ def drange(start, stop, step):
         yield r
         r += step
 
-class Gear(PartTemplate.PartTemplate):
+class Gear(wx.Panel):
     def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="triangle"):
         super(Gear, self).__init__()
+        self.Show(False)
         self.lines=lines
         self.gearDim={}#dict for standard gear values
         self.hubDim={} #dict for hub dimensions
-        self.dimensionEditor=self.generateGearDimensionEditor(parent)
-        self.gearDim["numTeeth"].SetValue(numTeeth)
-        self.gearDim["pitchDiameter"].SetValue(pitchDiameter)
-        self.gearDim["bore"].SetValue(bore)
-        self.gearDim["thickness"].SetValue(thickness)
-        self.gearDim["shape"].SetValue(shape)
 
-        self.hubDim["thickness"].SetValue(hubThickness)
-        self.hubDim["diameter"].SetValue(hubDiameter)
+        self.editors=self.MakeEditors()
+        self.updateButton=wx.Button(hubBox, 1, 'Update', (20, 200))
+        self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
+
+
+        self.setDim("numTeeth", numTeeth)
+        self.setDim("pitchDiameter",pitchDiameter)
+        self.setDim("bore",bore)
+        self.setDim("thickness",thickness)
+        self.setDim("shape",shape)
+        self.setHubDim("thickness",hubThickness)
+        self.setHubDim("diameter",hubDiameter)
         self.makeGear()
+
+
 
 
     def setLines(self, nlines):
@@ -105,7 +121,6 @@ class Gear(PartTemplate.PartTemplate):
                 r=outr
                 points.append([r*trig(theta) for trig in [math.cos, math.sin]])
             gear.append(plot.PolyLine(points))
-
         #generate bore circle
         bore=self.getDim("bore")/2 #convert diameter to radius
         boreCircle=[]
@@ -113,46 +128,47 @@ class Gear(PartTemplate.PartTemplate):
             boreCircle.append((round(bore*math.cos(theta),4), round(bore*math.sin(theta),4)))
         gear.append(plot.PolyLine(boreCircle))
 
-        #add stuff to hub
+        #TODO: hub info
+
         self.lines=gear
 
-    def generateGearDimensionEditor(self, parent):
-        viewPanel=wx.Panel(parent)
-
+    def makeEditors(self):
+        """Generates buttons, spincontrols, etc. to edit gear parameters"""
     #Standard Gear info-------------------------------------------------------------
+        gearBox=wx.StaticBox(self, -1, 'Gear Dimensions:')
         #number of teeth
-        self.gearDim["numTeeth"]=lbl.LabeledSpin(viewPanel, name="Number of teeth:", max=100)
+        self.gearDim["numTeeth"]=fs.FloatSpin(gearBox,min_val=0, max_val=100,name="Number of teeth")
         #pitchDiameter
-        self.gearDim["pitchDiameter"]=lbl.LabeledSpin(viewPanel, name="Pitch Diameter:", max=10)
+        self.gearDim["pitchDiameter"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Pitch Diameter")
         #Thickness
-        self.gearDim["thickness"]=lbl.LabeledSpin(viewPanel, name="Thickness:", max=10)
+        self.gearDim["thickness"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Thickness")
         #Bore Diameter
-        self.gearDim["bore"]=lbl.LabeledSpin(viewPanel, name="Bore Diameter:", max=10)
+        self.gearDim["bore"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Bore Diameter")
         #tooth shape
-        self.gearDim["shape"]=wx.TextCtrl(viewPanel, name="Tooth Shape:")#test only, will be radio buttons or list
+        self.gearDim["shape"]=wx.TextCtrl(gearBox, value="Triangle", name="Tooth Shape")#test only, will be radio buttons or list
 
-        gearBox=wx.StaticBox(viewPanel, -1, 'Gear Dimensions:')
-        gearBoxSizer=wx.BoxSizer(wx.VERTICAL)
+
+        gearBoxSizer=wx.GridSizer(len(self.gearDim),2,4,4)
         for dim in self.gearDim:
+            gearBoxSizer.Add(wx.StaticText(gearBox, self.gearDim[key].GetName()))
             gearBoxSizer.Add(self.gearDim[dim])
         gearBox.SetSizer(gearBoxSizer)
 
-    #Hub info-------------------------------------------------------------
-        #Hub Diameter
-        self.hubDim["diameter"]=lbl.LabeledSpin(viewPanel, name="Diameter:", max=10)
-        #Hub Thickness
-        self.hubDim["thickness"]=lbl.LabeledSpin(viewPanel, name="Thickness:", max=10)
+        #Hub info-------------------------------------------------------------
+        hubBox=wx.StaticBox(self, -1, 'Hub Dimensions:')
+        hubBoxSizer=wx.GridSizer(len(self.hubDim),2,4,4)
 
-        hubBox=wx.StaticBox(viewPanel, -1, 'Hub Dimensions:')
-        hubBoxSizer=wx.BoxSizer(wx.VERTICAL)
+        #Thickness
+        self.gearDim["thickness"]=fs.FloatSpin(hubBox,min_val=0, max_val=10,name="Thickness")
+        #Bore Diameter
+        wx.StaticText(self, label="Bore Diameter")
+        self.hubDim["diameter"]=fs.FloatSpin(hubBox,min_val=0, max_val=10, name="Bore Diameter")
+
         for dim in self.hubDim:
+            hubBoxSizer.Add(wx.StaticText(hubBox, self.hubDim[key].GetName()))
             hubBoxSizer.Add(self.hubDim[dim])
         hubBox.SetSizer(gearBoxSizer)
-        #Implement keyway afterwards
+        #TODO: Implement keyway option
 
-        viewSizer=wx.BoxSizer(wx.VERTICAL)
-        viewSizer.Add(gearBox)
-        viewSizer.Add(hubBox)
-        viewPanel.SetSizer(viewSizer)
-        return viewPanel
 
+        return [gearBox, hubBox]

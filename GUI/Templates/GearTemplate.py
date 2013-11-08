@@ -12,7 +12,7 @@
 import PartTemplate
 import math
 import wx
-import util.plot as plot
+import GUI.util.plot as plot
 import wx.lib.agw.floatspin as fs
 
 def drange(start, stop, step):
@@ -21,25 +21,42 @@ def drange(start, stop, step):
         yield r
         r += step
 
-class Gear(wx.Panel):
-    def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="triangle"):
-        super(Gear, self).__init__()
-        self.Show(False)
-        self.lines=lines
+class GearTemplate(wx.Panel):
+    def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="trapezoid"):
+        super(GearTemplate, self).__init__(parent, size=(800,400))
+        self.lines=[]
         self.gearDim={}#dict for standard gear values
         self.hubDim={} #dict for hub dimensions
-        self.AddEditors()
-        self.dimensionEditor=self.generateGearDimensionEditor(parent)
-        self.gearDim["numTeeth"].SetValue(numTeeth)
-        self.gearDim["pitchDiameter"].SetValue(pitchDiameter)
-        self.gearDim["bore"].SetValue(bore)
-        self.gearDim["thickness"].SetValue(thickness)
-        self.gearDim["shape"].SetValue(shape)
 
-        self.hubDim["thickness"].SetValue(hubThickness)
-        self.hubDim["diameter"].SetValue(hubDiameter)
+        self.editors=self.makeEditors()
+        self.updateButton=wx.Button(self, 1, 'Update')
+        self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
+
+        self.setDim("Number of Teeth", numTeeth)
+        self.setDim("Pitch Diameter",pitchDiameter)
+        self.setDim("bore",bore)
+        self.setDim("Thickness",thickness)
+        self.setDim("Tooth Shape",shape)
+        self.setHubDim("Thickness",hubThickness)
+        self.setHubDim("Bore Diameter",hubDiameter)
         self.makeGear()
 
+        self.display= plot.PlotCanvas(self, pos=wx.DefaultPosition, size=(400,400))
+
+        masterSizer=wx.BoxSizer(wx.HORIZONTAL)
+        editorSizer=wx.BoxSizer(wx.VERTICAL)
+        for e in self.editors:
+            editorSizer.Add(e)
+        editorSizer.Add(self.updateButton)
+        masterSizer.Add(self.display)
+        masterSizer.Add(editorSizer)
+        self.SetSizer(masterSizer)
+        self.OnUpdate(None)
+
+    def OnUpdate(self, event):
+        self.makeGear()
+        self.grid = plot.PlotGraphics(self.lines, 'Custom Gear')
+        self.display.Draw(self.grid)
 
     def setLines(self, nlines):
         self.lines=nlines
@@ -57,118 +74,132 @@ class Gear(wx.Panel):
             return None
 
     def getHubDim(self, key):
-        if key in seld.hubDim:
+        if key in self.hubDim:
             return self.hubDim[key].GetValue()
         else:
             return None
 
     def setDim(self, key, val):
-        if key in seld.gearDim:
+        if key in self.gearDim:
             self.gearDim[key].SetValue(val)
         else:
             pass
 
     def setHubDim(self, key, val):
-        if key in seld.hubDim:
+        if key in self.hubDim:
             self.hubDim[key].SetValue(val)
         else:
             pass
 
     def makeGear(self):
-        pitch = self.getDim("numTeeth")/self.getDim("pitchDiameter")
+        pitch = self.getDim("Number of Teeth")/self.getDim("Pitch Diameter")
         addendum = 1 /  pitch
         dedendum = 1.157 / pitch
-        inr=(self.getDim("pitchDiameter")/2.0) - dedendum #inner radius
-        outr=(self.getDim("pitchDiameter")/2.0) + addendum #outer radius
-        inc=2*math.pi/self.getDim("numTeeth")
+        inr=(self.getDim("Pitch Diameter")/2.0) - dedendum #inner radius
+        outr=(self.getDim("Pitch Diameter")/2.0) + addendum #outer radius
+        inc=2*math.pi/self.getDim("Number of Teeth")
         gear=[]
         for theta in drange(0, 2*math.pi, inc):
             points=[]
             r=outr
             points.append([r*trig(theta) for trig in [math.cos, math.sin]])
-            if self.getDim("shape")!="trapezoid":
+            if self.getDim("Tooth Shape")!="trapezoid":
                 #for rect and tri
                 theta+=inc/2.0
-                if self.getDim("shape")=="triangle":
+                if self.getDim("Tooth Shape")=="triangle":
                     r=inr
             else:
                 #trapezoid
                 theta+=inc/4.0
             points.append([r*trig(theta) for trig in [math.cos, math.sin]])
-            if self.getDim("shape")=="triangle":
+            if self.getDim("Tooth Shape")=="triangle":
                 theta+=inc/2.0
                 r=outr
             else:
                 r=inr
-                if self.getDim("shape")=="trapezoid":
+                if self.getDim("Tooth Shape")=="trapezoid":
                     theta+=inc/4.0
             points.append([r*trig(theta) for trig in [math.cos, math.sin]])
             #done with triangle
-            if self.getDim("shape")!="triangle":
+            if self.getDim("Tooth Shape")!="triangle":
                 #r is still inr
-                if self.getDim("shape")=="trapezoid":
+                if self.getDim("Tooth Shape")=="trapezoid":
                     theta += inc/4.0
                 else:
                     theta+=inc/2.0
                 points.append([r*trig(theta) for trig in [math.cos, math.sin]])
-                if self.getDim("shape")=="trapezoid":
+                if self.getDim("Tooth Shape")=="trapezoid":
                     theta+=inc/4.0
                 r=outr
                 points.append([r*trig(theta) for trig in [math.cos, math.sin]])
             gear.append(plot.PolyLine(points))
-
         #generate bore circle
-        bore=self.getDim("bore")/2 #convert diameter to radius
+        bore=self.getDim("Bore Diameter")/2 #convert diameter to radius
         boreCircle=[]
-        for theta in drange(0,2*math.pi, bore*math.pi/100):
+        binc=math.pi/50
+        for theta in drange(0,2*math.pi+binc, binc):
             boreCircle.append((round(bore*math.cos(theta),4), round(bore*math.sin(theta),4)))
         gear.append(plot.PolyLine(boreCircle))
 
-        #add stuff to hub
+        #TODO: hub info
+
         self.lines=gear
 
-    def generateGearDimensionEditor(self, parent):
-
+    def makeEditors(self):
+        """Generates buttons, spincontrols, etc. to edit gear parameters"""
     #Standard Gear info-------------------------------------------------------------
+        gearBox=wx.StaticBox(self, -1, 'Gear Dimensions:')
         #number of teeth
-        wx.StaticText(self, label="Number of teeth:")
-        self.gearDim["numTeeth"]=fs.FloatSpin(viewPanel,min_val=0, max_val=100)
+        self.gearDim["Number of Teeth"]=fs.FloatSpin(gearBox,min_val=0, max_val=100,name="Number of Teeth")
         #pitchDiameter
-        wx.StaticText(self, label="Pitch Diameter:")
-        self.gearDim["pitchDiameter"]=fs.FloatSpin(viewPanel,min_val=0, max_val=10)
+        self.gearDim["Pitch Diameter"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Pitch Diameter")
         #Thickness
-        wx.StaticText(self, label="Thickness:")
-        self.gearDim["thickness"]=fs.FloatSpin(viewPanel,min_val=0, max_val=10)
+        self.gearDim["Thickness"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Thickness")
         #Bore Diameter
-        wx.StaticText(self, label="Bore Diameter:")
-        self.gearDim["bore"]=fs.FloatSpin(viewPanel,min_val=0, max_val=10)
+        self.gearDim["Bore Diameter"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Bore Diameter")
         #tooth shape
-        wx.StaticText(self, label="Tooth Shape:")
-        self.gearDim["shape"]=wx.TextCtrl(viewPanel, value="Tooth Shape:")#test only, will be radio buttons or list
+        self.gearDim["Tooth Shape"]=wx.TextCtrl(gearBox, value="Triangle", name="Tooth Shape")#test only, will be radio buttons or list
 
-        gearBox=wx.StaticBox(viewPanel, -1, 'Gear Dimensions:')
-        gearBoxSizer=wx.BoxSizer(wx.VERTICAL)
+
+        gearBoxSizer=wx.GridSizer(len(self.gearDim),2,4,4)
         for dim in self.gearDim:
+            gearBoxSizer.Add(wx.StaticText(gearBox,-1, self.gearDim[dim].GetName()))
             gearBoxSizer.Add(self.gearDim[dim])
         gearBox.SetSizer(gearBoxSizer)
 
-    #Hub info-------------------------------------------------------------
-        hubBox=wx.StaticBox(viewPanel, -1, 'Hub Dimensions:')
-        hubBoxSizer=wx.BoxSizer(wx.VERTICAL)
+        #Hub info-------------------------------------------------------------
+        hubBox=wx.StaticBox(self, -1, 'Hub Dimensions:')
+        hubBoxSizer=wx.GridSizer(len(self.hubDim),2,4,4)
 
         #Thickness
-        wx.StaticText(self, label="Thickness:")
-        self.gearDim["thickness"]=fs.FloatSpin(viewPanel,min_val=0, max_val=10)
+        self.gearDim["Thickness"]=fs.FloatSpin(hubBox,min_val=0, max_val=10,name="Thickness")
         #Bore Diameter
-        wx.StaticText(self, label="Bore Diameter:")
-        self.hubDim["diameter"]=fs.FloatSpin(viewPanel,min_val=0, max_val=10)
+        self.hubDim["Bore Diameter"]=fs.FloatSpin(hubBox,min_val=0, max_val=10, name="Bore Diameter")
 
         for dim in self.hubDim:
+            hubBoxSizer.Add(wx.StaticText(hubBox,-1, self.hubDim[dim].GetName()))
             hubBoxSizer.Add(self.hubDim[dim])
-        hubBox.SetSizer(gearBoxSizer)
-        #Implement keyway afterwards
+        hubBox.SetSizer(hubBoxSizer)
+        #TODO: Implement keyway option
 
-        viewSizer=wx.BoxSizer(wx.VERTICAL)
-        viewSizer.Add(gearBox)
-        viewSizer.Add(hubBox)
-        self.SetSizer(viewSizer)
+
+        return [gearBox, hubBox]
+
+
+
+#----------------------------------------------------------------------------------
+def main():
+    ProtoApp = wx.App()
+    frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
+
+    sizer=wx.BoxSizer(wx.HORIZONTAL)
+    panel=GearTemplate(frm)
+    sizer.Add(panel)
+
+    frm.SetSizer(sizer)
+    frm.Show(True)
+    ProtoApp.MainLoop()
+
+
+if __name__ == '__main__':
+    main()
