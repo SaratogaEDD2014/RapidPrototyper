@@ -2,7 +2,6 @@
 import wx
 import copy
 import AppSettings
-import BubbleMenu
 import ProtoToolbar
 import MainMenu
 
@@ -10,6 +9,7 @@ import MainMenu
 class ProtoFrame(wx.Frame):
     def __init__(self, parent, id, title):
         super(ProtoFrame, self).__init__(parent, id, title, wx.DefaultPosition, wx.Size(800, 510))
+        self.SetBackgroundColour(AppSettings.defaultBackground)
         self.imagePath=AppSettings.IMAGE_PATH+"Main/"
         self.title=title
         self.toolbar=ProtoToolbar.ProtoToolbar(self)
@@ -24,10 +24,13 @@ class ProtoFrame(wx.Frame):
                 AppSettings.previousPage.Show(False)
             AppSettings.currentPage=viewPanel
             AppSettings.currentPage.Show(True)
-            sizer=wx.BoxSizer(wx.VERTICAL)
-            sizer.Add(self.toolbar)
+            mastersizer=wx.BoxSizer(wx.VERTICAL)
+            mastersizer.Add(self.toolbar)
+            sizer=wx.BoxSizer()
+            sizer.Add(wx.Panel(self, size=((800-viewPanel.GetSize()[0])/2,20)))
             sizer.Add(viewPanel)
-            self.SetSizer(sizer)
+            mastersizer.Add(sizer)
+            self.SetSizer(mastersizer)
 
 
 def main():
@@ -38,4 +41,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
