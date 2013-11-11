@@ -27,6 +27,7 @@ def drange(start, stop, step):
 class GearTemplate(wx.Panel):
     def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="trapezoid"):
         super(GearTemplate, self).__init__(parent, size=(800,400))
+        self.Show(False)
         self.lines=[]
         self.gearDim={}#dict for standard gear values
         self.hubDim={} #dict for hub dimensions
@@ -42,7 +43,6 @@ class GearTemplate(wx.Panel):
         self.setDim("Tooth Shape",shape)
         self.setHubDim("Thickness",hubThickness)
         self.setHubDim("Hub Diameter",hubDiameter)
-        self.makeGear()
 
         self.display= plot.PlotCanvas(self, pos=wx.DefaultPosition, size=(400,400))
         self.display.SetBackgroundColour(wx.Colour(240,240,240))
@@ -58,13 +58,14 @@ class GearTemplate(wx.Panel):
         masterSizer.Add(wx.Panel(self, size=(20,20)))#spacer
         masterSizer.Add(editorSizer)
         self.SetSizer(masterSizer)
-        self.OnUpdate(None)
         self.SetBackgroundColour(AppSettings.defaultBackground)
+        self.OnUpdate(None)
 
     def OnUpdate(self, event):
         self.makeGear()
         self.grid = plot.PlotGraphics(self.lines, 'Custom Gear')
         self.display.Draw(self.grid)
+
 
     def setLines(self, nlines):
         self.lines=nlines
@@ -120,6 +121,7 @@ class GearTemplate(wx.Panel):
             points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
             theta+=inc/2.0
             points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
 
         if points!=None: points.append(points[0])
         return [plot.PolyLine(points, width=1, legend="gear")]
@@ -249,6 +251,7 @@ def main():
     sizer=wx.BoxSizer(wx.HORIZONTAL)
     panel=GearTemplate(frm)
     sizer.Add(panel)
+    panel.Show(True)
 
     frm.SetSizer(sizer)
     frm.Show(True)
