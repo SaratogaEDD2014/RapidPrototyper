@@ -1,4 +1,4 @@
-#-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 # Name:        GearTemplate
 # Purpose:     This is a panel for generating a gear. It contains window objects to edit parameters and can return a list of points representing the gear object
 #
@@ -133,7 +133,7 @@ class Gear(wx.Panel):
         self.lines=gear
 
     def makeEditors(self):
-        """Generates buttons, spincontrols, etc. to edit gear parameters"""
+
     #Standard Gear info-------------------------------------------------------------
         gearBox=wx.StaticBox(self, -1, 'Gear Dimensions:')
         #number of teeth
