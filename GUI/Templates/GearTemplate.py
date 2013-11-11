@@ -16,6 +16,8 @@ import GUI.AppSettings as AppSettings
 import GUI.util.plot as plot
 import wx.lib.agw.floatspin as fs
 
+shapes=['trapezoid','triangle', 'rectangle']
+
 def drange(start, stop, step):
     r = start
     while r < stop:
@@ -43,17 +45,21 @@ class GearTemplate(wx.Panel):
         self.makeGear()
 
         self.display= plot.PlotCanvas(self, pos=wx.DefaultPosition, size=(400,400))
-        #self.display.SetBackgroundColour(AppSettings.secondForeground)
+        self.display.SetBackgroundColour(wx.Colour(240,240,240))
 
         masterSizer=wx.BoxSizer(wx.HORIZONTAL)
         editorSizer=wx.BoxSizer(wx.VERTICAL)
+        editorSizer.Add(wx.Panel(self, size=(20,20)))
         for e in self.editors:
             editorSizer.Add(e)
+            editorSizer.Add(wx.Panel(self, size=(20,20)))
         editorSizer.Add(self.updateButton)
         masterSizer.Add(self.display)
+        masterSizer.Add(wx.Panel(self, size=(20,20)))#spacer
         masterSizer.Add(editorSizer)
         self.SetSizer(masterSizer)
         self.OnUpdate(None)
+        self.SetBackgroundColour(AppSettings.defaultBackground)
 
     def OnUpdate(self, event):
         self.makeGear()
@@ -93,86 +99,112 @@ class GearTemplate(wx.Panel):
         else:
             pass
 
+
+    def triangle(self, inc, outr, inr):
+        points=[]
+        for theta in drange(0, 2*math.pi, inc):
+            points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            theta+=inc/2.0
+            points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            theta+=inc/2.0
+            points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+        if points!=None: points.append(points[0])
+        return plot.PolyLine(points, width=1, legend="gear")
+
+    def rectangle(self, inc, outr, inr):
+        points=[]
+        for theta in drange(0, 2*math.pi, inc):
+            points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            theta+=inc/2.0
+            points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            theta+=inc/2.0
+            points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+
+        if points!=None: points.append(points[0])
+        return plot.PolyLine(points, width=1, legend="gear")
+
+    def trapezoid(self, inc, outr, inr):
+        points=[]
+        for theta in drange(0, 2*math.pi, inc):
+            points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            theta+=inc/4
+            points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            theta+=inc/4
+            points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            theta+=inc/4
+            points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            theta+=inc/4
+            points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+
+        if points!=None: points.append(points[0])
+        return plot.PolyLine(points, width=1, legend="gear")
+
+
+
     def makeGear(self):
         pitch = self.getDim("Number of Teeth")/self.getDim("Pitch Diameter")
-        addendum = 1 /  pitch
+        addendum = 1.0 /  pitch
         dedendum = 1.157 / pitch
         inr=(self.getDim("Pitch Diameter")/2.0) - dedendum #inner radius
         outr=(self.getDim("Pitch Diameter")/2.0) + addendum #outer radius
         inc=2*math.pi/self.getDim("Number of Teeth")
-        gear=[]
-        points=[]
-        for theta in drange(-inc/2, 2*math.pi-inc/2, inc):
-            r=outr
-            points.append([r*trig(theta) for trig in [math.cos, math.sin]])
-            if self.getDim("Tooth Shape")!="trapezoid":
-                #for rect and tri
-                theta+=inc/2.0
-                if self.getDim("Tooth Shape")=="triangle":
-                    r=inr
-            else:
-                #trapezoid
-                theta+=inc/4.0
-            points.append([r*trig(theta) for trig in [math.cos, math.sin]])
-            if self.getDim("Tooth Shape")=="triangle":
-                theta+=inc/2.0
-                r=outr
-            else:
-                r=inr
-                if self.getDim("Tooth Shape")=="trapezoid":
-                    theta+=inc/4.0
-            points.append([r*trig(theta) for trig in [math.cos, math.sin]])
-            #done with triangle
-            if self.getDim("Tooth Shape")!="triangle":
-                #r is still inr
-                if self.getDim("Tooth Shape")=="trapezoid":
-                    theta += inc/4.0
-                else:
-                    theta+=inc/2.0
-                points.append([r*trig(theta) for trig in [math.cos, math.sin]])
-                if self.getDim("Tooth Shape")=="trapezoid":
-                    theta+=inc/4.0
-                r=outr
-                points.append([r*trig(theta) for trig in [math.cos, math.sin]])
-        if points!=None: points.append(points[0])
-        gear.append(plot.PolyLine(points, width=1, legend="gear"))
-        #generate bore circle
-        bore=self.getDim("Bore Diameter")/2 #convert diameter to radius
-        boreCircle=[]
-        binc=math.pi/100
-        for theta in drange(0,2*math.pi+binc, binc):
-            boreCircle.append((bore*math.cos(theta), bore*math.sin(theta)))
-        gear.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
 
-        #TODO: hub info
+        gear=[]
+        shapeFunctions={"triangle":self.triangle, "rectangle":self.rectangle, "trapezoid":self.trapezoid}
+        gear.append(shapeFunctions[self.getDim("Tooth Shape")](inc, outr, inr))
+
+        #generate bore circle
+        bore=self.getDim("Bore Diameter")/2.0 #convert diameter to radius
+        if bore!=0:
+            boreCircle=[]
+            binc=math.pi/100
+            for theta in drange(0,2*math.pi+binc, binc):
+                boreCircle.append((bore*math.cos(theta), bore*math.sin(theta)))
+            gear.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
+
+        #generate hub circle
+        hub=self.getHubDim("Hub Diameter")/2.0 #convert diameter to radius
+        if hub!=0:
+            hubCircle=[]
+            hinc=math.pi/100.0
+            for theta in drange(0,2*math.pi, hinc):
+                hubCircle.append((hub*math.cos(theta), hub*math.sin(theta)))
+            gear.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=AppSettings.defaultAccent))
 
         self.lines=gear
 
     def makeEditors(self):
         """Generates buttons, spincontrols, etc. to edit gear parameters"""
     #Standard Gear info-------------------------------------------------------------
-        gearBox=wx.Panel(self)#wx.StaticBox(self, -1, 'Gear Dimensions:')
+        gearBox=wx.StaticBox(self, -1, 'Gear Dimensions:')
+        gearBox.SetForegroundColour(wx.Colour(255,255,255))
         #number of teeth
-        self.gearDim["Number of Teeth"]=fs.FloatSpin(gearBox, pos=(10,10), min_val=0, max_val=100,name="Number of Teeth")
+        self.gearDim["Number of Teeth"]=fs.FloatSpin(gearBox, min_val=0, max_val=100,name="Number of Teeth")
         #pitchDiameter
-        self.gearDim["Pitch Diameter"]=fs.FloatSpin(gearBox,pos=(10,10), min_val=0, max_val=10,name="Pitch Diameter")
+        self.gearDim["Pitch Diameter"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Pitch Diameter")
         #Thickness
-        self.gearDim["Thickness"]=fs.FloatSpin(gearBox,pos=(10,10), min_val=0, max_val=10,name="Thickness")
+        self.gearDim["Thickness"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Thickness")
         #Bore Diameter
-        self.gearDim["Bore Diameter"]=fs.FloatSpin(gearBox,pos=(10,10), min_val=0, max_val=10,name="Bore Diameter")
+        self.gearDim["Bore Diameter"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Bore Diameter")
         #tooth shape
-        self.gearDim["Tooth Shape"]=wx.TextCtrl(gearBox,pos=(10,10), value="Triangle", name="Tooth Shape")#test only, will be radio buttons or list
+        self.gearDim["Tooth Shape"]=wx.ComboBox(gearBox, value=shapes[0], choices=shapes, name="Tooth Shape")
 
 
-        gearBoxSizer=wx.GridSizer(len(self.gearDim),2,4,4)
+        gearBoxSizer=wx.GridSizer(len(self.gearDim),2,8,8)
         for dim in self.gearDim:
-            gearBoxSizer.Add(wx.StaticText(gearBox,-1, self.gearDim[dim].GetName()))
+            temp=wx.StaticText(gearBox,-1, self.gearDim[dim].GetName()+":")
+            temp.SetForegroundColour(wx.Colour(255,255,255))
+            gearBoxSizer.Add(temp)
             gearBoxSizer.Add(self.gearDim[dim])
-        gearBox.SetSizer(gearBoxSizer)
+
+        staticSizer=wx.StaticBoxSizer(gearBox)
+        staticSizer.Add(gearBoxSizer)
 
         #Hub info-------------------------------------------------------------
-        hubBox=wx.Panel(self)#wx.StaticBox(self, -1, 'Hub Dimensions:')
-        hubBoxSizer=wx.GridSizer(len(self.hubDim),2,4,4)
+        hubBox=wx.StaticBox(self, -1, 'Hub Dimensions:')
+        hubBox.SetForegroundColour(wx.Colour(255,255,255))
+        hubBoxSizer=wx.GridSizer(len(self.hubDim),2,8,8)
 
         #Thickness
         self.hubDim["Thickness"]=fs.FloatSpin(hubBox,min_val=0, max_val=10,name="Thickness")
@@ -180,13 +212,17 @@ class GearTemplate(wx.Panel):
         self.hubDim["Hub Diameter"]=fs.FloatSpin(hubBox,min_val=0, max_val=10, name="Hub Diameter")
 
         for dim in self.hubDim:
-            hubBoxSizer.Add(wx.StaticText(hubBox,-1, self.hubDim[dim].GetName()))
+            temp=wx.StaticText(hubBox,-1, self.hubDim[dim].GetName()+":       ")
+            temp.SetForegroundColour(wx.Colour(255,255,255))
+            hubBoxSizer.Add(temp)
             hubBoxSizer.Add(self.hubDim[dim])
-        hubBox.SetSizer(hubBoxSizer)
+
+        hubStaticSizer=wx.StaticBoxSizer(hubBox)
+        hubStaticSizer.Add(hubBoxSizer)
         #TODO: Implement keyway option
 
 
-        return (gearBox, hubBox)
+        return (staticSizer, hubStaticSizer)
 
 
 
