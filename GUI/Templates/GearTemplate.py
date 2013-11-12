@@ -14,7 +14,7 @@ import math
 import wx
 import GUI.AppSettings as AppSettings
 import GUI.util.plot as plot
-import wx.lib.agw.floatspin as fs
+import GUI.util.floatspin as fs
 
 shapes=['trapezoid','triangle', 'rectangle','sprocket']
 
@@ -197,23 +197,27 @@ class GearTemplate(wx.Panel):
         gearBox=wx.StaticBox(self, -1, 'Gear Dimensions:')
         gearBox.SetForegroundColour(wx.Colour(255,255,255))
         #number of teeth
-        self.gearDim["Number of Teeth"]=fs.FloatSpin(gearBox, min_val=0, max_val=100,name="Number of Teeth")
+        self.gearDim["Number of Teeth"]=fs.FloatSpin(gearBox, min_val=0, max_val=100, increment=1,name="Number of Teeth", agwStyle=fs.FS_RIGHT)
+        self.gearDim["Number of Teeth"].SetDigits(0)
         #pitchDiameter
-        self.gearDim["Pitch Diameter"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Pitch Diameter")
+        self.gearDim["Pitch Diameter"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,increment=0.05, name="Pitch Diameter", agwStyle=fs.FS_RIGHT)
+        self.gearDim["Pitch Diameter"].SetDigits(3)
         #Thickness
-        self.gearDim["Thickness"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Thickness")
+        self.gearDim["Thickness"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,increment=0.05,name="Thickness", agwStyle=fs.FS_RIGHT)
+        self.gearDim["Thickness"].SetDigits(3)
         #Bore Diameter
-        self.gearDim["Bore Diameter"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,name="Bore Diameter")
+        self.gearDim["Bore Diameter"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,increment=0.05,name="Bore Diameter", agwStyle=fs.FS_RIGHT)
+        self.gearDim["Bore Diameter"].SetDigits(3)
         #tooth shape
         self.gearDim["Tooth Shape"]=wx.ComboBox(gearBox, value=shapes[0], choices=shapes, name="Tooth Shape")
 
 
         gearBoxSizer=wx.GridSizer(len(self.gearDim),2,8,8)
         for dim in self.gearDim:
-            temp=wx.StaticText(gearBox,-1, self.gearDim[dim].GetName()+":")
+            temp=wx.StaticText(gearBox,-1, self.gearDim[dim].GetName()+":", size=(105,-1))
             temp.SetForegroundColour(wx.Colour(255,255,255))
             gearBoxSizer.Add(temp)
-            gearBoxSizer.Add(self.gearDim[dim])
+            gearBoxSizer.Add(self.gearDim[dim], flag=wx.ALIGN_RIGHT)
 
         staticSizer=wx.StaticBoxSizer(gearBox)
         staticSizer.Add(gearBoxSizer)
@@ -224,15 +228,17 @@ class GearTemplate(wx.Panel):
         hubBoxSizer=wx.GridSizer(len(self.hubDim),2,8,8)
 
         #Thickness
-        self.hubDim["Thickness"]=fs.FloatSpin(hubBox,min_val=0, max_val=10,name="Thickness")
+        self.hubDim["Thickness"]=fs.FloatSpin(hubBox,min_val=0, max_val=10,increment=0.05,name="Thickness", agwStyle=fs.FS_RIGHT)
+        self.hubDim["Thickness"].SetDigits(3)
         #Bore Diameter
-        self.hubDim["Hub Diameter"]=fs.FloatSpin(hubBox,min_val=0, max_val=10, name="Hub Diameter")
+        self.hubDim["Hub Diameter"]=fs.FloatSpin(hubBox,min_val=0, max_val=10,increment=0.05, name="Hub Diameter", agwStyle=fs.FS_RIGHT)
+        self.hubDim["Hub Diameter"].SetDigits(3)
 
         for dim in self.hubDim:
-            temp=wx.StaticText(hubBox,-1, self.hubDim[dim].GetName()+":       ")
+            temp=wx.StaticText(hubBox,-1,self.hubDim[dim].GetName()+":", size=(105,-1))
             temp.SetForegroundColour(wx.Colour(255,255,255))
             hubBoxSizer.Add(temp)
-            hubBoxSizer.Add(self.hubDim[dim])
+            hubBoxSizer.Add(self.hubDim[dim], flag=wx.ALIGN_RIGHT)
 
         hubStaticSizer=wx.StaticBoxSizer(hubBox)
         hubStaticSizer.Add(hubBoxSizer)
