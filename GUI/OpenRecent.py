@@ -2,7 +2,7 @@ import wx
 import AppSettings
 
 class OpenRecent(wx.Panel):
-    def __init__(self, parent, id=-1, position=wx.DefaultPosition, size=wx.Size(600,380)):
+    def __init__(self, parent, id=-1, position=(0,40), size=wx.Size(600,380)):
         wx.Panel.__init__(self, parent, id, position, size)
         self.Show(False)
         self.SetBackgroundColour(AppSettings.secondBackground)
@@ -20,8 +20,8 @@ class OpenRecent(wx.Panel):
         sw.Show(True)
 
 class FileBox(wx.Panel):
-    def __init__(self, parent, filename, id=-1, position=wx.DefaultPosition, size=wx.Size(400,100)):
-        wx.Panel.__init__(self, parent, id, position, size)
+    def __init__(self, parent, filename, id=-1, size=wx.Size(400,100)):
+        wx.Panel.__init__(self, parent, id, size=size)
         self.Show(False)
         self.SetBackgroundColour(AppSettings.defaultBackground)
         self.sizer=wx.BoxSizer(wx.HORIZONTAL)

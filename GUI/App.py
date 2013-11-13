@@ -27,10 +27,12 @@ class ProtoFrame(wx.Frame):
             mastersizer=wx.BoxSizer(wx.VERTICAL)
             mastersizer.Add(self.toolbar)
             sizer=wx.BoxSizer()
-            sizer.Add(wx.Panel(self, size=((800-viewPanel.GetSize()[0])/2,20)))
-            sizer.Add(viewPanel)
+            sizer.Add(wx.Panel(self, size=((800-AppSettings.currentPage.GetSize()[0])/2,20)))
+            sizer.Add(AppSettings.currentPage)
             mastersizer.Add(sizer)
             self.SetSizer(mastersizer)
+            #AppSettings.currentPage.Refresh()
+            wx.PostEvent(AppSettings.currentPage, wx.SizeEvent())
 
 
 def main():

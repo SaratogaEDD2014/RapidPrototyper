@@ -3,8 +3,8 @@ import BubbleEvent
 import AppSettings
 
 class BubbleMenu(wx.Window):
-    def __init__(self, parent, bitmap, name="", children=[], id=-1, position=(0,40), size=(360, 360)):
-        super(BubbleMenu, self).__init__(parent, id, wx.DefaultPosition, size=size)
+    def __init__(self, parent, bitmap, name="", children=[], id=-1, pos=(200,40), size=(360, 360)):
+        super(BubbleMenu, self).__init__(parent, id, pos=pos, size=size)
         self.Show(False)
         self.bitmap=bitmap
         self.name=name
