@@ -9,7 +9,6 @@
 
 #Scott Krulcik 10/29
 
-import PartTemplate
 import math
 import wx
 import GUI.AppSettings as AppSettings
