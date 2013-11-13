@@ -8,7 +8,7 @@ import MainMenu
 
 class ProtoFrame(wx.Frame):
     def __init__(self, parent, id, title):
-        super(ProtoFrame, self).__init__(parent, id, title, wx.DefaultPosition, wx.Size(800, 510))
+        super(ProtoFrame, self).__init__(parent, id, title, size=wx.Size(800, 480))
         self.SetBackgroundColour(AppSettings.defaultBackground)
         self.imagePath=AppSettings.IMAGE_PATH+"Main/"
         self.title=title
