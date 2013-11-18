@@ -25,7 +25,7 @@ def drange(start, stop, step):
 
 class GearTemplate(wx.Panel):
     def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="trapezoid"):
-        super(GearTemplate, self).__init__(parent, size=(800,400))
+        super(GearTemplate, self).__init__(parent, pos=(0,40,), size=(800,400))
         self.Show(False)
         self.lines=[]
         self.gearDim={}#dict for standard gear values
