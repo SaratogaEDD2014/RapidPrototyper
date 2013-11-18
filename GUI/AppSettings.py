@@ -30,7 +30,7 @@ recentFiles=[PATH+"examples/teapot.stl",
 LAYER_DEPTH=.01 #IN INCHES
 
 
-def add_recent_file(filename):
+def addRecentFile(filename):
     global recentFiles
     recentFiles.insert(0,filename)
     if len(recentFiles)>5:
