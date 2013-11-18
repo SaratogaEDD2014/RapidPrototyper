@@ -18,7 +18,7 @@ class TouchSpin(wx.Control):
         self._down=wx.Panel(self, size=(30,30))
         self._down.SetBackgroundColour(wx.Colour(255,0,0))
 
-        sizer=wx.BoxSizer(wx.VERTICAL)
+        sizer=wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(self._textcontrol)
         sizer.Add(self._up)
         sizer.Add(self._down)
@@ -28,6 +28,7 @@ class TouchSpin(wx.Control):
 
     def _on_click(self, event):
         x, y = event.GetPosition()
+        print x,y
         if self._up.region.Contains(x, y):
             self.value+=self._inc
         elif self._down.region.Contains(x,y):

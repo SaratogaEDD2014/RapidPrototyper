@@ -31,8 +31,7 @@ class ProtoFrame(wx.Frame):
             sizer.Add(AppSettings.currentPage)
             mastersizer.Add(sizer)
             self.SetSizer(mastersizer)
-            #AppSettings.currentPage.Refresh()
-            wx.PostEvent(AppSettings.currentPage, wx.SizeEvent())
+            wx.PostEvent(AppSettings.currentPage, wx.SizeEvent()) #Without this, panel appears in wrong spot
 
 
 def main():

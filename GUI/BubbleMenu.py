@@ -3,7 +3,7 @@ import BubbleEvent
 import AppSettings
 
 class BubbleMenu(wx.Window):
-    def __init__(self, parent, bitmap, name="", children=[], id=-1, pos=(200,40), size=(360, 360)):
+    def __init__(self, parent, bitmap, name="", children=[], id=-1, pos=wx.DefaultPosition, size=(400, 400)):
         super(BubbleMenu, self).__init__(parent, id, pos=pos, size=size)
         self.Show(False)
         self.bitmap=bitmap
@@ -39,6 +39,8 @@ class BubbleMenu(wx.Window):
         if len(self.children)>0:
             self.updateChildren()
         self.Bind(wx.EVT_BUTTON, self.onClick)
+
+        self.Center()
 
     def Add(self, button):
         self.AddMany([button])
@@ -91,7 +93,7 @@ class BubbleButton(wx.PyControl):
         self._clicked = False
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         #events
-        self.Bind(wx.EVT_SIZE, self.on_size)                    #Used to make button fit as best as possible
+        self.Bind(wx.EVT_SIZE, self.on_size) #Used to make button fit as best as possible
         self.Bind(wx.EVT_PAINT, self.on_paint)
         self.Bind(wx.EVT_LEFT_DOWN, self.on_left_down)
         self.Bind(wx.EVT_LEFT_DCLICK, self.on_left_dclick)
