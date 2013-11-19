@@ -13,7 +13,7 @@ import math
 import wx
 import GUI.AppSettings as AppSettings
 import GUI.util.plot as plot
-import GUI.util.floatspin as fs
+import GUI.util.editors as editors
 
 shapes=['trapezoid','triangle', 'rectangle','sprocket']
 
@@ -196,17 +196,13 @@ class GearTemplate(wx.Panel):
         gearBox=wx.StaticBox(self, -1, 'Gear Dimensions:')
         gearBox.SetForegroundColour(wx.Colour(255,255,255))
         #number of teeth
-        self.gearDim["Number of Teeth"]=fs.FloatSpin(gearBox, min_val=0, max_val=100, increment=1,name="Number of Teeth", agwStyle=fs.FS_RIGHT)
-        self.gearDim["Number of Teeth"].SetDigits(0)
+        self.gearDim["Number of Teeth"]=editors.TouchSpin(gearBox, limits=(0,100), increment=1,name="Number of Teeth")
         #pitchDiameter
-        self.gearDim["Pitch Diameter"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,increment=0.05, name="Pitch Diameter", agwStyle=fs.FS_RIGHT)
-        self.gearDim["Pitch Diameter"].SetDigits(3)
+        self.gearDim["Pitch Diameter"]=editors.TouchSpin(gearBox,limits=(0,10),increment=0.05, name="Pitch Diameter")
         #Thickness
-        self.gearDim["Thickness"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,increment=0.05,name="Thickness", agwStyle=fs.FS_RIGHT)
-        self.gearDim["Thickness"].SetDigits(3)
+        self.gearDim["Thickness"]=editors.TouchSpin(gearBox,limits=(0,10),increment=0.05,name="Thickness")
         #Bore Diameter
-        self.gearDim["Bore Diameter"]=fs.FloatSpin(gearBox,min_val=0, max_val=10,increment=0.05,name="Bore Diameter", agwStyle=fs.FS_RIGHT)
-        self.gearDim["Bore Diameter"].SetDigits(3)
+        self.gearDim["Bore Diameter"]=editors.TouchSpin(gearBox,limits=(0,10),increment=0.05,name="Bore Diameter")
         #tooth shape
         self.gearDim["Tooth Shape"]=wx.ComboBox(gearBox, value=shapes[0], choices=shapes, name="Tooth Shape")
 
@@ -227,11 +223,9 @@ class GearTemplate(wx.Panel):
         hubBoxSizer=wx.GridSizer(len(self.hubDim),2,8,8)
 
         #Thickness
-        self.hubDim["Thickness"]=fs.FloatSpin(hubBox,min_val=0, max_val=10,increment=0.05,name="Thickness", agwStyle=fs.FS_RIGHT)
-        self.hubDim["Thickness"].SetDigits(3)
+        self.hubDim["Thickness"]=editors.TouchSpin(hubBox,limits=(0,10),increment=0.05,name="Thickness")
         #Bore Diameter
-        self.hubDim["Hub Diameter"]=fs.FloatSpin(hubBox,min_val=0, max_val=10,increment=0.05, name="Hub Diameter", agwStyle=fs.FS_RIGHT)
-        self.hubDim["Hub Diameter"].SetDigits(3)
+        self.hubDim["Hub Diameter"]=editors.TouchSpin(hubBox,limits=(0,10),increment=0.05, name="Hub Diameter")
 
         for dim in self.hubDim:
             temp=wx.StaticText(hubBox,-1,self.hubDim[dim].GetName()+":", size=(105,-1))

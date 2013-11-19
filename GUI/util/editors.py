@@ -1,5 +1,5 @@
 import wx
-import AppSettings
+import GUI.AppSettings
 from GUI.BubbleMenu import *
 
 class TouchSpin(wx.Control):
@@ -10,7 +10,7 @@ class TouchSpin(wx.Control):
         self._range=limits
         self.increment=increment
         self.name=name
-        self._textcontrol=wx.TextCtrl(self, -1, str(self._value), (30, 50), (60, 30))
+        self._textcontrol=wx.TextCtrl(self, -1, str(self._value), (30, 50), (60, 30), style=wx.TE_PROCESS_ENTER)
 
         h = self._textcontrol.GetSize().height
         w = self._textcontrol.GetSize().width + self._textcontrol.GetPosition().x + 2
@@ -24,6 +24,7 @@ class TouchSpin(wx.Control):
         sizer.Add(self._down)
         self.SetSizer(sizer)
 
+        self.Bind(wx.EVT_TEXT_ENTER, self._on_enter)
         self.Bind(wx.EVT_BUTTON, self._on_click)
 
     def _on_click(self, event):
@@ -33,16 +34,19 @@ class TouchSpin(wx.Control):
         elif self._down is source:
             self.value-=self._inc
 
-    def setValue(self, val):
-        self._value=val
+    def SetValue(self, val):
+        self._value=float(val)
         if self._value>self.range[1]:
             self._value=self.range[1]
         elif self._value<self.range[0]:
             self._value=self.range[0]
         self._textcontrol.SetValue(str(self._value))
-    def getValue(self):
+    def GetValue(self):
         return self._value
-    value=property(getValue, setValue)
+    value=property(GetValue, SetValue)
+
+    def _on_enter(self, event):
+        self.value=float(self._textcontrol.GetValue())
 
     def setIncrement(self, val):
         self._inc=val
@@ -57,14 +61,34 @@ class TouchSpin(wx.Control):
     range=property(getRange, setRange)
 
 
+class LabeledSpin(wx.Panel):
+    def __init__(self, parent=None, id=-1, value=0.0, name="Un-named", min=0, max=100, pos=wx.DefaultPosition):
+        super(LabeledSpin, self).__init__(parent, id, pos=pos)
+        self.text=wx.StaticText(self, -1, name)
+        self.control=TouchSpin(self, -1, value=value, limits=(min,max))
+        sizer=wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(self.text)
+        sizer.Add(self.control)
+        self.control.Show(True)
+        self.SetSizer(sizer)
+        self.Show(True)
+
+    def GetValue(self):
+        return self.control.GetValue()
+    def SetValue(self, val):
+        self.control.SetValue(val)
+
+
 def main():
     ProtoApp = wx.App()
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
 
     sizer=wx.BoxSizer(wx.HORIZONTAL)
-    panel=TouchSpin(frm)
-    sizer.Add(panel)
-    panel.Show(True)
+    touchspin=TouchSpin(frm)
+    lblspin=LabeledSpin(frm)
+    sizer.Add(touchspin)
+    sizer.Add(lblspin)
+    #panel.Show(True)
 
     frm.SetSizer(sizer)
     frm.Show(True)

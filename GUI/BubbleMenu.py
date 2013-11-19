@@ -135,7 +135,6 @@ class BubbleButton(wx.PyControl):
 
     def get_clicked(self):
         return self._clicked
-
     clicked = property(get_clicked, set_clicked)
 
     def on_left_down(self, event):

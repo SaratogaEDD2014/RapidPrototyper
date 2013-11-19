@@ -16,7 +16,8 @@ previousPage=None
 currentPage=None
 
 #Resources:
-PATH=os.getcwd()+"/"
+PATH=os.getcwd()
+PATH=PATH[:PATH.rfind("GUI")+3] + "/"
 IMAGE_PATH=PATH+"images/"
 sys.path.append(os.getcwd())
 
