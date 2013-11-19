@@ -26,6 +26,7 @@ def drange(start, stop, step):
 class GearTemplate(wx.Panel):
     def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="trapezoid"):
         super(GearTemplate, self).__init__(parent, pos=(0,40,), size=(800,400))
+        self.SetBackgroundColour(AppSettings.defaultBackground)
         self.Show(False)
         self.lines=[]
         self.gearDim={}#dict for standard gear values
@@ -195,6 +196,7 @@ class GearTemplate(wx.Panel):
     #Standard Gear info-------------------------------------------------------------
         gearBox=wx.StaticBox(self, -1, 'Gear Dimensions:')
         gearBox.SetForegroundColour(wx.Colour(255,255,255))
+        gearBox.SetBackgroundColour(self.GetBackgroundColour())
         #number of teeth
         self.gearDim["Number of Teeth"]=editors.TouchSpin(gearBox, limits=(0,100), increment=1,name="Number of Teeth")
         #pitchDiameter
@@ -220,6 +222,7 @@ class GearTemplate(wx.Panel):
         #Hub info-------------------------------------------------------------
         hubBox=wx.StaticBox(self, -1, 'Hub Dimensions:')
         hubBox.SetForegroundColour(wx.Colour(255,255,255))
+        hubBox.SetBackgroundColour(self.GetBackgroundColour())
         hubBoxSizer=wx.GridSizer(len(self.hubDim),2,8,8)
 
         #Thickness

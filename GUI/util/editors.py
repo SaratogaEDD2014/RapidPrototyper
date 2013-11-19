@@ -2,14 +2,16 @@ import wx
 import GUI.AppSettings
 from GUI.BubbleMenu import *
 
-class TouchSpin(wx.Control):
+class TouchSpin(wx.Window):
     def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, name="NoName"):  #TODO: add style/formatting flags for constructor
         super(TouchSpin, self).__init__(parent, id, pos, size)
+        if self.GetParent() != None:
+            self.SetBackgroundColour(self.GetParent().GetBackgroundColour())
 
         self._value=value
         self._range=limits
         self.increment=increment
-        self.name=name
+        self._name=name
         self._textcontrol=wx.TextCtrl(self, -1, str(self._value), (30, 50), (60, 30), style=wx.TE_PROCESS_ENTER)
 
         h = self._textcontrol.GetSize().height
@@ -26,6 +28,9 @@ class TouchSpin(wx.Control):
 
         self.Bind(wx.EVT_TEXT_ENTER, self._on_enter)
         self.Bind(wx.EVT_BUTTON, self._on_click)
+
+    def _on_enter(self, event):
+        self.value=float(self._textcontrol.GetValue())
 
     def _on_click(self, event):
         source=event.GetEventObject()
@@ -45,8 +50,11 @@ class TouchSpin(wx.Control):
         return self._value
     value=property(GetValue, SetValue)
 
-    def _on_enter(self, event):
-        self.value=float(self._textcontrol.GetValue())
+    def SetName(self, val):
+        self._name=val
+    def GetName(self):
+        return self._name
+    name=property(GetName, SetName)
 
     def setIncrement(self, val):
         self._inc=val
