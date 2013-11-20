@@ -3,16 +3,17 @@ import GUI.AppSettings
 from GUI.BubbleMenu import *
 
 class TouchSpin(wx.Window):
-    def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, name="NoName"):  #TODO: add style/formatting flags for constructor
+    def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, precision=2, name="NoName"):  #TODO: add style/formatting flags for constructor
         super(TouchSpin, self).__init__(parent, id, pos, size)
         if self.GetParent() != None:
             self.SetBackgroundColour(self.GetParent().GetBackgroundColour())
 
         self._value=value
         self._range=limits
+        self._precision=precision
         self.increment=increment
         self._name=name
-        self._textcontrol=wx.TextCtrl(self, -1, str(self._value), (30, 50), (60, 30), style=wx.TE_PROCESS_ENTER)
+        self._textcontrol=wx.TextCtrl(self, -1, str(self.value), (30, 50), (60, 28), style=wx.TE_PROCESS_ENTER | wx.TE_RIGHT)
 
         h = self._textcontrol.GetSize().height
         w = self._textcontrol.GetSize().width + self._textcontrol.GetPosition().x + 2
@@ -45,9 +46,9 @@ class TouchSpin(wx.Window):
             self._value=self.range[1]
         elif self._value<self.range[0]:
             self._value=self.range[0]
-        self._textcontrol.SetValue(str(self._value))
+        self._textcontrol.SetValue(str(round(self._value,self._precision)))
     def GetValue(self):
-        return self._value
+        return round(self._value,self._precision)
     value=property(GetValue, SetValue)
 
     def SetName(self, val):
@@ -61,6 +62,12 @@ class TouchSpin(wx.Window):
     def getIncrement(self):
         return self._inc
     increment=property(getIncrement, setIncrement)
+
+    def SetPrecision(self, val):
+        self._precision=val
+    def GetPrecision(self):
+        return self._precision
+    precision=property(GetPrecision, SetPrecision)
 
     def setRange(self, val):
         self._range=val

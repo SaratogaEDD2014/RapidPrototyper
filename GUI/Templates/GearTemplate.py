@@ -199,15 +199,18 @@ class GearTemplate(wx.Panel):
         gearBox.SetBackgroundColour(self.GetBackgroundColour())
         #number of teeth
         self.gearDim["Number of Teeth"]=editors.TouchSpin(gearBox, limits=(0,100), increment=1,name="Number of Teeth")
+        self.gearDim["Number of Teeth"].SetPrecision(0)
         #pitchDiameter
         self.gearDim["Pitch Diameter"]=editors.TouchSpin(gearBox,limits=(0,10),increment=0.05, name="Pitch Diameter")
+        self.gearDim["Pitch Diameter"].SetPrecision(3)
         #Thickness
         self.gearDim["Thickness"]=editors.TouchSpin(gearBox,limits=(0,10),increment=0.05,name="Thickness")
+        self.gearDim["Thickness"].SetPrecision(3)
         #Bore Diameter
         self.gearDim["Bore Diameter"]=editors.TouchSpin(gearBox,limits=(0,10),increment=0.05,name="Bore Diameter")
+        self.gearDim["Bore Diameter"].SetPrecision(3)
         #tooth shape
         self.gearDim["Tooth Shape"]=wx.ComboBox(gearBox, value=shapes[0], choices=shapes, name="Tooth Shape")
-
 
         gearBoxSizer=wx.GridSizer(len(self.gearDim),2,8,8)
         for dim in self.gearDim:
@@ -227,8 +230,10 @@ class GearTemplate(wx.Panel):
 
         #Thickness
         self.hubDim["Thickness"]=editors.TouchSpin(hubBox,limits=(0,10),increment=0.05,name="Thickness")
+        self.hubDim["Thickness"].SetPrecision(3)
         #Bore Diameter
         self.hubDim["Hub Diameter"]=editors.TouchSpin(hubBox,limits=(0,10),increment=0.05, name="Hub Diameter")
+        self.hubDim["Hub Diameter"].SetPrecision(3)
 
         for dim in self.hubDim:
             temp=wx.StaticText(hubBox,-1,self.hubDim[dim].GetName()+":", size=(105,-1))
