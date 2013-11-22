@@ -13,7 +13,7 @@ class TouchSpin(wx.Window):
         self._precision=precision
         self.increment=increment
         self._name=name
-        self._textcontrol=wx.TextCtrl(self, -1, str(self.value), (30, 50), (60, 28), style=wx.TE_PROCESS_ENTER | wx.TE_RIGHT)
+        self._textcontrol=wx.TextCtrl(self, -1, str(self.value), (30, 50), (60, 24), style=wx.TE_PROCESS_ENTER | wx.TE_RIGHT)
 
         h = self._textcontrol.GetSize().height
         w = self._textcontrol.GetSize().width + self._textcontrol.GetPosition().x + 2
