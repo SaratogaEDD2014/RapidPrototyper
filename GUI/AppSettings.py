@@ -16,10 +16,9 @@ previousPage=None
 currentPage=None
 
 #Resources:
-PATH=os.getcwd()
-PATH=PATH[:PATH.rfind("GUI")+3] + "/"
+PATH=os.path.dirname(os.path.realpath(__file__))+'/'
 IMAGE_PATH=PATH+"images/"
-sys.path.append(os.getcwd())
+sys.path.append(PATH[:PATH.rfind("GUI")])
 
 userFilePath=PATH
 recentFiles=[PATH+"examples/teapot.stl",
