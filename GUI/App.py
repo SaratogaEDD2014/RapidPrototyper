@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import wx
-import copy
 import AppSettings
 import ProtoToolbar
 import MainMenu
@@ -31,7 +30,7 @@ class ProtoFrame(wx.Frame):
             sizer.Add(AppSettings.currentPage)
             mastersizer.Add(sizer)
             self.SetSizer(mastersizer)
-            wx.PostEvent(AppSettings.currentPage, wx.SizeEvent()) #Without this, panel appears in wrong spot
+            self.SendSizeEvent()    #Without this, panels will be misaligned
 
 
 def main():
