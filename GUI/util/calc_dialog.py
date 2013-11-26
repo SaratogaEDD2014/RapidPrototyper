@@ -1,7 +1,7 @@
 import wx
 
 class CalcDialog(wx.Dialog):
-    def __init__(self, parent, title, caption):
+    def __init__(self, parent, title):
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         super(CalcDialog, self).__init__(parent, -1, title, style=style)
         self.formula = False
@@ -10,7 +10,7 @@ class CalcDialog(wx.Dialog):
         self.display = wx.TextCtrl(self, -1, '',  style=wx.TE_RIGHT)
         sizer.Add(self.display, 0, wx.EXPAND | wx.TOP | wx.BOTTOM, 4)
 
-        ids={"1":51, "2":52, "3":53, "4":54, "5":55, "6":56, "7":57, "8":58, "9":59, "10":60, "Clr":61, "Del":62, "=":63, "Done":wx.OK, "/":64, "*":65, "-":66, ".":67, "+":68}
+        ids={"1":51, "2":52, "3":53, "4":54, "5":55, "6":56, "7":57, "8":58, "9":59, "0":60, "Clr":61, "Del":62, "=":63, "Done":wx.OK, "/":64, "*":65, "-":66, ".":67, "+":68}
 
         gs = wx.GridSizer(5, 4, 3, 3)
         gs.AddMany([(wx.Button(self, ids['Clr'], 'Clr'), 0, wx.EXPAND),
@@ -39,25 +39,25 @@ class CalcDialog(wx.Dialog):
         self.SetSizer(sizer)
         self.Centre()
 
-        self.Bind(wx.EVT_BUTTON, self.OnClear, id=20)
-        self.Bind(wx.EVT_BUTTON, self.OnBackspace, id=21)
-        self.Bind(wx.EVT_BUTTON, self.OnClose, id=22)
-        self.Bind(wx.EVT_BUTTON, self.OnSeven, id=1)
-        self.Bind(wx.EVT_BUTTON, self.OnEight, id=2)
-        self.Bind(wx.EVT_BUTTON, self.OnNine, id=3)
-        self.Bind(wx.EVT_BUTTON, self.OnDivide, id=4)
-        self.Bind(wx.EVT_BUTTON, self.OnFour, id=5)
-        self.Bind(wx.EVT_BUTTON, self.OnFive, id=6)
-        self.Bind(wx.EVT_BUTTON, self.OnSix, id=7)
-        self.Bind(wx.EVT_BUTTON, self.OnMultiply, id=8)
-        self.Bind(wx.EVT_BUTTON, self.OnOne, id=9)
-        self.Bind(wx.EVT_BUTTON, self.OnTwo, id=10)
-        self.Bind(wx.EVT_BUTTON, self.OnThree, id=11)
-        self.Bind(wx.EVT_BUTTON, self.OnMinus, id=12)
-        self.Bind(wx.EVT_BUTTON, self.OnZero, id=13)
-        self.Bind(wx.EVT_BUTTON, self.OnDot, id=14)
-        self.Bind(wx.EVT_BUTTON, self.OnEqual, id=15)
-        self.Bind(wx.EVT_BUTTON, self.OnPlus, id=16)
+        self.Bind(wx.EVT_BUTTON, self.OnClear, id=ids['Clr'])
+        self.Bind(wx.EVT_BUTTON, self.OnBackspace, id=ids['Del'])
+        self.Bind(wx.EVT_BUTTON, self.OnClose, id=ids['Done'])
+        self.Bind(wx.EVT_BUTTON, self.OnSeven, id=ids['7'])
+        self.Bind(wx.EVT_BUTTON, self.OnEight, id=ids['8'])
+        self.Bind(wx.EVT_BUTTON, self.OnNine, id=ids['9'])
+        self.Bind(wx.EVT_BUTTON, self.OnDivide, id=ids['/'])
+        self.Bind(wx.EVT_BUTTON, self.OnFour, id=ids['4'])
+        self.Bind(wx.EVT_BUTTON, self.OnFive, id=ids['5'])
+        self.Bind(wx.EVT_BUTTON, self.OnSix, id=ids['6'])
+        self.Bind(wx.EVT_BUTTON, self.OnMultiply, id=ids['*'])
+        self.Bind(wx.EVT_BUTTON, self.OnOne, id=ids['1'])
+        self.Bind(wx.EVT_BUTTON, self.OnTwo, id=ids['2'])
+        self.Bind(wx.EVT_BUTTON, self.OnThree, id=ids['3'])
+        self.Bind(wx.EVT_BUTTON, self.OnMinus, id=ids['-'])
+        self.Bind(wx.EVT_BUTTON, self.OnZero, id=ids['0'])
+        self.Bind(wx.EVT_BUTTON, self.OnDot, id=ids['.'])
+        self.Bind(wx.EVT_BUTTON, self.OnEqual, id=ids['='])
+        self.Bind(wx.EVT_BUTTON, self.OnPlus, id=ids['+'])
 
     def OnClear(self, event):
             self.display.Clear()
@@ -68,6 +68,7 @@ class CalcDialog(wx.Dialog):
         self.display.SetValue(formula[:-1])
 
     def OnClose(self, event):
+        self.OnEqual(event)
         self.Close()
 
     def OnDivide(self, event):
@@ -172,11 +173,16 @@ class CalcDialog(wx.Dialog):
     def GetValue(self):
         return self.display.GetValue()
 
+def calc_value(title='Edit Dimension:'):
+    dialog = CalcDialog(None, title, )
+    dialog.Center()
+    dialog.ShowModal()
+    val=dialog.GetValue()
+    dialog.Destroy()
+    return val
+
+
 if __name__ == '__main__':
     app = wx.App()
-    dialog = CalcDialog(None, 'Title', 'Caption')
-    dialog.Center()
-    if dialog.ShowModal() == wx.OK:
-        print dialog.GetValue()
-    dialog.Destroy()
+    print calc_value()
     app.MainLoop()
