@@ -1,36 +1,38 @@
 import wx
 
-class TextEntryDialog(wx.Dialog):
+class CalcDialog(wx.Dialog):
     def __init__(self, parent, title, caption):
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        super(TextEntryDialog, self).__init__(parent, -1, title, style=style)
+        super(CalcDialog, self).__init__(parent, -1, title, style=style)
         self.formula = False
         wx.EVT_MENU(self, 22, self.OnClose)
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.display = wx.TextCtrl(self, -1, '',  style=wx.TE_RIGHT)
         sizer.Add(self.display, 0, wx.EXPAND | wx.TOP | wx.BOTTOM, 4)
 
+        ids={"1":51, "2":52, "3":53, "4":54, "5":55, "6":56, "7":57, "8":58, "9":59, "10":60, "Clr":61, "Del":62, "=":63, "Done":wx.OK, "/":64, "*":65, "-":66, ".":67, "+":68}
+
         gs = wx.GridSizer(5, 4, 3, 3)
-        gs.AddMany([(wx.Button(self, 20, 'Cls'), 0, wx.EXPAND),
-                        (wx.Button(self, 21, 'Bck'), 0, wx.EXPAND),
-                        (wx.Button(self, 15, '='), 0, wx.EXPAND),
-                        (wx.Button(self, 22, 'Close'), 0, wx.EXPAND),
-                        (wx.Button(self, 1, '7'), 0, wx.EXPAND),
-                        (wx.Button(self, 2, '8'), 0, wx.EXPAND),
-                        (wx.Button(self, 3, '9'), 0, wx.EXPAND),
-                        (wx.Button(self, 4, '/'), 0, wx.EXPAND),
-                        (wx.Button(self, 5, '4'), 0, wx.EXPAND),
-                        (wx.Button(self, 6, '5'), 0, wx.EXPAND),
-                        (wx.Button(self, 7, '6'), 0, wx.EXPAND),
-                        (wx.Button(self, 8, '*'), 0, wx.EXPAND),
-                        (wx.Button(self, 9, '1'), 0, wx.EXPAND),
-                        (wx.Button(self, 10, '2'), 0, wx.EXPAND),
-                        (wx.Button(self, 11, '3'), 0, wx.EXPAND),
-                        (wx.Button(self, 12, '-'), 0, wx.EXPAND),
-                        (wx.Button(self, 13, '0'), 0, wx.EXPAND),
-                        (wx.Button(self, 14, '.'), 0, wx.EXPAND),
+        gs.AddMany([(wx.Button(self, ids['Clr'], 'Clr'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['Del'], 'Del'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['='], '='), 0, wx.EXPAND),
+                        (wx.Button(self, ids['Done'], 'Done'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['7'], '7'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['8'], '8'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['9'], '9'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['/'], '/'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['4'], '4'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['5'], '5'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['6'], '6'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['*'], '*'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['1'], '1'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['2'], '2'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['3'], '3'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['-'], '-'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['0'], '0'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['.'], '.'), 0, wx.EXPAND),
                         (wx.StaticText(self, -1, ''), 0, wx.EXPAND),
-                        (wx.Button(self, 16, '+'), 0, wx.EXPAND) ])
+                        (wx.Button(self, ids['+'], '+'), 0, wx.EXPAND) ])
 
         sizer.Add(gs, 1, wx.EXPAND)
 
@@ -172,12 +174,9 @@ class TextEntryDialog(wx.Dialog):
 
 if __name__ == '__main__':
     app = wx.App()
-    dialog = TextEntryDialog(None, 'Title', 'Caption')
+    dialog = CalcDialog(None, 'Title', 'Caption')
     dialog.Center()
-    print dialog.ShowModal()
-    print wx.OK
-    print wx.CLOSE
-    if dialog.ShowModal() == 5101:
+    if dialog.ShowModal() == wx.OK:
         print dialog.GetValue()
     dialog.Destroy()
     app.MainLoop()
