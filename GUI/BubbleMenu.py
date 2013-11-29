@@ -138,7 +138,7 @@ class BubbleButton(wx.PyControl):
             bitmap = self.pressed or bitmap
         dc.DrawBitmap(bitmap, 0, 0)
 
-        _butt_font = wx.Font(12, wx.SWISS, wx.SLANT, wx.NORMAL)
+        _butt_font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL)
         lbl = wx.StaticText(self, -1, self.name)
         if platform.system() == 'Windows':
             lbl.SetBackgroundColour(wx.Colour(75,105,255))
