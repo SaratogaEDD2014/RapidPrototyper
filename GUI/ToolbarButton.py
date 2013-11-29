@@ -18,27 +18,27 @@ class ToolbarButton(wx.PyControl):
         self.Bind(wx.EVT_LEFT_DOWN, self.on_left_down)
         self.Bind(wx.EVT_LEFT_UP, self.on_left_up)
         self.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave_window)
-    
+
     def DoGetBestSize(self):
         return self.normal.GetSize()
-    
+
     def post_event(self):
         event = wx.CommandEvent()
         event.SetEventObject(self)
         event.SetEventType(wx.EVT_BUTTON.typeId)
         wx.PostEvent(self, event)
-    
+
     def Enable(self, *args, **kwargs):
         super(ToolbarButton, self).Enable(*args, **kwargs)
         self.Refresh()
     def Disable(self, *args, **kwargs):
         super(ToolbarButton, self).Disable(*args, **kwargs)
         self.Refresh()
-    
+
     def on_size(self, event):
         event.Skip()
         self.Refresh()
-    
+
     def on_paint(self, event):
         dc = wx.AutoBufferedPaintDC(self)
         dc.SetBackground(wx.Brush(self.GetParent().GetBackgroundColour()))
@@ -49,34 +49,35 @@ class ToolbarButton(wx.PyControl):
         if not self.IsEnabled():
             bitmap = self.disabled or bitmap
         dc.DrawBitmap(bitmap, 0, 0)
-    
+
     def set_clicked(self, clicked):
         if clicked != self._clicked:
             self._clicked = clicked
             self.Refresh()
-    
+
     def get_clicked(self):
         return self._clicked
-    
+
     clicked = property(get_clicked, set_clicked)
-    
+
     def on_left_down(self, event):
         x, y = event.GetPosition()
         if self.region.Contains(x, y):
             self.clicked = True
-    
+
     def on_left_up(self, event):
         if self.clicked:
             x, y = event.GetPosition()
             if self.region.Contains(x, y):
                 self.post_event()
         self.clicked = False
-    
+
     def on_leave_window(self, event):
         self.clicked = False
 
 def main():
-    imagePath='/Users/Scott/Documents/Design/Ultimaker/GUI/images/'
+    import AppSettings
+    imagePath=AppSettings.IMAGE_PATH
     def on_button(event):
         print 'Button was clicked.'
     app = wx.App()

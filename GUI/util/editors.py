@@ -85,6 +85,8 @@ class TouchSpin(wx.Window):
 class LabeledSpin(wx.Panel):
     def __init__(self, parent=None, id=-1, value=0.0, name="Un-named", min=0, max=100, pos=wx.DefaultPosition):
         super(LabeledSpin, self).__init__(parent, id, pos=pos)
+        if self.GetParent():
+            self.SetBackgroundColour(self.GetParent().GetBackgroundColour())
         self.text=wx.StaticText(self, -1, name)
         self.control=TouchSpin(self, -1, value=value, limits=(min,max))
         sizer=wx.BoxSizer(wx.HORIZONTAL)

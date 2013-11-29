@@ -62,7 +62,10 @@ class BubbleMenu(wx.Window):
                 if (self.posIndices[len(self.children)-1].count(i)>0):
                     sizer.Add(self.nextChild(), flag=self.alignIndices[i])
                 else:
-                    sizer.Add(wx.Panel(self, size=(90,90), id=1000+i), flag=self.alignIndices[i])
+                    temp=wx.Panel(self, size=(90,90), id=1000+i)
+                    if self.GetParent():
+                        temp.SetBackgroundColour(self.GetParent().GetBackgroundColour())
+                    sizer.Add(temp, flag=self.alignIndices[i])
             sizer.Remove(4)
             sizer.Insert(4, self.button, flag=wx.ALIGN_CENTER)
             self.SetSizer(sizer)
