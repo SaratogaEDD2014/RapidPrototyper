@@ -1,10 +1,12 @@
 import os
 import struct
-
+import wx.glcanvas
+import OpenGL
 from OpenGL.GL import *
 from OpenGL.GLU import *
-import pygame
-from pygame.locals import *
+#import pygame
+#from pygame.locals import *
+import wx
 
 #class for a 3d point
 class createpoint:
@@ -144,12 +146,13 @@ class loader:
 
 
 
-class draw_scene:
-    def __init__(self,style=1):
+class draw_scene(wx.glcanvas.GLCanvas):
+    def __init__(self,parent,style=1):
+        super(draw_scene, self).__init__(parent)
         #create a model instance and
         self.model1=loader()
         #self.model1.load_stl(os.path.abspath('')+'/text.stl')
-        self.model1.load_stl(os.path.abspath('')+'/binary.stl')
+        self.model1.load_stl('C:/Users/Robert Krulcik/Documents/GitHub/RapidPrototyper/GUI/examples/bottle.stl')
         self.init_shading()
 
 
@@ -205,7 +208,7 @@ class draw_scene:
 
         glTranslatef(0.0,-26.0, -100.0)
         self.model1.draw()
-
+"""
 #main program loop
 def main():
     #initalize pygame
@@ -228,7 +231,18 @@ def main():
         pygame.display.flip()
         frames = frames+1
 
-    print "fps:  %d" % ((frames*1000)/(pygame.time.get_ticks()-ticks))
+    print "fps:  %d" % ((frames*1000)/(pygame.time.get_ticks()-ticks))"""
+
+def main():
+    ProtoApp = wx.App()
+    frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
+
+    scene=draw_scene(frm)
+    scene.resize((640,480))
+    scene.draw()
+
+    frm.Show(True)
+    ProtoApp.MainLoop()
 
 
 if __name__ == '__main__':

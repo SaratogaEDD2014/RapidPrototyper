@@ -1,4 +1,6 @@
 import wx
+import re
+import string
 
 class CalcDialog(wx.Dialog):
     def __init__(self, parent, title):
@@ -10,13 +12,13 @@ class CalcDialog(wx.Dialog):
         self.display = wx.TextCtrl(self, -1, '',  style=wx.TE_RIGHT)
         sizer.Add(self.display, 0, wx.EXPAND | wx.TOP | wx.BOTTOM, 4)
 
-        ids={"1":51, "2":52, "3":53, "4":54, "5":55, "6":56, "7":57, "8":58, "9":59, "0":60, "Clr":61, "Del":62, "=":63, "Done":wx.OK, "/":64, "*":65, "-":66, ".":67, "+":68}
+        ids={"1":51, "2":52, "3":53, "4":54, "5":55, "6":56, "7":57, "8":58, "9":59, "0":60, "Clr":61, "Del":62, "=":63, "Done":wx.OK, "/":64, "*":65, "-":66, ".":67, "+":68, '(':69, ')':70}
 
         gs = wx.GridSizer(5, 4, 3, 3)
         gs.AddMany([(wx.Button(self, ids['Clr'], 'Clr'), 0, wx.EXPAND),
                         (wx.Button(self, ids['Del'], 'Del'), 0, wx.EXPAND),
-                        (wx.Button(self, ids['='], '='), 0, wx.EXPAND),
-                        (wx.Button(self, ids['Done'], 'Done'), 0, wx.EXPAND),
+                        (wx.Button(self, ids['('], '('), 0, wx.EXPAND),
+                        (wx.Button(self, ids[')'], ')'), 0, wx.EXPAND),
                         (wx.Button(self, ids['7'], '7'), 0, wx.EXPAND),
                         (wx.Button(self, ids['8'], '8'), 0, wx.EXPAND),
                         (wx.Button(self, ids['9'], '9'), 0, wx.EXPAND),
@@ -31,7 +33,7 @@ class CalcDialog(wx.Dialog):
                         (wx.Button(self, ids['-'], '-'), 0, wx.EXPAND),
                         (wx.Button(self, ids['0'], '0'), 0, wx.EXPAND),
                         (wx.Button(self, ids['.'], '.'), 0, wx.EXPAND),
-                        (wx.StaticText(self, -1, ''), 0, wx.EXPAND),
+                        (wx.Button(self, ids['Done'], 'Done'), 0, wx.EXPAND),
                         (wx.Button(self, ids['+'], '+'), 0, wx.EXPAND) ])
 
         sizer.Add(gs, 1, wx.EXPAND)
@@ -56,8 +58,9 @@ class CalcDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.OnMinus, id=ids['-'])
         self.Bind(wx.EVT_BUTTON, self.OnZero, id=ids['0'])
         self.Bind(wx.EVT_BUTTON, self.OnDot, id=ids['.'])
-        self.Bind(wx.EVT_BUTTON, self.OnEqual, id=ids['='])
         self.Bind(wx.EVT_BUTTON, self.OnPlus, id=ids['+'])
+        self.Bind(wx.EVT_BUTTON, self.OnLeftP, id=ids['('])
+        self.Bind(wx.EVT_BUTTON, self.OnRightP, id=ids[')'])
 
     def OnClear(self, event):
             self.display.Clear()
@@ -99,14 +102,29 @@ class CalcDialog(wx.Dialog):
     def OnEqual(self, event):
         if self.formula:
             return
-        formula = self.display.GetValue()
+        expression = self.display.GetValue()
+        expression = self._parse_to_double(expression)
+
         self.formula = False
         try:
             self.display.Clear()
-            output = eval(formula)
+            output = eval(expression)
             self.display.AppendText(str(output))
         except StandardError:
-            self.display.AppendText("Error")
+            self.display.AppendText("0")
+
+    def _parse_to_double(self, formula):
+        _last_num_index=-1
+        i=0
+        while i<len(formula)-1:
+            if formula[i] in string.digits and formula[i+1] not in string.digits:
+                if '.' not in formula[_last_num_index:i]:
+                    formula=formula[:i+1]+'.0'+formula[i+1:]
+                _last_num_index=i
+            i+=1
+        if '.' not in formula[_last_num_index:]:
+            formula+='.0'
+        return formula
 
     def OnZero(self, event):
         if self.formula:
@@ -167,6 +185,17 @@ class CalcDialog(wx.Dialog):
             self.display.Clear()
             self.formula = False
         self.display.AppendText('9')
+
+    def OnRightP(self, event):
+        if self.formula:
+            self.display.Clear()
+            self.formula = False
+        self.display.AppendText(')')
+    def OnLeftP(self, event):
+        if self.formula:
+            self.display.Clear()
+            self.formula = False
+        self.display.AppendText('(')
 
     def SetValue(self, value):
         self.display.SetValue(value)

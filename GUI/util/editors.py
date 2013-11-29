@@ -1,6 +1,7 @@
 import wx
 import GUI.AppSettings
 from GUI.BubbleMenu import *
+from GUI.util.calc_dialog import *
 
 class TouchSpin(wx.Window):
     def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, precision=2, name="NoName"):  #TODO: add style/formatting flags for constructor
@@ -14,31 +15,36 @@ class TouchSpin(wx.Window):
         self.increment=increment
         self._name=name
         self._textcontrol=wx.TextCtrl(self, -1, str(self.value), (30, 50), (60, 24), style=wx.TE_PROCESS_ENTER | wx.TE_RIGHT)
+        self._textcontrol.SetEditable(False)
 
         h = self._textcontrol.GetSize().height
         w = self._textcontrol.GetSize().width + self._textcontrol.GetPosition().x + 2
 
-        self._up = BubbleButton(self, wx.Bitmap(AppSettings.IMAGE_PATH+'spin_up.png'))
-        self._down=BubbleButton(self, wx.Bitmap(AppSettings.IMAGE_PATH+'spin_down.png'))
+        self._up = BubbleButton(self, wx.Bitmap(AppSettings.IMAGE_PATH + 'spin_up.png'))
+        self._down=BubbleButton(self, wx.Bitmap(AppSettings.IMAGE_PATH + 'spin_down.png'))
+        self._edit=BubbleButton(self, wx.Bitmap(AppSettings.IMAGE_PATH + 'edit_bubble.png'))
 
         sizer=wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(self._edit)
         sizer.Add(self._textcontrol)
         sizer.Add(self._up)
         sizer.Add(self._down)
         self.SetSizer(sizer)
 
         self.Bind(wx.EVT_TEXT_ENTER, self._on_enter)
-        self.Bind(wx.EVT_BUTTON, self._on_click)
+        self.Bind(wx.EVT_BUTTON, self._on_butt_click)
 
     def _on_enter(self, event):
         self.value=float(self._textcontrol.GetValue())
 
-    def _on_click(self, event):
+    def _on_butt_click(self, event):
         source=event.GetEventObject()
         if self._up is source:
             self.value+=self._inc
         elif self._down is source:
             self.value-=self._inc
+        elif self._edit is source:
+            self.value=calc_value('Edit '+self.name+':')
 
     def SetValue(self, val):
         self._value=float(val)

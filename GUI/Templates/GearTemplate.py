@@ -3,7 +3,6 @@
 # Purpose:     This is a panel for generating a gear. It contains window objects to edit parameters and can return a list of points representing the gear object
 #
 # Author:      Scott Krulcik
-#
 # Created:     11/2013
 #-------------------------------------------------------------------------------
 

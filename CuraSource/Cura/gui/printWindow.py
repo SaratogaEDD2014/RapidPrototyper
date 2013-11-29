@@ -8,7 +8,7 @@ import sys
 import time
 import platform
 import os
-import power
+#import power
 import datetime
 
 import wx
@@ -34,7 +34,7 @@ class printProcessMonitor():
 	def loadFile(self, filename, id):
 		if self.handle is None:
 			if platform.system() == "Darwin" and hasattr(sys, 'frozen'):
-				cmdList = [os.path.join(os.path.dirname(sys.executable), 'Cura')] 
+				cmdList = [os.path.join(os.path.dirname(sys.executable), 'Cura')]
 			else:
 				cmdList = [sys.executable, '-m', 'Cura.cura']
 			cmdList.append('-r')
@@ -158,18 +158,18 @@ class printWindow(wx.Frame):
 		sb = wx.StaticBox(self.panel, label=_("Statistics"))
 		boxsizer = wx.StaticBoxSizer(sb, wx.VERTICAL)
 
-		self.powerWarningText = wx.StaticText(parent=self.panel,
-			id=-1,
-			label=_("Your computer is running on battery power.\nConnect your computer to AC power or your print might not finish."),
-			style=wx.ALIGN_CENTER)
-		self.powerWarningText.SetBackgroundColour('red')
-		self.powerWarningText.SetForegroundColour('white')
-		boxsizer.AddF(self.powerWarningText, flags=wx.SizerFlags().Expand().Border(wx.BOTTOM, 10))
-		self.powerManagement = power.PowerManagement()
-		self.powerWarningTimer = wx.Timer(self)
-		self.Bind(wx.EVT_TIMER, self.OnPowerWarningChange, self.powerWarningTimer)
-		self.OnPowerWarningChange(None)
-		self.powerWarningTimer.Start(10000)
+		#self.powerWarningText = wx.StaticText(parent=self.panel,
+		#	id=-1,
+		#	label=_("Your computer is running on battery power.\nConnect your computer to AC power or your print might not finish."),
+		#	style=wx.ALIGN_CENTER)
+		#self.powerWarningText.SetBackgroundColour('red')
+		#self.powerWarningText.SetForegroundColour('white')
+		#boxsizer.AddF(self.powerWarningText, flags=wx.SizerFlags().Expand().Border(wx.BOTTOM, 10))
+		#self.powerManagement = power.PowerManagement()
+		#self.powerWarningTimer = wx.Timer(self)
+		#self.Bind(wx.EVT_TIMER, self.OnPowerWarningChange, self.powerWarningTimer)
+		#self.OnPowerWarningChange(None)
+		#self.powerWarningTimer.Start(10000)
 
 		self.statsText = wx.StaticText(self.panel, -1, _("Filament: ####.##m #.##g\nEstimated print time: #####:##\nMachine state:\nDetecting baudrateXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"))
 		boxsizer.Add(self.statsText, flag=wx.LEFT, border=5)
