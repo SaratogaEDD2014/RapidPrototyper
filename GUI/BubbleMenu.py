@@ -1,6 +1,7 @@
 import wx
 import BubbleEvent
 import AppSettings
+import platform
 
 class BubbleMenu(wx.Window):
     def __init__(self, parent, bitmap, name="", children=[], id=-1, pos=wx.DefaultPosition, size=(400, 400)):
@@ -83,16 +84,22 @@ class BubbleMenu(wx.Window):
 
 
 class BubbleButton(wx.PyControl):
-    def __init__(self, parent, normal, pressed=None, name="", target=None):
+    def __init__(self, parent, normal=None, pressed=None, name="", target=None):
         super(BubbleButton, self).__init__(parent, -1, style=wx.BORDER_NONE)
         self.style=wx.BORDER_NONE
-        self.normal = normal
-        self.pressed = pressed
+        if normal != None:
+            self.normal = normal
+        else:
+            self.normal=wx.Bitmap(AppSettings.IMAGE_PATH+"BubbleButtonTemplate.png")
+            if pressed != None:
+                self.pressed = pressed
+            else:
+                self.pressed=wx.Bitmap(AppSettings.IMAGE_PATH+"BubbleButtonPressed.png")
         self.name=name
         self.target=target
         #Region is the area that is "clickable"
         #It consists of the PNG minus the transparent areas
-        self.region = wx.RegionFromBitmapColour(normal, wx.Colour(0, 0, 0, 0))
+        self.region = wx.RegionFromBitmapColour(self.normal, wx.Colour(0, 0, 0, 0))
         self._clicked = False
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         #events
@@ -131,6 +138,16 @@ class BubbleButton(wx.PyControl):
             bitmap = self.pressed or bitmap
         dc.DrawBitmap(bitmap, 0, 0)
 
+        _butt_font = wx.Font(12, wx.SWISS, wx.SLANT, wx.NORMAL)
+        lbl = wx.StaticText(self, -1, self.name)
+        if platform.system() == 'Windows':
+            lbl.SetBackgroundColour(wx.Colour(75,105,255))
+        else:
+            lbl.SetBackgroundColour(wx.Colour(200,200,200,0))
+        lbl.SetForegroundColour(AppSettings.defaultForeground)
+        lbl.SetFont(_butt_font)
+        lbl.Centre()
+
     def set_clicked(self, clicked):
         if clicked != self._clicked:
             self._clicked = clicked
@@ -163,3 +180,22 @@ class BubbleButton(wx.PyControl):
 
     def on_leave_window(self, event):
         self.clicked = False
+
+#----------------------------------------------------------------------------------
+def main():
+    ProtoApp = wx.App()
+    frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
+
+    sizer=wx.BoxSizer(wx.HORIZONTAL)
+    panel=BubbleButton(frm)
+    sizer.Add(panel)
+    panel.Show(True)
+
+    frm.SetSizer(sizer)
+    frm.Show(True)
+    ProtoApp.MainLoop()
+
+
+if __name__ == '__main__':
+    main()
+

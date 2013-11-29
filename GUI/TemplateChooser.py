@@ -23,12 +23,12 @@ class TemplateChooser(BubbleMenu.BubbleMenu):
         self.vaseView=   wx.Panel(self.parent)
 
 
-        self.extrude=BubbleMenu.BubbleButton(   self, wx.Bitmap(self.imagePath+"Extrusion.png"), wx.Bitmap(self.imagePath+"ExtrusionPress.png"), target=self.extrudeView)
-        self.gear=   BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"Gear.png"), wx.Bitmap(self.imagePath+"GearPress.png"), target=self.gearView)
-        self.mug=    BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"Mug.png"), wx.Bitmap(self.imagePath+"MugPress.png"), target=self.mugView)
-        self.ring=   BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"Ring.png"), wx.Bitmap(self.imagePath+"RingPress.png"), target=self.ringView)
-        self.ring2=  BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"Ring.png"), wx.Bitmap(self.imagePath+"VasePress.png"), target=self.ring2View)
-        self.vase=   BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"Vase.png"), wx.Bitmap(self.imagePath+"VasePress.png"), target=self.vaseView)
+        self.extrude=BubbleMenu.BubbleButton(   self, wx.Bitmap(self.imagePath+"Extrusion.png"), wx.Bitmap(self.imagePath+"ExtrusionPress.png"), name='Extrusion', target=self.extrudeView)
+        self.gear=   BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"Gear.png"), wx.Bitmap(self.imagePath+"GearPress.png"), name='Gear', target=self.gearView)
+        self.mug=    BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"Mug.png"), wx.Bitmap(self.imagePath+"MugPress.png"), name='Mug', target=self.mugView)
+        self.ring=   BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"Ring.png"), wx.Bitmap(self.imagePath+"RingPress.png"), name='Ring', target=self.ringView)
+        self.ring2=  BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"Ring.png"), wx.Bitmap(self.imagePath+"VasePress.png"), name='Revolve', target=self.ring2View)
+        self.vase=   BubbleMenu.BubbleButton(self, wx.Bitmap(self.imagePath+"Vase.png"), wx.Bitmap(self.imagePath+"VasePress.png"), name='Temp', target=self.vaseView)
 
         self.buttonList=[self.extrude, self.gear, self.mug, self.ring, self.ring2, self.vase]
         self.setChildren(self.buttonList)
