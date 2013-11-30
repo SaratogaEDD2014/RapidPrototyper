@@ -63,7 +63,7 @@ class GearTemplate(wx.Panel):
         temp=wx.Panel(self, size=(16,16))
         if self.GetParent():
             temp.SetBackgroundColour(self.GetParent().GetBackgroundColour())
-        editorSizer.Add(temp)#spacer
+        masterSizer.Add(temp)#spacer
         masterSizer.Add(editorSizer)
         self.SetSizer(masterSizer)
         self.SetBackgroundColour(AppSettings.defaultBackground)
