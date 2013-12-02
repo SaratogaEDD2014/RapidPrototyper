@@ -109,21 +109,22 @@ class CalcDialog(wx.Dialog):
         try:
             self.display.Clear()
             output = eval(expression)
-            self.display.AppendText(str(output))
+            self.SetValue(str(output))
         except StandardError:
-            self.display.AppendText("0")
+            self.SetValue('0')
 
     def _parse_to_double(self, formula):
-        _last_num_index=-1
+        _last_num_index=-0
         i=0
-        while i<len(formula)-1:
+        while i<len(formula)-2:
             if formula[i] in string.digits and formula[i+1] not in string.digits:
-                if '.' not in formula[_last_num_index:i]:
+                if '.' not in formula[_last_num_index:i+2]:
                     formula=formula[:i+1]+'.0'+formula[i+1:]
                 _last_num_index=i
             i+=1
-        if '.' not in formula[_last_num_index:]:
-            formula+='.0'
+        #if '.' not in formula[_last_num_index:]:
+        #    formula+='.0'
+        #formula+='*1.0'#Allows user to enter a plain number
         return formula
 
     def OnZero(self, event):
