@@ -48,17 +48,17 @@ class GearTemplate(wx.Panel):
 
         masterSizer=wx.BoxSizer(wx.HORIZONTAL)
         editorSizer=wx.BoxSizer(wx.VERTICAL)
-        temp=wx.Panel(self, size=(16,16))
+        temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
         temp.SetBackgroundColour(self.GetBackgroundColour())
         editorSizer.Add(temp)#spacer
         for e in self.editors:
             editorSizer.Add(e)
-            temp=wx.Panel(self, size=(16,16))
+            temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
             temp.SetBackgroundColour(self.GetBackgroundColour())
         editorSizer.Add(temp)#spacer
         editorSizer.Add(self.updateButton)
         masterSizer.Add(self.display)
-        temp=wx.Panel(self, size=(16,16))
+        temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
         temp.SetBackgroundColour(self.GetBackgroundColour())
         masterSizer.Add(temp)#spacer
         masterSizer.Add(editorSizer)

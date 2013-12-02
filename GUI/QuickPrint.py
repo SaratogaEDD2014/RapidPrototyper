@@ -10,14 +10,12 @@ class QuickPrint(wx.Panel):
 
         sizer.Add(wx.FilePickerCtrl(self, -1, AppSettings.userFilePath,"Choose a file:",pos=(20,20), size=(350,-1)))
         temp=wx.Panel(self,size=(40,40))
-        if self.GetParent():
-            temp.SetBackgroundColour(self.GetBackgroundColour())
+        temp.SetBackgroundColour(self.GetBackgroundColour())
         sizer.Add(temp)
         sizer2=wx.BoxSizer()
         sizer2.Add(wx.Button(self, label="Cancel", pos=(20,100)))
         temp=wx.Panel(self,size=(40,40))
-        if self.GetParent():
-            temp.SetBackgroundColour(self.GetBackgroundColour())
+        temp.SetBackgroundColour(self.GetBackgroundColour())
         sizer2.Add(temp)
         sizer2.Add(wx.Button(self, label="Print",pos=(120,100)))
         sizer.Add(sizer2)

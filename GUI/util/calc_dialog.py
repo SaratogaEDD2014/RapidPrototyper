@@ -5,7 +5,7 @@ import string
 class CalcDialog(wx.Dialog):
     def __init__(self, parent, title):
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        super(CalcDialog, self).__init__(parent, -1, title, style=style)
+        super(CalcDialog, self).__init__(parent, -1, title, style=style, size=(350,350))
         self.formula = False
         wx.EVT_MENU(self, 22, self.OnClose)
         sizer = wx.BoxSizer(wx.VERTICAL)
