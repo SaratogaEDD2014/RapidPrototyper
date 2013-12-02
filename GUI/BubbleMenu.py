@@ -138,15 +138,15 @@ class BubbleButton(wx.PyControl):
             bitmap = self.pressed or bitmap
         dc.DrawBitmap(bitmap, 0, 0)
 
-        _butt_font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL)
-        lbl = wx.StaticText(self, -1, self.name)
-        if platform.system() == 'Windows':
-            lbl.SetBackgroundColour(wx.Colour(75,105,255))
-        else:
-            lbl.SetBackgroundColour(wx.Colour(200,200,200,0))
-        lbl.SetForegroundColour(AppSettings.defaultForeground)
-        lbl.SetFont(_butt_font)
-        lbl.Centre()
+        #_butt_font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL)
+        #lbl = wx.StaticText(self, -1, self.name)
+        #if platform.system() == 'Windows':
+        #    lbl.SetBackgroundColour(wx.Colour(75,105,255))
+        #else:
+        #    lbl.SetBackgroundColour(wx.Colour(200,200,200,0))
+        #lbl.SetForegroundColour(AppSettings.defaultForeground)
+        #lbl.SetFont(_butt_font)
+        #lbl.Centre()
 
     def set_clicked(self, clicked):
         if clicked != self._clicked:
