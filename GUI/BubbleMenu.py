@@ -89,6 +89,7 @@ class BubbleButton(wx.PyControl):
         self.style=wx.BORDER_NONE
         if normal != None:
             self.normal = normal
+            self.pressed = pressed
         else:
             self.normal=wx.Bitmap(AppSettings.IMAGE_PATH+"BubbleButtonTemplate.png")
             if pressed != None:
