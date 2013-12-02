@@ -49,24 +49,20 @@ class GearTemplate(wx.Panel):
         masterSizer=wx.BoxSizer(wx.HORIZONTAL)
         editorSizer=wx.BoxSizer(wx.VERTICAL)
         temp=wx.Panel(self, size=(16,16))
-        if self.GetParent():
-            temp.SetBackgroundColour(self.GetParent().GetBackgroundColour())
+        temp.SetBackgroundColour(self.GetBackgroundColour())
         editorSizer.Add(temp)#spacer
         for e in self.editors:
             editorSizer.Add(e)
             temp=wx.Panel(self, size=(16,16))
-            if self.GetParent():
-                temp.SetBackgroundColour(self.GetParent().GetBackgroundColour())
+            temp.SetBackgroundColour(self.GetBackgroundColour())
         editorSizer.Add(temp)#spacer
         editorSizer.Add(self.updateButton)
         masterSizer.Add(self.display)
         temp=wx.Panel(self, size=(16,16))
-        if self.GetParent():
-            temp.SetBackgroundColour(self.GetParent().GetBackgroundColour())
+        temp.SetBackgroundColour(self.GetBackgroundColour())
         masterSizer.Add(temp)#spacer
         masterSizer.Add(editorSizer)
         self.SetSizer(masterSizer)
-        self.SetBackgroundColour(AppSettings.defaultBackground)
         self.OnUpdate(None)
 
     def OnUpdate(self, event):
@@ -223,6 +219,7 @@ class GearTemplate(wx.Panel):
         gearBoxSizer=wx.GridSizer(len(self.gearDim),2,8,8)
         for dim in self.gearDim:
             temp=wx.StaticText(gearBox,-1, self.gearDim[dim].GetName()+":", size=(125,-1))
+            temp.SetBackgroundColour(gearBox.GetBackgroundColour())
             temp.SetForegroundColour(wx.Colour(255,255,255))
             gearBoxSizer.Add(temp)
             gearBoxSizer.Add(self.gearDim[dim], flag=wx.ALIGN_RIGHT)
@@ -246,6 +243,7 @@ class GearTemplate(wx.Panel):
         for dim in self.hubDim:
             temp=wx.StaticText(hubBox,-1,self.hubDim[dim].GetName()+":", size=(125,-1))
             temp.SetForegroundColour(wx.Colour(255,255,255))
+            temp.SetBackgroundColour(hubBox.GetBackgroundColour())
             hubBoxSizer.Add(temp)
             hubBoxSizer.Add(self.hubDim[dim], flag=wx.ALIGN_RIGHT)
 
