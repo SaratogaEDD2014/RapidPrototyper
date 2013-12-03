@@ -201,54 +201,64 @@ class GearTemplate(wx.Panel):
         gearBox=wx.StaticBox(self, -1, 'Gear Dimensions:')
         gearBox.SetForegroundColour(wx.Colour(255,255,255))
         gearBox.SetBackgroundColour(self.GetBackgroundColour())
+        #should improve coloring on linux system
+        gearPanel=wx.Panel(self)
+        gearPanel.SetBackgroundColour(self.GetBackgroundColour())
+
         #number of teeth
-        self.gearDim["Number of Teeth"]=editors.TouchSpin(gearBox, limits=(0,100), increment=1,name="Number of Teeth")
+        self.gearDim["Number of Teeth"]=editors.TouchSpin(gearPanel, limits=(0,100), increment=1,name="Number of Teeth")
         self.gearDim["Number of Teeth"].SetPrecision(0)
         #pitchDiameter
-        self.gearDim["Pitch Diameter"]=editors.TouchSpin(gearBox,limits=(0,10),increment=0.05, name="Pitch Diameter")
+        self.gearDim["Pitch Diameter"]=editors.TouchSpin(gearPanel,limits=(0,10),increment=0.05, name="Pitch Diameter")
         self.gearDim["Pitch Diameter"].SetPrecision(3)
         #Thickness
-        self.gearDim["Thickness"]=editors.TouchSpin(gearBox,limits=(0,10),increment=0.05,name="Thickness")
+        self.gearDim["Thickness"]=editors.TouchSpin(gearPanel,limits=(0,10),increment=0.05,name="Thickness")
         self.gearDim["Thickness"].SetPrecision(3)
         #Bore Diameter
-        self.gearDim["Bore Diameter"]=editors.TouchSpin(gearBox,limits=(0,10),increment=0.05,name="Bore Diameter")
+        self.gearDim["Bore Diameter"]=editors.TouchSpin(gearPanel,limits=(0,10),increment=0.05,name="Bore Diameter")
         self.gearDim["Bore Diameter"].SetPrecision(3)
         #tooth shape
-        self.gearDim["Tooth Shape"]=wx.ComboBox(gearBox, value=shapes[0], choices=shapes, name="Tooth Shape")
+        self.gearDim["Tooth Shape"]=wx.ComboBox(gearPanel, value=shapes[0], choices=shapes, name="Tooth Shape")
+
 
         gearBoxSizer=wx.GridSizer(len(self.gearDim),2,8,8)
         for dim in self.gearDim:
-            temp=wx.StaticText(gearBox,-1, self.gearDim[dim].GetName()+":", size=(125,-1))
-            temp.SetBackgroundColour(gearBox.GetBackgroundColour())
+            temp=wx.StaticText(gearPanel,-1, self.gearDim[dim].GetName()+":", size=(125,-1))
+            temp.SetBackgroundColour(gearPanel.GetBackgroundColour())
             temp.SetForegroundColour(wx.Colour(255,255,255))
             gearBoxSizer.Add(temp)
             gearBoxSizer.Add(self.gearDim[dim], flag=wx.ALIGN_RIGHT)
+        gearPanel.SetSizer(gearBoxSizer)
 
         staticSizer=wx.StaticBoxSizer(gearBox)
-        staticSizer.Add(gearBoxSizer)
+        staticSizer.Add(gearPanel)
 
         #Hub info-------------------------------------------------------------
         hubBox=wx.StaticBox(self, -1, 'Hub Dimensions:')
         hubBox.SetForegroundColour(wx.Colour(255,255,255))
         hubBox.SetBackgroundColour(self.GetBackgroundColour())
         hubBoxSizer=wx.GridSizer(len(self.hubDim),2,8,8)
+        #better linux coloring
+        hubPanel=wx.Panel(self)
+        hubPanel.SetBackgroundColour(self.GetBackgroundColour())
 
         #Thickness
-        self.hubDim["Thickness"]=editors.TouchSpin(hubBox,limits=(0,10),increment=0.05,name="Thickness")
+        self.hubDim["Thickness"]=editors.TouchSpin(hubPanel,limits=(0,10),increment=0.05,name="Thickness")
         self.hubDim["Thickness"].SetPrecision(3)
         #Bore Diameter
-        self.hubDim["Hub Diameter"]=editors.TouchSpin(hubBox,limits=(0,10),increment=0.05, name="Hub Diameter")
+        self.hubDim["Hub Diameter"]=editors.TouchSpin(hubPanel,limits=(0,10),increment=0.05, name="Hub Diameter")
         self.hubDim["Hub Diameter"].SetPrecision(3)
 
         for dim in self.hubDim:
-            temp=wx.StaticText(hubBox,-1,self.hubDim[dim].GetName()+":", size=(125,-1))
+            temp=wx.StaticText(hubPanel,-1,self.hubDim[dim].GetName()+":", size=(125,-1))
             temp.SetForegroundColour(wx.Colour(255,255,255))
-            temp.SetBackgroundColour(hubBox.GetBackgroundColour())
+            temp.SetBackgroundColour(hubPanel.GetBackgroundColour())
             hubBoxSizer.Add(temp)
             hubBoxSizer.Add(self.hubDim[dim], flag=wx.ALIGN_RIGHT)
+        hubPanel.SetSizer(hubBoxSizer)
 
         hubStaticSizer=wx.StaticBoxSizer(hubBox)
-        hubStaticSizer.Add(hubBoxSizer)
+        hubStaticSizer.Add(hubPanel)
         #TODO: Implement keyway option
 
 
