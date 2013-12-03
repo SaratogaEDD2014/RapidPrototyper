@@ -6,7 +6,8 @@ import os
 #Colors
 defaultForeground=wx.Colour(255,255,255)
 secondForeground=wx.Colour(200,200,200)
-defaultBackground=wx.Colour(30,106,246)
+#defaultBackground=wx.Colour(30,106,246)
+defaultBackground=wx.Colour(255,0,0)
 secondBackground=wx.Colour(140,175,200)
 defaultAccent=wx.Colour(255,125,75)
 secondAccent=wx.Colour(230,70,50)
