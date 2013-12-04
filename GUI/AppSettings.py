@@ -12,6 +12,8 @@ secondBackground=wx.Colour(140,175,200)
 defaultAccent=wx.Colour(255,125,75)
 secondAccent=wx.Colour(230,70,50)
 
+icon_view=True
+
 #Appinfo
 previousPage=None
 currentPage=None
