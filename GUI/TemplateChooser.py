@@ -15,12 +15,19 @@ class TemplateChooser(BubbleMenu):
         self.Show(False)
         self.imagePath=AppSettings.IMAGE_PATH+"/Templates/T_Chooser/"
 
-        self.extrudeView=wx.Panel(self.parent, pos=(-20,-20), size=(16,16))
+        self.extrudeView=wx.Panel(self.parent, pos=(0,40), size=(16,16))
         self.gearView=   Templates.GearTemplate.GearTemplate(self.parent)
-        self.mugView=    wx.Panel(self.parent, pos=(-20,-20), size=(16,16))
-        self.ringView=   wx.Panel(self.parent, pos=(-20,-20), size=(16,16))
-        self.ring2View=  wx.Panel(self.parent, pos=(-20,-20), size=(16,16))
-        self.vaseView=   wx.Panel(self.parent, pos=(-20,-20), size=(16,16))
+        self.mugView=    wx.Panel(self.parent, pos=(0,40), size=(16,16))
+        self.ringView=   wx.Panel(self.parent, pos=(0,40), size=(16,16))
+        self.ring2View=  wx.Panel(self.parent, pos=(0,40), size=(16,16))
+        self.vaseView=   wx.Panel(self.parent, pos=(0,40), size=(16,16))
+
+        self.extrudeView.Show(False)
+        self.gearView.Show(False)
+        self.mugView.Show(False)
+        self.ringView.Show(False)
+        self.ring2View.Show(False)
+        self.vaseView.Show(False)
 
 
         self.extrude=MenuButton(   self, wx.Bitmap(self.imagePath+"Extrusion.png"), wx.Bitmap(self.imagePath+"ExtrusionPress.png"), name='Extrusion', target=self.extrudeView)
