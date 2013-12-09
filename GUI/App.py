@@ -3,11 +3,15 @@ import wx
 import AppSettings
 import ProtoToolbar
 import MainMenu
+from visual import window
 
 
 class ProtoFrame(wx.Frame):
     def __init__(self, parent, id, title):
-        super(ProtoFrame, self).__init__(parent, id, title, size=wx.Size(800, 480))
+        #super(ProtoFrame, self).__init__(parent, id, title, size=wx.Size(800, 480))
+        #window(width=2*(L+window.dwidth), height=L+window.dheight+window.menuheight,
+        #   menus=True, title='Widgets')
+        window(width=800, height=480, title=title)
         self.SetBackgroundColour(AppSettings.defaultBackground)
         self.imagePath=AppSettings.IMAGE_PATH+"Main/"
         self.title=title
