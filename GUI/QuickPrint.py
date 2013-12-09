@@ -7,7 +7,7 @@ class QuickPrint(wx.Panel):
         wx.Panel.__init__(self, parent, id, pos, size)
         self.SetBackgroundColour(AppSettings.secondBackground)
         self.Show(False)
-    def Show(visible):
-        super.Show(visible)
+    def Show(self, visible):
+        super(QuickPrint, self).Show(visible)
         if visible:
             AppSettings.set_view(generate_view(self))
