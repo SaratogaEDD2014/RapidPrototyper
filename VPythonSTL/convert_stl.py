@@ -82,7 +82,7 @@ def stl_to_faces(fileinfo): # specify file
     return faces(frame=f, pos=triPos, normal=triNor)
 
 if __name__ == '__main__':
-    print "Choose an stl file to display. Rotate!"
+    #print "Choose an stl file to display. Rotate!"
     # Open .stl file
     while True:
         fd = get_file()
