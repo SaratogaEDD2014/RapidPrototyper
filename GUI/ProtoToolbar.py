@@ -1,7 +1,7 @@
 import wx
 import copy
 import ToolbarButton
-import AppSettings
+import settings as AppSettings
 import BubbleEvent
 
 class ProtoToolbar(wx.Panel):
@@ -37,5 +37,5 @@ class ProtoToolbar(wx.Panel):
         cmd=event.GetEventObject().name
         if cmd ==self.quitButton.name:
             self.GetParent().Destroy()
-        if cmd == self.backButton.name and AppSettings.previousPage!= None:
-            self.GetParent().setView(AppSettings.previousPage)
+        if cmd == self.backButton.name:
+            AppSettings.goto_prev_page()

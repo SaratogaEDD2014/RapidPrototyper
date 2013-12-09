@@ -1,6 +1,6 @@
 import wx
 import AppSettings
-from PartViewer import generate_view
+#from PartViewer import generate_view
 
 class QuickPrint(wx.Panel):
     def __init__(self, parent, id=-1, pos=(0,40), size=wx.Size(800,440)):
@@ -9,5 +9,5 @@ class QuickPrint(wx.Panel):
         self.Show(False)
     def Show(self, visible):
         super(QuickPrint, self).Show(visible)
-        if visible:
-            AppSettings.set_view(generate_view(self))
+        #if visible:
+        #    AppSettings.set_view(generate_view(self))
