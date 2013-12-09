@@ -38,3 +38,8 @@ def addRecentFile(filename):
     recentFiles.insert(0,filename)
     if len(recentFiles)>5:
         recentFiles=recentFiles[0:6]
+
+
+def set_view(view):
+    pass
+

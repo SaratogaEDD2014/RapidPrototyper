@@ -14,7 +14,8 @@ class ProtoFrame(wx.Frame):
         self.toolbar=ProtoToolbar.ProtoToolbar(self)
         self.toolbar.Show(True)
         self.menu=MainMenu.MainMenu(self)
-        self.setView(self.menu)
+        AppSettings.set_view=self.setView
+        AppSettings.set_view(self.menu)
 
     def setView(self, viewPanel):
         if(viewPanel!=None):

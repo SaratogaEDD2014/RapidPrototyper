@@ -39,8 +39,6 @@ class BubbleMenu(wx.Window):
 
         if len(self.children)>0:
             self.updateChildren()
-        self.Bind(wx.EVT_BUTTON, self.onClick)
-
         self.Center()
 
     def Add(self, button):
@@ -74,16 +72,11 @@ class BubbleMenu(wx.Window):
         self.childIndex+=1
         return self.children[self.childIndex-1]
 
-    def onClick(self, event):
-        source=event.GetEventObject()
-        if source in self.children:
-            #So if this menu is the parent
-            self.parent.setView(source.target)
 
 
 
 class BubbleButton(wx.PyControl):
-    def __init__(self, parent, normal=None, pressed=None, name="", target=None):
+    def __init__(self, parent, normal=None, pressed=None, name=""):
         super(BubbleButton, self).__init__(parent, -1, style=wx.BORDER_NONE)
         self.style=wx.BORDER_NONE
         if normal != None:
@@ -96,7 +89,6 @@ class BubbleButton(wx.PyControl):
             else:
                 self.pressed=wx.Bitmap(AppSettings.IMAGE_PATH+"BubbleButtonPressed.png")
         self.name=name
-        self.target=target
         #Region is the area that is "clickable"
         #It consists of the PNG minus the transparent areas
         self.region = wx.RegionFromBitmapColour(self.normal, wx.Colour(0, 0, 0, 0))
@@ -115,7 +107,7 @@ class BubbleButton(wx.PyControl):
         return self.normal.GetSize()
 
     def post_event(self):
-        event = BubbleEvent.BubbleEvent(self, self.target)
+        event = BubbleEvent.BubbleEvent(self, None)
         wx.PostEvent(self, event)
 
     def Enable(self, *args, **kwargs):
@@ -179,6 +171,21 @@ class BubbleButton(wx.PyControl):
                 self.clicked = False
 
     def on_leave_window(self, event):
+        self.clicked = False
+
+class MenuButton(BubbleButton):
+    def __init__(self, parent, normal=None, pressed=None, name="", target=None):
+        super(MenuButton, self).__init__(parent, normal, pressed, name)
+        self.target=target
+    
+    #@overrides(BubbleButton)
+    def on_left_up(self, event):
+        if self.clicked:
+            x, y = event.GetPosition()
+            if self.region.Contains(x, y):
+                self.post_event()
+                if self.target !=None:
+                    AppSettings.set_view(self.target)
         self.clicked = False
 
 #----------------------------------------------------------------------------------
