@@ -22,9 +22,12 @@ def add_prev_page(page):
 def goto_prev_page():
     if len(prev_page)>=1:
         temp=prev_page[len(prev_page)-1]
-        get_current_page().Show(False)
+        current=get_current_page()
+        current.Show(False)
+        del current
         prev_page.remove(temp)
         set_current_page(temp)
+        refresh_view_panel()
 
 def get_prev_page():
     if len(prev_page)>0:
@@ -41,7 +44,8 @@ def get_current_page():
     return currentPage
 
 def set_view(view):
-    """CRITICAL: This is how we change which window is being displayed, it is defined within the Frame class"""
+    pass
+def refresh_view_panel():
     pass
 
 #Recent and example files
