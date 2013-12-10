@@ -130,15 +130,6 @@ class BubbleButton(wx.PyControl):
             bitmap = self.pressed or bitmap
         dc.DrawBitmap(bitmap, 0, 0)
 
-        #_butt_font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL)
-        #lbl = wx.StaticText(self, -1, self.name)
-        #if platform.system() == 'Windows':
-        #    lbl.SetBackgroundColour(wx.Colour(75,105,255))
-        #else:
-        #    lbl.SetBackgroundColour(wx.Colour(200,200,200,0))
-        #lbl.SetForegroundColour(AppSettings.defaultForeground)
-        #lbl.SetFont(_butt_font)
-        #lbl.Centre()
 
     def set_clicked(self, clicked):
         if clicked != self._clicked:
@@ -188,14 +179,42 @@ class MenuButton(BubbleButton):
                     AppSettings.set_view(self.target)
         self.clicked = False
 
+    #overrides (BubbleButton)
+    def on_paint(self, event):
+        dc = wx.AutoBufferedPaintDC(self)
+        dc.SetBackground(wx.Brush(self.GetParent().GetBackgroundColour()))
+        dc.Clear()
+        if AppSettings.icon_view:
+            bitmap = self.normal
+            if self.clicked:
+                bitmap = self.pressed or bitmap
+            dc.DrawBitmap(bitmap, 0, 0)
+        else:
+            if self.clicked:
+                dc.SetBrush(wx.Brush(AppSettings.secondBackground))
+            else:
+                dc.SetBrush(wx.Brush(AppSettings.defaultForeground))
+            dc.SetPen(wx.Pen(AppSettings.defaultAccent, 5))
+            w,h=self.GetSize()
+            dc.DrawCircle(w/2, h/2, int(h*.35))
+            _butt_font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL)
+            dc.SetFont(_butt_font)
+            dc.SetTextForeground(AppSettings.defaultBackground)
+            dc.DrawText(self.name, int(w*.25), int(h*.4))
+
 #----------------------------------------------------------------------------------
 def main():
     ProtoApp = wx.App()
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
-
+    imagePath=AppSettings.IMAGE_PATH+"Main/"
+    AppSettings.icon_view=False
     sizer=wx.BoxSizer(wx.HORIZONTAL)
     panel=BubbleButton(frm)
+    panel2=MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 1")
+    panel3=MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 2")
     sizer.Add(panel)
+    sizer.Add(panel2)
+    sizer.Add(panel3)
     panel.Show(True)
 
     frm.SetSizer(sizer)
