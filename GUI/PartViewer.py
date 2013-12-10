@@ -6,6 +6,7 @@ from visual.filedialog import get_file
 class STLViewer(wx.Panel):
     def __init__(self, parent, stl_file="", pos=wx.DefaultPosition, size=(800,400)):
         super(STLViewer, self).__init__(parent, pos=pos, size=size)
+        self.Show(False)
         try:
             if stl_file == "":
                 self.file=AppSettings.PATH+"examples/bottle.stl"

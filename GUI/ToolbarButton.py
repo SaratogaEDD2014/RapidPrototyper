@@ -3,6 +3,7 @@ import wx
 class ToolbarButton(wx.PyControl):
     def __init__(self, parent, normal, pressed=None, disabled=None, name=None):
         super(ToolbarButton, self).__init__(parent, -1, style=wx.BORDER_NONE)
+        #self.Show(False)
         self.normal = normal
         self.pressed = pressed
         self.disabled=disabled
