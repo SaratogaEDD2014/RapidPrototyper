@@ -20,8 +20,9 @@ def add_prev_page(page):
         prev_page.append(page)
 
 def goto_prev_page():
-    if len(prev_page)>1:
+    if len(prev_page)>=1:
         temp=prev_page[len(prev_page)-1]
+        get_current_page().Show(False)
         prev_page.remove(temp)
         set_current_page(temp)
 

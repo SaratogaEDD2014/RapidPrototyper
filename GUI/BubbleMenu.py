@@ -1,6 +1,6 @@
 import wx
 import BubbleEvent
-import AppSettings
+import settings as AppSettings
 import platform
 
 class BubbleMenu(wx.Window):
@@ -177,7 +177,7 @@ class MenuButton(BubbleButton):
     def __init__(self, parent, normal=None, pressed=None, name="", target=None):
         super(MenuButton, self).__init__(parent, normal, pressed, name)
         self.target=target
-    
+
     #@overrides(BubbleButton)
     def on_left_up(self, event):
         if self.clicked:

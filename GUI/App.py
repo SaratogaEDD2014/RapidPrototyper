@@ -3,21 +3,21 @@ import wx
 import settings as AppSettings
 import ProtoToolbar
 import MainMenu
-#from visual import window
+from visual import window
 
 
-class ProtoFrame(wx.Frame):
+class ProtoFrame(window):
     def __init__(self, parent, id, title):
-        super(ProtoFrame, self).__init__(parent, id, title, size=wx.Size(800, 480))
+        #super(ProtoFrame, self).__init__(parent, id, title, size=wx.Size(800, 480))
         #window(width=2*(L+window.dwidth), height=L+window.dheight+window.menuheight,
         #   menus=True, title='Widgets')
-        #window(width=800, height=480, title=title)
-        self.SetBackgroundColour(AppSettings.defaultBackground)
+        window.__init__(self, width=800, height=480, title=title)
+        self.win.SetBackgroundColour(AppSettings.defaultBackground)
         self.imagePath=AppSettings.IMAGE_PATH+"Main/"
         self.title=title
-        self.toolbar=ProtoToolbar.ProtoToolbar(self)
+        self.toolbar=ProtoToolbar.ProtoToolbar(self.win)
         self.toolbar.Show(True)
-        self.menu=MainMenu.MainMenu(self)
+        self.menu=MainMenu.MainMenu(self.win)
         AppSettings.set_view=self.setView
         AppSettings.set_view(self.menu)
 
@@ -31,17 +31,17 @@ class ProtoFrame(wx.Frame):
             mastersizer.Add(self.toolbar)
             sizer=wx.BoxSizer()
             current=AppSettings.get_current_page()
-            sizer.Add(wx.Panel(self, size=((800-current.GetSize()[0])/2,20)))
+            sizer.Add(wx.Panel(self.win, size=((800-current.GetSize()[0])/2,20)))
             sizer.Add(current)
             mastersizer.Add(sizer)
-            self.SetSizer(mastersizer)
-            self.SendSizeEvent()    #Without this, panels will be misaligned
+            self.win.SetSizer(mastersizer)
+            self.win.SendSizeEvent()    #Without this, panels will be misaligned
 
 
 def main():
     ProtoApp = wx.App()
     frame = ProtoFrame(None, -1, 'Blue Streaks EDD')
-    frame.Show(True)
+    frame.win.Show(True)
     ProtoApp.MainLoop()
 
 if __name__ == '__main__':
