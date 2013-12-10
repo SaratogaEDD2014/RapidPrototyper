@@ -1,138 +1,138 @@
  solid FLIRIS  
-facet normal  0.955654E-01 -0.966960E+00  0.236339E+00
+facet 
  outer loop
   vertex  0.000000E+00  0.800000E+01  0.000000E+00
   vertex -0.675880E+01  0.442610E+01 -0.118893E+02
   vertex -0.335710E+01  0.442610E+01 -0.132648E+02
  endloop
 endfacet
-facet normal -0.350878E+00  0.349503E+00 -0.868753E+00
+facet 
  outer loop
   vertex -0.675880E+01  0.442610E+01 -0.118893E+02
   vertex -0.634850E+01  0.666400E+01 -0.111547E+02
   vertex -0.315330E+01  0.666400E+01 -0.124452E+02
  endloop
 endfacet
-facet normal -0.351159E+00  0.350063E+00 -0.868414E+00
+facet 
  outer loop
   vertex -0.315330E+01  0.666400E+01 -0.124451E+02
   vertex -0.335710E+01  0.442610E+01 -0.132648E+02
   vertex -0.675880E+01  0.442600E+01 -0.118893E+02
  endloop
 endfacet
-facet normal -0.220443E+00  0.806661E+00 -0.548363E+00
+facet 
  outer loop
   vertex -0.634850E+01  0.666400E+01 -0.111547E+02
   vertex -0.434760E+01  0.962570E+01 -0.760230E+01
   vertex -0.215980E+01  0.962570E+01 -0.848180E+01
  endloop
 endfacet
-facet normal -0.221167E+00  0.806996E+00 -0.547578E+00
+facet
  outer loop
   vertex -0.215980E+01  0.962560E+01 -0.848180E+01
   vertex -0.315330E+01  0.666400E+01 -0.124452E+02
   vertex -0.634840E+01  0.666400E+01 -0.111547E+02
  endloop
 endfacet
-facet normal -0.300020E+00  0.478751E+00 -0.825097E+00
+facet 
  outer loop
   vertex -0.434760E+01  0.962570E+01 -0.760230E+01
   vertex -0.403060E+01  0.119983E+02 -0.634090E+01
   vertex -0.201310E+01  0.119983E+02 -0.707450E+01
  endloop
 endfacet
-facet normal -0.323599E+00  0.497452E+00 -0.804876E+00
+facet 
  outer loop
   vertex -0.201300E+01  0.119982E+02 -0.707450E+01
   vertex -0.215980E+01  0.962570E+01 -0.848180E+01
   vertex -0.434750E+01  0.962560E+01 -0.760230E+01
  endloop
 endfacet
-facet normal -0.256923E+00 -0.242035E+00 -0.935633E+00
+facet 
  outer loop
   vertex -0.403060E+01  0.119983E+02 -0.634090E+01
   vertex -0.600750E+01  0.168341E+02 -0.704900E+01
   vertex -0.303770E+01  0.168341E+02 -0.786450E+01
  endloop
 endfacet
-facet normal -0.333357E+00 -0.220378E+00 -0.916682E+00
+facet 
  outer loop
   vertex -0.303760E+01  0.168341E+02 -0.786450E+01
   vertex -0.201310E+01  0.119983E+02 -0.707450E+01
   vertex -0.403060E+01  0.119982E+02 -0.634080E+01
  endloop
 endfacet
-facet normal -0.194387E+00 -0.277062E+00 -0.940984E+00
+facet 
  outer loop
   vertex -0.600750E+01  0.168341E+02 -0.704900E+01
   vertex -0.103064E+02  0.265168E+02 -0.901190E+01
   vertex -0.525940E+01  0.265168E+02 -0.100545E+02
  endloop
 endfacet
-facet normal -0.255093E+00 -0.268608E+00 -0.928858E+00
+facet 
  outer loop
   vertex -0.525930E+01  0.265167E+02 -0.100544E+02
   vertex -0.303770E+01  0.168341E+02 -0.786450E+01
   vertex -0.600750E+01  0.168341E+02 -0.704890E+01
  endloop
 endfacet
-facet normal -0.172375E+00 -0.223705E+00 -0.959293E+00
+facet 
  outer loop
   vertex -0.103064E+02  0.265168E+02 -0.901190E+01
   vertex -0.145267E+02  0.383280E+02 -0.110079E+02
   vertex -0.743950E+01  0.383280E+02 -0.122814E+02
  endloop
 endfacet
-facet normal -0.197513E+00 -0.216704E+00 -0.956048E+00
+facet 
  outer loop
   vertex -0.743940E+01  0.383279E+02 -0.122813E+02
   vertex -0.525940E+01  0.265168E+02 -0.100545E+02
   vertex -0.103064E+02  0.265167E+02 -0.901180E+01
  endloop
 endfacet
-facet normal -0.175367E+00 -0.844403E-01 -0.980875E+00
+facet 
  outer loop
   vertex -0.145267E+02  0.383280E+02 -0.110079E+02
   vertex -0.154644E+02  0.478155E+02 -0.116570E+02
   vertex -0.792130E+01  0.478155E+02 -0.130056E+02
  endloop
 endfacet
-facet normal -0.176234E+00 -0.838028E-01 -0.980775E+00
+facet 
  outer loop
   vertex -0.792120E+01  0.478154E+02 -0.130055E+02
   vertex -0.743950E+01  0.383280E+02 -0.122814E+02
   vertex -0.145267E+02  0.383279E+02 -0.110079E+02
  endloop
 endfacet
-facet normal -0.190530E+00  0.301597E+00 -0.934204E+00
+facet 
  outer loop
   vertex -0.154644E+02  0.478155E+02 -0.116570E+02
   vertex -0.123464E+02  0.528995E+02 -0.106516E+02
   vertex -0.630420E+01  0.528995E+02 -0.118839E+02
  endloop
 endfacet
-facet normal -0.169789E+00  0.263536E+00 -0.949590E+00
+facet 
  outer loop
   vertex -0.630420E+01  0.528995E+02 -0.118838E+02
   vertex -0.792130E+01  0.478155E+02 -0.130056E+02
   vertex -0.154644E+02  0.478154E+02 -0.116569E+02
  endloop
 endfacet
-facet normal -0.180697E+00  0.716393E+00 -0.673891E+00
+facet 
  outer loop
   vertex -0.123464E+02  0.528995E+02 -0.106516E+02
   vertex -0.816880E+01  0.551808E+02 -0.934660E+01
   vertex -0.413620E+01  0.551808E+02 -0.104279E+02
  endloop
 endfacet
-facet normal -0.154895E+00  0.631895E+00 -0.759419E+00
+facet 
  outer loop
   vertex -0.413610E+01  0.551808E+02 -0.104279E+02
   vertex -0.630420E+01  0.528995E+02 -0.118839E+02
   vertex -0.123464E+02  0.528995E+02 -0.106515E+02
  endloop
 endfacet
-facet normal -0.258808E+00  0.636150E+00 -0.726864E+00
+facet 
  outer loop
   vertex -0.816880E+01  0.551808E+02 -0.934660E+01
   vertex -0.588970E+01  0.564356E+02 -0.905990E+01
@@ -153,14 +153,14 @@ facet normal -0.327598E+00 -0.464498E+00 -0.822752E+00
   vertex -0.277880E+01  0.573211E+02 -0.107985E+02
  endloop
 endfacet
-facet normal -0.278507E+00 -0.557364E+00 -0.782163E+00
+facet 
  outer loop
   vertex -0.277880E+01  0.573210E+02 -0.107985E+02
   vertex -0.294610E+01  0.564356E+02 -0.101080E+02
   vertex -0.588960E+01  0.564356E+02 -0.905990E+01
  endloop
 endfacet
-facet normal -0.227196E+00 -0.790831E+00 -0.568303E+00
+facet 
  outer loop
   vertex -0.559100E+01  0.573210E+02 -0.967870E+01
   vertex -0.598540E+01  0.579599E+02 -0.104101E+02
@@ -174,14 +174,14 @@ facet normal -0.225602E+00 -0.792433E+00 -0.566704E+00
   vertex -0.559100E+01  0.573209E+02 -0.967870E+01
  endloop
 endfacet
-facet normal -0.304856E+00 -0.568274E+00 -0.764283E+00
+facet 
  outer loop
   vertex -0.598540E+01  0.579599E+02 -0.104101E+02
   vertex -0.616270E+01  0.584363E+02 -0.106936E+02
   vertex -0.306100E+01  0.584363E+02 -0.119308E+02
  endloop
 endfacet
-facet normal -0.306202E+00 -0.565357E+00 -0.765906E+00
+facet 
  outer loop
   vertex -0.306100E+01  0.584362E+02 -0.119308E+02
   vertex -0.297300E+01  0.579599E+02 -0.116144E+02
