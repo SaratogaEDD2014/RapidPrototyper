@@ -143,7 +143,9 @@ class GearTemplate(wx.Panel):
             theta+=inc/4
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
         if points!=None: points.append(points[0])
-        return [plot.PolyLine(points, width=1, legend="gear")]
+        plotlines= [plot.PolyLine(points, width=1, legend="gear")]
+        generate_vertices(points)
+        return plotlines
 
     def sprocket(self, inc, outr, inr):
         points=[]
@@ -263,6 +265,41 @@ class GearTemplate(wx.Panel):
 
 
         return (staticSizer, hubStaticSizer)
+
+def generate_vertices(points):
+    print("solid shape")
+
+    for i in range(0, len(points)-2):
+        p1=points[i]+[0]
+        p1[2]=0.0
+        p2=points[i+1]+[0]
+        p2[2]=0.0
+        center = [0,0,0]
+        center[2]=0.0
+        normal = [0.0,0.0,-1.0]
+        print_facet(center, p2, p1, normal)
+
+        normal[2] = 1.0
+        p1[2]=(1.0)
+        p2[2]=(1.0)
+        center[2]=(1.0)
+        print_facet(p1, p2, center, normal)
+
+    print("endsolid")
+
+
+def print_facet(p1,p2,p3, vector):
+    print('facet normal '+ point_as_string(vector))
+    print('  outer loop')
+    print('    vertex ' + point_as_string(p1))
+    print('    vertex ' + point_as_string(p2))
+    print('    vertex ' + point_as_string(p3))
+    print('  endloop')
+    print('endfacet')
+
+def point_as_string(p):
+    strings=str(p[0])+' '+str(p[1])+' '+str(p[2])
+    return strings
 
 
 
