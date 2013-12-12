@@ -279,13 +279,24 @@ class GearTemplate(wx.Panel):
             center = [0,0,0]
             center[2]=0.0
             normal = [0.0,0.0,-1.0]
+            a1=p1[:]
+            a2=p2[:]
             self.print_facet(center, p2, p1, normal)
 
             normal[2] = 1.0
             p1[2]=(1.0)
             p2[2]=(1.0)
             center[2]=(1.0)
+            a3=p1[:]
+            a4=p2[:]
             self.print_facet(p1, p2, center, normal)
+
+            normal=[a2[0]-a1[0], a2[1]-a1[1], 0.0]
+            #first tri: a1-a2-a3
+            self.print_facet(a1, a2, a3, normal)
+
+            #second tri: a2-a4-a3
+            self.print_facet(a2, a4, a3, normal)
 
         self.add_to_stl("endsolid")
         self.file.close()
@@ -304,7 +315,6 @@ class GearTemplate(wx.Panel):
         strings=str(p[0])+' '+str(p[1])+' '+str(p[2])
         return strings
     def add_to_stl(self, stuff):
-        print(stuff)
         self.file.write(stuff+'\n')
 
 
