@@ -115,7 +115,9 @@ class GearTemplate(wx.Panel):
             theta+=inc/2.0
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
         if points!=None: points.append(points[0])
-        return [plot.PolyLine(points, width=1, legend="gear")]
+        plotlines= [plot.PolyLine(points, width=1, legend="gear")]
+        self.generate_vertices(points)
+        return plotlines
 
     def rectangle(self, inc, outr, inr):
         points=[]
@@ -129,7 +131,9 @@ class GearTemplate(wx.Panel):
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
 
         if points!=None: points.append(points[0])
-        return [plot.PolyLine(points, width=1, legend="gear")]
+        plotlines= [plot.PolyLine(points, width=1, legend="gear")]
+        self.generate_vertices(points)
+        return plotlines
 
     def trapezoid(self, inc, outr, inr):
         points=[]
