@@ -30,7 +30,7 @@ class GearTemplate(wx.Panel):
         self.lines=[]
         self.gearDim={}#dict for standard gear values
         self.hubDim={} #dict for hub dimensions
-        self.file=open(AppSettings.PATH+'examples/temp_file.stl','w')
+        self.file=None
 
         self.editors=self.makeEditors()
         self.updateButton=wx.Button(self, 1, 'Update')
@@ -268,6 +268,7 @@ class GearTemplate(wx.Panel):
         return (staticSizer, hubStaticSizer)
 
     def generate_vertices(self, points):
+        self.file=open(AppSettings.PATH+'examples/temp_file.stl','w')
         self.add_to_stl("solid shape")
 
         for i in range(0, len(points)-2):
