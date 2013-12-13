@@ -319,6 +319,8 @@ class GearTemplate(wx.Panel):
             p2 = points[i+1][:]+[0]
             c1 = bore[i][:]+[0]
             c2 = bore[i+1][:]+[0]
+            c3 = bore[i][:]+[0]
+            c4 = bore[i+1][:]+[0]
 
             p1[2] = 0.0
             p2[2] = 0.0
@@ -330,44 +332,26 @@ class GearTemplate(wx.Panel):
             a1=p1[:]
             a2=p2[:]
             #self.print_facet(center, p2, p1, normal)
-            self.print_rect_facets(p1, c1, p2, c2, normal)
+            self.print_rect_facets(p1, c1, c2, p2, normal)
 
-            normal[2] = 1.0 #point up
+            normal = [0.0, 0.0, 1.0] #point up
             p1[2] = thickness
             p2[2] = thickness
-            c1[2] = thickness
-            c2[2] = thickness
+            c3[2] = thickness
+            c4[2] = thickness
             #center[2] = thickness
             a3 = p1[:]
             a4 = p2[:]
-            self.print_rect_facets(p1, c1, p2, c2, normal)
+            self.print_rect_facets(a3, a4, c4, c3, normal)
 
-            normal=[a2[0]-a1[0], a2[1]-a1[1], 0.0]
-            self.print_rect_facets(a1, a2, a3, a4, normal)
+            normal = [a2[0]-a1[0], a2[1]-a1[1], 0.0]
+            self.print_rect_facets(a1, a2, a4, a3, normal)
 
-            self.generate_cylinder(bore, thickness, False)
+            normal = [c1[0]-c2[0], c1[1]-c2[1], 0.0]
+            self.print_rect_facets(c3, c4, c2, c1, normal)
 
         self.add_to_stl("endsolid")
         self.file.close()
-
-    def generate_cylinder(self, points, thickness, out=True):
-        for i in range(0, len(points)-2):
-            p1 = points[i][:]+[0.0]
-            p2 = points[i+1][:]+[0.0]
-
-            a1=p1[:]
-            a2=p2[:]
-
-            p1[2] = thickness
-            p2[2] = thickness
-            a3 = p1[:]
-            a4 = p2[:]
-
-            if out:
-                normal=[a2[0]-a1[0], a2[1]-a1[1], 0.0]
-            else:
-                normal=[a1[0]-a2[0], a1[1]-a2[1], 0.0]
-            self.print_rect_facets(a1, a2, a3, a4, normal)
 
 
     def print_facet(self, p1,p2,p3, vector):
@@ -383,7 +367,7 @@ class GearTemplate(wx.Panel):
         #first tri: a1-a2-a3
         #second tri: a2-a4-a3
         self.print_facet(p1, p2, p3, vector)
-        self.print_facet(p2, p4, p3, vector)
+        self.print_facet(p1, p3, p4, vector)
 
     def point_as_string(self, p):
         strings=str(p[0])+' '+str(p[1])+' '+str(p[2])
