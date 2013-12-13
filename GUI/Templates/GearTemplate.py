@@ -107,49 +107,106 @@ class GearTemplate(wx.Panel):
 
 
     def triangle(self, inc, outr, inr):
+        #gear teeth
         points=[]
+        #generate bore circle
+        bore=self.getDim("Bore Diameter")/2.0 #convert diameter to radius
+        boreCircle=[]
+        #generate hub circle
+        hub=self.getHubDim("Hub Diameter")/2.0 #convert diameter to radius
+        hubCircle=[]
         points.append([outr*trig(0) for trig in [math.cos, math.sin]])
+        boreCircle.append([bore*trig(0) for trig in [math.cos, math.sin]])
+        hubCircle.append([hub*trig(0) for trig in [math.cos, math.sin]])
+
         for theta in drange(0, 2*math.pi, inc):
             theta+=inc/2.0
             points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             theta+=inc/2.0
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
         if points!=None: points.append(points[0])
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
-        self.generate_vertices(points)
+        plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
+        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=AppSettings.defaultAccent))
+        self.generate_vertices(points, boreCircle, hubCircle)
         return plotlines
 
     def rectangle(self, inc, outr, inr):
+        #gear teeth
         points=[]
+        #generate bore circle
+        bore=self.getDim("Bore Diameter")/2.0 #convert diameter to radius
+        boreCircle=[]
+        #generate hub circle
+        hub=self.getHubDim("Hub Diameter")/2.0 #convert diameter to radius
+        hubCircle=[]
+
         points.append([outr*trig(0) for trig in [math.cos, math.sin]])
+        boreCircle.append([bore*trig(0) for trig in [math.cos, math.sin]])
+        hubCircle.append([hub*trig(0) for trig in [math.cos, math.sin]])
+
         for theta in drange(0, 2*math.pi, inc):
             theta+=inc/2.0
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             theta+=inc/2.0
             points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
 
         if points!=None: points.append(points[0])
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
-        self.generate_vertices(points)
+        plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
+        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=AppSettings.defaultAccent))
+        self.generate_vertices(points, boreCircle, hubCircle)
         return plotlines
 
     def trapezoid(self, inc, outr, inr):
+        #gear teeth
         points=[]
+        #generate bore circle
+        bore=self.getDim("Bore Diameter")/2.0 #convert diameter to radius
+        boreCircle=[]
+        #generate hub circle
+        hub=self.getHubDim("Hub Diameter")/2.0 #convert diameter to radius
+        hubCircle=[]
         points.append([outr*trig(0) for trig in [math.cos, math.sin]])
+        boreCircle.append([bore*trig(0) for trig in [math.cos, math.sin]])
+        hubCircle.append([hub*trig(0) for trig in [math.cos, math.sin]])
+
         for theta in drange(0, 2*math.pi, inc):
             theta+=inc/4
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             theta+=inc/4
             points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             theta+=inc/4
             points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             theta+=inc/4
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
         if points!=None: points.append(points[0])
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
-        self.generate_vertices(points)
+        plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
+        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=AppSettings.defaultAccent))
+        self.generate_vertices(points, boreCircle, hubCircle)
         return plotlines
 
     def sprocket(self, inc, outr, inr):
@@ -181,25 +238,6 @@ class GearTemplate(wx.Panel):
         shapeFunctions={"triangle":self.triangle, "rectangle":self.rectangle, "trapezoid":self.trapezoid, "sprocket":self.sprocket}
         for line in shapeFunctions[self.getDim("Tooth Shape")](inc, outr, inr):
             gear.append(line)
-
-        #generate bore circle
-        bore=self.getDim("Bore Diameter")/2.0 #convert diameter to radius
-        if bore!=0:
-            boreCircle=[]
-            binc=math.pi/100
-            for theta in drange(0,2*math.pi+binc, binc):
-                boreCircle.append((bore*math.cos(theta), bore*math.sin(theta)))
-            gear.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
-
-        #generate hub circle
-        hub=self.getHubDim("Hub Diameter")/2.0 #convert diameter to radius
-        if hub!=0:
-            hubCircle=[]
-            hinc=math.pi/100.0
-            for theta in drange(0,2*math.pi, hinc):
-                hubCircle.append((hub*math.cos(theta), hub*math.sin(theta)))
-            gear.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=AppSettings.defaultAccent))
-
         self.lines=gear
 
     def makeEditors(self):
@@ -271,39 +309,62 @@ class GearTemplate(wx.Panel):
 
         return (staticSizer, hubStaticSizer)
 
-    def generate_vertices(self, points):
+    def generate_vertices(self, points, bore, hub):
         self.file=open(AppSettings.PATH+'examples/temp_file.stl','w')
         self.add_to_stl("solid shape")
+        thickness=self.getDim("Thickness")
 
         for i in range(0, len(points)-2):
-            p1=points[i]+[0]
-            p1[2]=0.0
-            p2=points[i+1]+[0]
-            p2[2]=0.0
-            center = [0,0,0]
-            center[2]=0.0
-            normal = [0.0,0.0,-1.0]
+            p1 = points[i][:]+[0]
+            p2 = points[i+1][:]+[0]
+            c1 = bore[i][:]+[0]
+            c2 = bore[i+1][:]+[0]
+
+            p1[2] = 0.0
+            p2[2] = 0.0
+            c1[2] = 0.0
+            c2[2] = 0.0
+            #center = [0,0,0]
+            #center[2]=0.0
+            normal = [0.0,0.0,-1.0]#point down
             a1=p1[:]
             a2=p2[:]
-            self.print_facet(center, p2, p1, normal)
+            #self.print_facet(center, p2, p1, normal)
+            self.print_rect_facets(p1, c1, p2, c2, normal)
 
-            normal[2] = 1.0
-            p1[2]=(1.0)
-            p2[2]=(1.0)
-            center[2]=(1.0)
-            a3=p1[:]
-            a4=p2[:]
-            self.print_facet(p1, p2, center, normal)
+            normal[2] = 1.0 #point up
+            p1[2] = thickness
+            p2[2] = thickness
+            c1[2] = thickness
+            c2[2] = thickness
+            #center[2] = thickness
+            a3 = p1[:]
+            a4 = p2[:]
+            self.print_rect_facets(p1, c1, p2, c2, normal)
 
             normal=[a2[0]-a1[0], a2[1]-a1[1], 0.0]
-            #first tri: a1-a2-a3
-            self.print_facet(a1, a2, a3, normal)
+            self.print_rect_facets(a1, a2, a3, a4, normal)
 
-            #second tri: a2-a4-a3
-            self.print_facet(a2, a4, a3, normal)
+            self.generate_cylinder(bore, self.getDim("Bore Diameter"))
 
         self.add_to_stl("endsolid")
         self.file.close()
+
+    def generate_cylinder(self, points, thickness):
+        for i in range(0, len(points)-2):
+            p1 = points[i][:]+[0.0]
+            p2 = points[i+1][:]+[0.0]
+
+            a1=p1[:]
+            a2=p2[:]
+
+            p1[2] = thickness
+            p2[2] = thickness
+            a3 = p1[:]
+            a4 = p2[:]
+
+            normal=[a2[0]-a1[0], a2[1]-a1[1], 0.0]
+            self.print_rect_facets(a1, a2, a3, a4, normal)
 
 
     def print_facet(self, p1,p2,p3, vector):
@@ -314,6 +375,12 @@ class GearTemplate(wx.Panel):
         self.add_to_stl('    vertex ' + self.point_as_string(p3))
         self.add_to_stl('  endloop')
         self.add_to_stl('endfacet')
+
+    def print_rect_facets(self, p1, p2, p3, p4, vector):
+        #first tri: a1-a2-a3
+        #second tri: a2-a4-a3
+        self.print_facet(p1, p2, p3, vector)
+        self.print_facet(p2, p4, p3, vector)
 
     def point_as_string(self, p):
         strings=str(p[0])+' '+str(p[1])+' '+str(p[2])
