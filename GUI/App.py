@@ -26,8 +26,9 @@ class ProtoFrame(window):
             AppSettings.add_prev_page(AppSettings.get_current_page())
             AppSettings.set_current_page(viewPanel)
             AppSettings.refresh_view_panel()
-    
+
     def refresh_view_panel(self):
+
         mastersizer=wx.BoxSizer(wx.VERTICAL)
         mastersizer.Add(self.toolbar)
         sizer=wx.BoxSizer()
@@ -35,9 +36,10 @@ class ProtoFrame(window):
         sizer.Add(wx.Panel(self.win, size=((800-current.GetSize()[0])/2,20)))
         sizer.Add(current)
         mastersizer.Add(sizer)
+        load=wx.Panel(self.win, pos=(0,40), size=(800,400))
         self.win.SetSizer(mastersizer)
         self.win.SendSizeEvent()    #Without this, panels will be misaligned
-
+        load.Destroy()
 
 
 def main():
