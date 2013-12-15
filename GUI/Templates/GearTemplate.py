@@ -80,14 +80,15 @@ class GearTemplate(wx.Panel):
     def OnPreview(self, event):
         if AppSettings.display_part:
             #self.viewer = display(window=AppSettings.main_window, x=150, y=150, width=800, height=400, forward=-vector(0,1,2))
+            AppSettings.display_part=False
             scene.width = scene.height = 480
             scene.autocenter = True
             self.model = stl_to_faces(AppSettings.PATH+'examples/temp_file.stl')
             self.model.smooth()
-            while AppSettings.display_part:
+            while not AppSettings.display_part:
                 rate(100)
         else:
-            AppSettings.display_part=False
+            AppSettings.display_part=True
 
     def setLines(self, nlines):
         self.lines=nlines
