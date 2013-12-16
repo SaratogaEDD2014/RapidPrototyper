@@ -1,31 +1,31 @@
 import wx
 from App import *
-import settings as AppSettings
+import settings
 from visual import *
 from PartViewer import generate_view
 
 class QuickPrint(wx.Panel):
     def __init__(self, parent, id=-1, pos=(0,40), size=wx.Size(800,440)):
         wx.Panel.__init__(self, parent, id, pos, size)
-        self.SetBackgroundColour(AppSettings.secondBackground)
+        self.SetBackgroundColour(settings.secondBackground)
         self.Show(False)
     def Show(self, visible):
         #super(QuickPrint, self).Show(visible)
         if visible:
-            AppSettings.main_window.panel.Show(True)
-            disp = display(window=AppSettings.main_window, x=150, y=15, width=400, height=400, forward=-vector(0,1,2))
+            settings.main_window.panel.Show(True)
+            disp = display(window=settings.main_window, x=150, y=15, width=400, height=400, forward=-vector(0,1,2))
             cube = box(color=color.red)
             #disp.window.win.Set
-            while AppSettings.display_part:
+            while settings.display_part:
                 rate(100)
         else:
             super(QuickPrint, self).Show(visible)
 
 
 def disp_part():
-    disp = display(window=AppSettings.main_window, x=15, y=15, width=400, height=400, forward=-vector(0,1,2))
+    disp = display(window=settings.main_window, x=15, y=15, width=400, height=400, forward=-vector(0,1,2))
     cube = box(color=color.red)
-    while AppSettings.display_part:
+    while settings.display_part:
         rate(100)
     disp._destroy()
 

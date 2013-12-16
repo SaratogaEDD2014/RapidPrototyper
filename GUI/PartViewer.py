@@ -1,5 +1,5 @@
 import wx
-import settings as AppSettings
+import settings
 from visual import *
 from visual.filedialog import get_file
 
@@ -19,7 +19,7 @@ class STLViewer(wx.Panel):
 
         w,h=self.GetSize()
         #self._part_viewer =
-        display(window=AppSettings.main_window, x=100, y=100, width=300, height=300, forward=-vector(0,1,2))
+        display(window=settings.main_window, x=100, y=100, width=300, height=300, forward=-vector(0,1,2))
         newobject = stl_to_faces(self.file)
         newobject.smooth()
         #sizer = wx.BoxSizer(wx.HORIZONTAL)

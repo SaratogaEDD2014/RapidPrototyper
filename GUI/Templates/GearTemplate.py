@@ -10,7 +10,7 @@
 
 import math
 import wx
-import GUI.settings as AppSettings
+import GUI.settings as settings
 import GUI.util.plot as plot
 import GUI.util.editors as editors
 from GUI.util.convert_stl import *
@@ -26,7 +26,7 @@ def drange(start, stop, step):
 class GearTemplate(wx.Panel):
     def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="trapezoid"):
         super(GearTemplate, self).__init__(parent, pos=(0,40), size=(800,400))
-        self.SetBackgroundColour(AppSettings.defaultBackground)
+        self.SetBackgroundColour(settings.defaultBackground)
         self.Show(False)
         self.lines=[]
         self.gearDim={}#dict for standard gear values
@@ -78,17 +78,18 @@ class GearTemplate(wx.Panel):
         self.display.Draw(self.grid)
 
     def OnPreview(self, event):
-        if AppSettings.display_part:
-            #self.viewer = display(window=AppSettings.main_window, x=150, y=150, width=800, height=400, forward=-vector(0,1,2))
-            AppSettings.display_part=False
-            scene.width = scene.height = 480
-            scene.autocenter = True
-            self.model = stl_to_faces(AppSettings.PATH+'examples/temp_file.stl')
+        if settings.display_part:
+            self.viewer = display(window=settings.main_window, x=0, y=40, width=400, height=400, forward=-vector(0,1,2))
+            settings.display_part=False
+            self.preview_button.SetLabel("Edit")
+            self.model = stl_to_faces(settings.PATH+'examples/temp_file.stl')
             self.model.smooth()
-            while not AppSettings.display_part:
+            while not settings.display_part:
                 rate(100)
         else:
-            AppSettings.display_part=True
+            settings.display_part=True
+            self.preview_button.SetLabel('Preview')
+            #self.viewer.window._OnExitApp(wx.CommandEvent())
 
     def setLines(self, nlines):
         self.lines=nlines
@@ -149,7 +150,7 @@ class GearTemplate(wx.Panel):
         if points!=None: points.append(points[0])
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
         plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
-        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=AppSettings.defaultAccent))
+        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
         self.generate_vertices(points, boreCircle, hubCircle)
         return plotlines
 
@@ -186,7 +187,7 @@ class GearTemplate(wx.Panel):
         if points!=None: points.append(points[0])
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
         plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
-        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=AppSettings.defaultAccent))
+        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
         self.generate_vertices(points, boreCircle, hubCircle)
         return plotlines
 
@@ -223,7 +224,7 @@ class GearTemplate(wx.Panel):
         if points!=None: points.append(points[0])
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
         plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
-        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=AppSettings.defaultAccent))
+        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
         self.generate_vertices(points, boreCircle, hubCircle)
         return plotlines
 
@@ -328,7 +329,7 @@ class GearTemplate(wx.Panel):
         return (staticSizer, hubStaticSizer)
 
     def generate_vertices(self, points, bore, hub):
-        self.file=open(AppSettings.PATH+'examples/temp_file.stl','w')
+        self.file=open(settings.PATH+'examples/temp_file.stl','w')
         self.add_to_stl("solid shape")
         thickness=self.getDim("Thickness")
         hub_thick=self.getHubDim("Thickness")
@@ -401,7 +402,7 @@ class GearTemplate(wx.Panel):
 #----------------------------------------------------------------------------------
 def main():
     ProtoApp = wx.App()
-    frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
+    frm = wx.Frame(None, -1, 'Gear Display', pos=(0,0), size=(800,400))
 
     sizer=wx.BoxSizer(wx.HORIZONTAL)
     panel=GearTemplate(frm)

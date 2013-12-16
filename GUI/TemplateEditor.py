@@ -1,6 +1,6 @@
 import wx
 from Templates import Gear
-import AppSettings
+import settings
 import util.plot as plot
 
 class TemplateEditor(wx.Panel):
@@ -8,7 +8,7 @@ class TemplateEditor(wx.Panel):
         wx.Panel.__init__(self, parent, id, position, size)
         self.Show(False)
         self.shape=template
-        self.SetBackgroundColour(AppSettings.defaultBackground)
+        self.SetBackgroundColour(settings.defaultBackground)
 
     def setShape(self, shape):
         self.shape=shape

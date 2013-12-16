@@ -1,5 +1,5 @@
-from visual import *
-from visual.filedialog import get_file
+from myvisual import *
+from myvisual.filedialog import get_file
 
 # Convert 3D .stl file ("stereo lithography") to faces object.
 
@@ -87,12 +87,12 @@ if __name__ == '__main__':
     while True:
         fd = get_file()
         if not fd: continue
-        
+
         scene.width = scene.height = 800
         scene.autocenter = True
         newobject = stl_to_faces(fd)
         newobject.smooth() # average normals at a vertex
-        
+
         # Examples of modifying the returned object:
 ##        newobject.frame.pos = (-1,-1,-0.5)
 ##        newobject.frame.axis = (0,1,0)

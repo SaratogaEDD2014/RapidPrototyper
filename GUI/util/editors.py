@@ -1,5 +1,5 @@
 import wx
-import GUI.AppSettings
+import GUI.settings
 from GUI.BubbleMenu import *
 from GUI.util.calc_dialog import *
 
@@ -20,9 +20,9 @@ class TouchSpin(wx.Window):
         h = self._textcontrol.GetSize().height
         w = self._textcontrol.GetSize().width + self._textcontrol.GetPosition().x + 2
 
-        self._up = BubbleButton(self, wx.Bitmap(AppSettings.IMAGE_PATH + 'spin_up.png'))
-        self._down=BubbleButton(self, wx.Bitmap(AppSettings.IMAGE_PATH + 'spin_down.png'))
-        self._edit=BubbleButton(self, wx.Bitmap(AppSettings.IMAGE_PATH + 'edit_bubble.png'))
+        self._up = BubbleButton(self, wx.Bitmap(settings.IMAGE_PATH + 'spin_up.png'))
+        self._down=BubbleButton(self, wx.Bitmap(settings.IMAGE_PATH + 'spin_down.png'))
+        self._edit=BubbleButton(self, wx.Bitmap(settings.IMAGE_PATH + 'edit_bubble.png'))
 
         sizer=wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(self._edit)
