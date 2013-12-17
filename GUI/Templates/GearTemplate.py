@@ -345,7 +345,7 @@ class GearTemplate(wx.Panel):
             normal=[a2[0]-a1[0], a2[1]-a1[1], 0.0]
             self.print_rect_facets(a1, a2, a3, a4, normal)
 
-            self.generate_cylinder(bore, thickness)
+            self.generate_cylinder(bore, self.getDim("Bore Diameter"))
 
         self.add_to_stl("endsolid")
         self.file.close()
