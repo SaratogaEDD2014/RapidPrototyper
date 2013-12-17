@@ -10,10 +10,9 @@
 
 import math
 import wx
-import GUI.settings as AppSettings
+import GUI.AppSettings as AppSettings
 import GUI.util.plot as plot
 import GUI.util.editors as editors
-from GUI.util.convert_stl import *
 
 shapes=['trapezoid','triangle', 'rectangle','sprocket']
 
@@ -34,10 +33,8 @@ class GearTemplate(wx.Panel):
         self.file=None
 
         self.editors=self.makeEditors()
-        self.updateButton = wx.Button(self, 1, 'Update')
-        self.preview_button = wx.Button(self, 2, 'Preview')
+        self.updateButton=wx.Button(self, 1, 'Update')
         self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
-        self.Bind(wx.EVT_BUTTON, self.OnPreview, id=2)
 
         self.setDim("Number of Teeth", numTeeth)
         self.setDim("Pitch Diameter",pitchDiameter)
@@ -52,7 +49,6 @@ class GearTemplate(wx.Panel):
 
         masterSizer=wx.BoxSizer(wx.HORIZONTAL)
         editorSizer=wx.BoxSizer(wx.VERTICAL)
-        button_sizer=wx.GridSizer(0,2,0,12)
         temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
         temp.SetBackgroundColour(self.GetBackgroundColour())
         editorSizer.Add(temp)#spacer
@@ -61,9 +57,7 @@ class GearTemplate(wx.Panel):
             temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
             temp.SetBackgroundColour(self.GetBackgroundColour())
         editorSizer.Add(temp)#spacer
-        button_sizer.Add(self.updateButton)
-        button_sizer.Add(self.preview_button)
-        editorSizer.Add(button_sizer)
+        editorSizer.Add(self.updateButton)
         masterSizer.Add(self.display)
         temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
         temp.SetBackgroundColour(self.GetBackgroundColour())
@@ -77,18 +71,6 @@ class GearTemplate(wx.Panel):
         self.grid = plot.PlotGraphics(self.lines, 'Custom Gear')
         self.display.Draw(self.grid)
 
-    def OnPreview(self, event):
-        if AppSettings.display_part:
-            #self.viewer = display(window=AppSettings.main_window, x=150, y=150, width=800, height=400, forward=-vector(0,1,2))
-            AppSettings.display_part=False
-            scene.width = scene.height = 480
-            scene.autocenter = True
-            self.model = stl_to_faces(AppSettings.PATH+'examples/temp_file.stl')
-            self.model.smooth()
-            while not AppSettings.display_part:
-                rate(100)
-        else:
-            AppSettings.display_part=True
 
     def setLines(self, nlines):
         self.lines=nlines
@@ -331,48 +313,58 @@ class GearTemplate(wx.Panel):
         self.file=open(AppSettings.PATH+'examples/temp_file.stl','w')
         self.add_to_stl("solid shape")
         thickness=self.getDim("Thickness")
-        hub_thick=self.getHubDim("Thickness")
 
         for i in range(0, len(points)-2):
-            p1 = points[i][:] + [0.0]
-            p2 = points[i+1][:] + [0.0]
-            p3 = p1[:2] + [thickness]
-            p4 = p2[:2] +[thickness]
-            c1 = bore[i][:] + [0.0]
-            c2 = bore[i+1][:] + [0.0]
-            c3 = bore[i][:] + [thickness]
-            c4 = bore[i+1][:] + [thickness]
-            c5 = c3[:2]+[thickness + hub_thick]
-            c6 = c4[:2]+[thickness + hub_thick]
-            h1 = hub[i][:] + [0.0]
-            h2 = hub[i+1][:] + [0.0]
-            h3 = h1[:2] + [thickness + hub_thick]
-            h4 = h2[:2] + [thickness + hub_thick]
+            p1 = points[i][:]+[0]
+            p2 = points[i+1][:]+[0]
+            c1 = bore[i][:]+[0]
+            c2 = bore[i+1][:]+[0]
 
+            p1[2] = 0.0
+            p2[2] = 0.0
+            c1[2] = 0.0
+            c2[2] = 0.0
+            #center = [0,0,0]
+            #center[2]=0.0
             normal = [0.0,0.0,-1.0]#point down
             a1=p1[:]
             a2=p2[:]
             #self.print_facet(center, p2, p1, normal)
-            self.print_rect_facets(p1, c1, c2, p2, normal)
+            self.print_rect_facets(p1, c1, p2, c2, normal)
 
-            normal = [0.0, 0.0, 1.0] #point up
-            a3 = p3[:]
-            a4 = p4[:]
-            self.print_rect_facets(a3, a4, c4, c3, normal)
-            self.print_rect_facets(h3, h4, c6, c5, normal)
+            normal[2] = 1.0 #point up
+            p1[2] = thickness
+            p2[2] = thickness
+            c1[2] = thickness
+            c2[2] = thickness
+            #center[2] = thickness
+            a3 = p1[:]
+            a4 = p2[:]
+            self.print_rect_facets(p1, c1, p2, c2, normal)
 
+            normal=[a2[0]-a1[0], a2[1]-a1[1], 0.0]
+            self.print_rect_facets(a1, a2, a3, a4, normal)
 
-            normal = [a2[0]-a1[0], a2[1]-a1[1], 0.0]
-            self.print_rect_facets(a1, a2, a4, a3, normal)
+            self.generate_cylinder(bore, thickness)
 
-            normal = [c1[0]-c2[0], c1[1]-c2[1], 0.0]
-            self.print_rect_facets(c3, c4, c2, c1, normal)
-            self.print_rect_facets(c5, c6, c4, c3, normal)
-
-            normal = [h2[0]-h1[0], h2[1]-h1[1], 0.0]
-            self.print_rect_facets(h1, h2, h4, h3, normal)
         self.add_to_stl("endsolid")
         self.file.close()
+
+    def generate_cylinder(self, points, thickness):
+        for i in range(0, len(points)-2):
+            p1 = points[i][:]+[0.0]
+            p2 = points[i+1][:]+[0.0]
+
+            a1=p1[:]
+            a2=p2[:]
+
+            p1[2] = thickness
+            p2[2] = thickness
+            a3 = p1[:]
+            a4 = p2[:]
+
+            normal=[a2[0]-a1[0], a2[1]-a1[1], 0.0]
+            self.print_rect_facets(a1, a2, a3, a4, normal)
 
 
     def print_facet(self, p1,p2,p3, vector):
@@ -388,7 +380,7 @@ class GearTemplate(wx.Panel):
         #first tri: a1-a2-a3
         #second tri: a2-a4-a3
         self.print_facet(p1, p2, p3, vector)
-        self.print_facet(p1, p3, p4, vector)
+        self.print_facet(p2, p4, p3, vector)
 
     def point_as_string(self, p):
         strings=str(p[0])+' '+str(p[1])+' '+str(p[2])

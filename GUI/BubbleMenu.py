@@ -184,24 +184,23 @@ class MenuButton(BubbleButton):
         dc = wx.AutoBufferedPaintDC(self)
         dc.SetBackground(wx.Brush(self.GetParent().GetBackgroundColour()))
         dc.Clear()
-        #if AppSettings.icon_view:
-        bitmap = self.normal
-        if self.clicked:
-            bitmap = self.pressed or bitmap
-        dc.DrawBitmap(bitmap, 0, 0)
-        #else:
-        #if self.clicked:
-        #    dc.SetBrush(wx.Brush(AppSettings.secondBackground))
-        #else:
-        #    dc.SetBrush(wx.Brush(AppSettings.defaultForeground))
-        #dc.SetPen(wx.Pen(AppSettings.defaultAccent, 5))
-        w,h=self.GetSize()
-        #dc.DrawCircle(w/2, h/2, int(h*.35))
-        if self.name!="":
-            _butt_font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD)
+        if AppSettings.icon_view:
+            bitmap = self.normal
+            if self.clicked:
+                bitmap = self.pressed or bitmap
+            dc.DrawBitmap(bitmap, 0, 0)
+        else:
+            if self.clicked:
+                dc.SetBrush(wx.Brush(AppSettings.secondBackground))
+            else:
+                dc.SetBrush(wx.Brush(AppSettings.defaultForeground))
+            dc.SetPen(wx.Pen(AppSettings.defaultAccent, 5))
+            w,h=self.GetSize()
+            dc.DrawCircle(w/2, h/2, int(h*.35))
+            _butt_font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL)
             dc.SetFont(_butt_font)
-            dc.SetTextForeground(AppSettings.defaultForeground)
-            dc.DrawText(self.name, int((w-len(self.name)*8)/2), int((h-16)/2))
+            dc.SetTextForeground(AppSettings.defaultBackground)
+            dc.DrawText(self.name, int(w*.25), int(h*.4))
 
 #----------------------------------------------------------------------------------
 def main():
