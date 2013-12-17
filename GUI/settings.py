@@ -6,12 +6,15 @@ import os
 PATH=os.path.dirname(os.path.realpath(__file__))+'/'
 IMAGE_PATH=PATH+"images/"
 sys.path.append(PATH[:PATH.rfind("GUI")])
+main_window=None
+display_part=True
 
 #Matt's part
 cfg= wx.Config('config')
 
 #Runtime information
 prev_page=[]
+global currentPage
 currentPage=None
 
 def add_prev_page(page):
