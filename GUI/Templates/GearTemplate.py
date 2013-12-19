@@ -78,6 +78,7 @@ class GearTemplate(wx.Panel):
         self.display.Draw(self.grid)
 
     def OnPreview(self, event):
+        self.generate_vertices(self.rim_circle, self.bore_circle, self.hub_circle)
         if settings.display_part:
             self.viewer = display(window=settings.main_window, x=0, y=40, width=400, height=400, forward=-vector(0,1,2))
             settings.display_part=False
@@ -151,7 +152,6 @@ class GearTemplate(wx.Panel):
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
         plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
         plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
-        self.generate_vertices(points, boreCircle, hubCircle)
         return plotlines
 
     def rectangle(self, inc, outr, inr):
@@ -188,7 +188,6 @@ class GearTemplate(wx.Panel):
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
         plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
         plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
-        self.generate_vertices(points, boreCircle, hubCircle)
         return plotlines
 
     def trapezoid(self, inc, outr, inr):
@@ -222,10 +221,12 @@ class GearTemplate(wx.Panel):
             boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
             hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
         if points!=None: points.append(points[0])
+        self.rim_circle = points
+        self.bore_circle = boreCircle
+        self.hub_circle = hubCircle
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
         plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
         plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
-        self.generate_vertices(points, boreCircle, hubCircle)
         return plotlines
 
     def sprocket(self, inc, outr, inr):
@@ -234,12 +235,20 @@ class GearTemplate(wx.Panel):
         for theta in drange(0, 2*math.pi, inc):
             theta+=5*inc/16
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             theta+=3*inc/16
             points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             theta+=5*inc/16
             points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             theta+=3*inc/16
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
         #if points!=None: points+=points[0:3]
         return [plot.PolySpline(points, width=1, legend="gear")]
 
@@ -255,7 +264,9 @@ class GearTemplate(wx.Panel):
 
         gear=[]
         shapeFunctions={"triangle":self.triangle, "rectangle":self.rectangle, "trapezoid":self.trapezoid, "sprocket":self.sprocket}
-        for line in shapeFunctions[self.getDim("Tooth Shape")](inc, outr, inr):
+        polyshapes = shapeFunctions[self.getDim("Tooth Shape")](inc, outr, inr)
+
+        for line in polyshapes:
             gear.append(line)
         self.lines=gear
 
