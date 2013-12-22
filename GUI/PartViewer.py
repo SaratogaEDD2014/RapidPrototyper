@@ -10,20 +10,20 @@ class STLViewer(wx.Panel):
         self.preview_butt = wx.Button(self, 11, "Preview")
         self.Bind(wx.EVT_BUTTON, self.OnPreview, id=11)
         self.Show(False)
-    #def Show(self, visible):
-     #   super(STLViewer, self).Show(visible)
-
-    def OnPreview(self, event):
-        #if visible:
-        if settings.display_part:
-            self.viewer = display(window=settings.main_window, x=0, y=40, width=400, height=400, forward=-vector(0,1,2))
-            settings.display_part=False
-            #self.model = stl_to_faces(settings.PATH+'examples/temp_file.stl')
-            if self.file != "":
-                self.model = stl_to_faces(self.file)
-                self.model.smooth()
-            while not settings.display_part:
-                rate(100)
+    def Show(self, visible):
+        super(STLViewer, self).Show(visible)
+        if visible:
+            if settings.display_part:
+                self.viewer = display(window=None, x=0, y=40, width=400, height=400, forward=-vector(0,1,2))
+                settings.display_part=False
+                scene.width = scene.height = 480
+                scene.autocenter = True
+                self.model = stl_to_faces(settings.PATH+'examples/temp_file.stl')
+                if self.file != "":
+                    self.model = stl_to_faces(self.file)
+                    self.model.smooth()
+                while not settings.display_part:
+                    rate(100)
         else:
             settings.display_part=True
             #self.viewer.window._OnExitApp(wx.CommandEvent())
