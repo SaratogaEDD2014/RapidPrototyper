@@ -80,20 +80,8 @@ class GearTemplate(wx.Panel):
 
     def OnPrint(self, event):
         self.generate_vertices(self.rim_circle, self.bore_circle, self.hub_circle)
-        #part_viewer = STLViewer(settings.main_window.win, settings.PATH+'examples/temp_file.stl')
-        #settings.set_view(part_viewer)
-        if settings.display_part:
-            self.viewer = display(window=None, x=0, y=40, width=400, height=400, forward=-vector(0,1,2))
-            settings.display_part=False
-            scene.width = scene.height = 480
-            scene.autocenter = True
-            self.model = stl_to_faces(settings.PATH+'examples/temp_file.stl')
-            self.model.smooth()
-            while not settings.display_part:
-                rate(100)
-        else:
-            settings.display_part=True
-            self.viewer.window._OnExitApp(wx.CommandEvent())
+        part_viewer = STLViewer(settings.main_window.win, settings.PATH+'examples/temp_file.stl')
+        settings.set_view(part_viewer)
 
     def setLines(self, nlines):
         self.lines=nlines

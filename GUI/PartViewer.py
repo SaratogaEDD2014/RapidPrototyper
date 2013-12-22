@@ -4,21 +4,22 @@ from myvisual import *
 from visual.filedialog import get_file
 
 class STLViewer(wx.Panel):
-    def __init__(self, parent, stl_file="", pos=wx.DefaultPosition, size=(800,400)):
+    def __init__(self, parent, stl_file="", pos=(0,80), size=(800,400)):
         super(STLViewer, self).__init__(parent, pos=pos, size=size)
         self.file = stl_file
-        self.preview_butt = wx.Button(self, 11, "Preview")
-        self.Bind(wx.EVT_BUTTON, self.OnPreview, id=11)
+        self.viewer = None
         self.Show(False)
+
     def Show(self, visible):
         super(STLViewer, self).Show(visible)
         if visible:
             if settings.display_part:
-                self.viewer = display(window=None, x=0, y=40, width=400, height=400, forward=-vector(0,1,2))
+                if self.viewer == None:
+                    self.viewer = display(window=None, x=0, y=40, width=400, height=400, forward=-vector(0,1,2), background=(1,1,1), foreground=(0.086,0.702,0.870))
                 settings.display_part=False
                 scene.width = scene.height = 480
                 scene.autocenter = True
-                self.model = stl_to_faces(settings.PATH+'examples/temp_file.stl')
+                self.model = stl_to_faces(self.file)
                 if self.file != "":
                     self.model = stl_to_faces(self.file)
                     self.model.smooth()
@@ -90,24 +91,6 @@ def stl_to_faces(fileinfo): # specify file
     return faces(frame=f, pos=triPos, normal=triNor)
 
 
-def generate_view(parent=None, window=None, filename=""):
-    return STLViewer(parent, window, filename)
-
-
-#----------------------------------------------------------------------------------
-def main():
-    ProtoApp = wx.App()
-    frm = window(width=300, height=300, title='Widgets')
-
-    panel=generate_view(None, frm)
-
-    frm.SetSizer(sizer)
-    frm.Show(True)
-    ProtoApp.MainLoop()
-
-
-if __name__ == '__main__':
-    main()
 
 
 
