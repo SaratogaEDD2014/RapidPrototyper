@@ -1,6 +1,6 @@
 import wx
 import BubbleEvent
-import settings
+import GUI.settings as settings
 import platform
 
 class BubbleMenu(wx.Window):

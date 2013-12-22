@@ -8,7 +8,7 @@ import QuickPrint
 import TemplateChooser
 import OpenRecent
 import AdvancedSetup
-import settings
+import GUI.settings as settings
 import wx
 
 class MainMenu(BubbleMenu):

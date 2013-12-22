@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import wx
-import settings
+import GUI.settings as settings
 import ProtoToolbar
 import MainMenu
 from visual import *
@@ -33,7 +33,6 @@ class ProtoFrame(window):
             #self.panel=settings.get_current_page()
 
     def refresh_view_panel(self):
-
         mastersizer=wx.BoxSizer(wx.VERTICAL)
         mastersizer.Add(self.toolbar)
         sizer=wx.BoxSizer()

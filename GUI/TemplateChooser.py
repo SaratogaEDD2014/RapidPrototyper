@@ -4,7 +4,7 @@
 # Created:     16/10/2013
 #-------------------------------------------------------------------------------
 from BubbleMenu import *
-import settings
+import GUI.settings as settings
 import wx
 import Templates.GearTemplate
 

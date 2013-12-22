@@ -1,5 +1,5 @@
 import wx
-import settings
+import GUI.settings as settings
 
 class AdvancedSetup(wx.Panel):
     def __init__(self, parent, id=-1, pos=(0,40), size=wx.Size(800,400)):

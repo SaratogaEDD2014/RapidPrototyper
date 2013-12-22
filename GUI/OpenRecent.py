@@ -1,5 +1,5 @@
 import wx
-import settings
+import GUI.settings as settings
 
 class OpenRecent(wx.Panel):
     def __init__(self, parent, id=-1, position=(0,40), size=wx.Size(600,380)):

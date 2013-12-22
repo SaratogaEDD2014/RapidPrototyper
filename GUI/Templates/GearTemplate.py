@@ -14,6 +14,7 @@ import GUI.settings as settings
 import GUI.util.plot as plot
 import GUI.util.editors as editors
 from GUI.util.convert_stl import *
+from GUI.PartViewer import *
 
 shapes=['trapezoid','triangle', 'rectangle','sprocket']
 
@@ -35,9 +36,9 @@ class GearTemplate(wx.Panel):
 
         self.editors=self.makeEditors()
         self.updateButton = wx.Button(self, 1, 'Update')
-        self.preview_button = wx.Button(self, 2, 'Preview')
+        self.print_button = wx.Button(self, 2, 'Print')
         self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
-        self.Bind(wx.EVT_BUTTON, self.OnPreview, id=2)
+        self.Bind(wx.EVT_BUTTON, self.OnPrint, id=2)
 
         self.setDim("Number of Teeth", numTeeth)
         self.setDim("Pitch Diameter",pitchDiameter)
@@ -62,7 +63,7 @@ class GearTemplate(wx.Panel):
             temp.SetBackgroundColour(self.GetBackgroundColour())
         editorSizer.Add(temp)#spacer
         button_sizer.Add(self.updateButton)
-        button_sizer.Add(self.preview_button)
+        button_sizer.Add(self.print_button)
         editorSizer.Add(button_sizer)
         masterSizer.Add(self.display)
         temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
@@ -77,20 +78,20 @@ class GearTemplate(wx.Panel):
         self.grid = plot.PlotGraphics(self.lines, 'Custom Gear')
         self.display.Draw(self.grid)
 
-    def OnPreview(self, event):
+    def OnPrint(self, event):
         self.generate_vertices(self.rim_circle, self.bore_circle, self.hub_circle)
+        #part_viewer = STLViewer(settings.main_window.win, settings.PATH+'examples/temp_file.stl')
+        #settings.set_view(part_viewer)
         if settings.display_part:
             self.viewer = display(window=settings.main_window, x=0, y=40, width=400, height=400, forward=-vector(0,1,2))
             settings.display_part=False
-            self.preview_button.SetLabel("Edit")
             self.model = stl_to_faces(settings.PATH+'examples/temp_file.stl')
             self.model.smooth()
             while not settings.display_part:
                 rate(100)
         else:
             settings.display_part=True
-            self.preview_button.SetLabel('Preview')
-            #self.viewer.window._OnExitApp(wx.CommandEvent())
+            self.viewer.window._OnExitApp(wx.CommandEvent())
 
     def setLines(self, nlines):
         self.lines=nlines

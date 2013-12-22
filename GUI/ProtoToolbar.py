@@ -1,7 +1,7 @@
 import wx
 import copy
 from ToolbarButton import *
-import settings as settings
+import GUI.settings as settings
 import BubbleEvent
 
 class ProtoToolbar(wx.Panel):

@@ -1,6 +1,6 @@
 import wx
 from Templates import Gear
-import settings
+import GUI.settings as settings
 import util.plot as plot
 
 class TemplateEditor(wx.Panel):

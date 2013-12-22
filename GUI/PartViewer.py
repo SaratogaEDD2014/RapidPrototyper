@@ -1,31 +1,33 @@
 import wx
-import settings
-from visual import *
+import GUI.settings as settings
+from myvisual import *
 from visual.filedialog import get_file
 
 class STLViewer(wx.Panel):
-    def __init__(self, parent, window, stl_file="", pos=wx.DefaultPosition, size=(800,400)):
+    def __init__(self, parent, stl_file="", pos=wx.DefaultPosition, size=(800,400)):
         super(STLViewer, self).__init__(parent, pos=pos, size=size)
-        #self.Show(False)
-        try:
-            if stl_file == "":
-                self.file=get_file()
-            else:
-                self.file=stl_file
-        except IOError:
-            dlg = wx.MessageDialog(self, 'Error: Not a valid filename.', 'Error Opening File', wx.OK|wx.ICON_INFORMATION)
-            dlg.ShowModal()
-            dlg.Destroy()
+        self.file = stl_file
+        self.preview_butt = wx.Button(self, 11, "Preview")
+        self.Bind(wx.EVT_BUTTON, self.OnPreview, id=11)
+        self.Show(False)
+    #def Show(self, visible):
+     #   super(STLViewer, self).Show(visible)
 
-        w,h=self.GetSize()
-        #self._part_viewer =
-        display(window=settings.main_window, x=100, y=100, width=300, height=300, forward=-vector(0,1,2))
-        newobject = stl_to_faces(self.file)
-        newobject.smooth()
-        #sizer = wx.BoxSizer(wx.HORIZONTAL)
-        #sizer.Add(self._part_viewer,1)
-        #sizer.Add(self._control_panel,1)
-        #self.SetSizer(sizer)
+    def OnPreview(self, event):
+        #if visible:
+        if settings.display_part:
+            self.viewer = display(window=settings.main_window, x=0, y=40, width=400, height=400, forward=-vector(0,1,2))
+            settings.display_part=False
+            #self.model = stl_to_faces(settings.PATH+'examples/temp_file.stl')
+            if self.file != "":
+                self.model = stl_to_faces(self.file)
+                self.model.smooth()
+            while not settings.display_part:
+                rate(100)
+        else:
+            settings.display_part=True
+            #self.viewer.window._OnExitApp(wx.CommandEvent())
+
 
 def stl_to_faces(fileinfo): # specify file
     # Accept a file name or a file descriptor; make sure mode is 'rb' (read binary)
