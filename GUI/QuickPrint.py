@@ -7,18 +7,21 @@ from PartViewer import *
 class QuickPrint(wx.Panel):
     def __init__(self, parent, stl_file="", id=-1, pos=(0,40), size=wx.Size(800,440)):
         wx.Panel.__init__(self, parent, id, pos, size)
-        self.SetBackgroundColour(AppSettings.secondBackground)
-        self.disp=None
+        self.SetBackgroundColour(settings.defaultBackground)
+        self.file=stl_file
         self.Show(False)
     def Show(self, visible):
         super(QuickPrint, self).Show(visible)
         if visible:
-            AppSettings.main_window.panel.Show(True)
-            self.disp = display(window=AppSettings.main_window, x=0, y=0, width=400, height=400, forward=-vector(0,1,2))
-            cube = box(color=color.red)
-            #disp.window.win.Set
-            while AppSettings.display_part:
-                rate(100)
+            try:
+                if self.file == "":
+                    self.file=get_file()
+                    part_viewer = STLViewer(settings.main_window.win, self.file)
+                    settings.set_view(part_viewer)
+            except IOError:
+                dlg = wx.MessageDialog(self, 'Error: Not a valid filename.', 'Error Opening File', wx.OK|wx.ICON_INFORMATION)
+                dlg.ShowModal()
+                dlg.Destroy()
         else:
             super(QuickPrint, self).Show(visible)
             if self.disp != None:
