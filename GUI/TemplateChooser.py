@@ -4,16 +4,16 @@
 # Created:     16/10/2013
 #-------------------------------------------------------------------------------
 from BubbleMenu import *
-import AppSettings
+import GUI.settings as settings
 import wx
 import Templates.GearTemplate
 
 class TemplateChooser(BubbleMenu):
     def __init__(self, parent):
-        BubbleMenu.__init__(self, parent, wx.Bitmap(AppSettings.IMAGE_PATH+"Main/"+"BubbleTitle.png"), "Shape Menu", size=wx.Size(440,440))
+        BubbleMenu.__init__(self, parent, wx.Bitmap(settings.IMAGE_PATH+"Main/"+"BubbleTitle.png"), "Shape Menu", size=wx.Size(440,440))
         self.parent=parent
         self.Show(False)
-        self.imagePath=AppSettings.IMAGE_PATH+"/Templates/T_Chooser/"
+        self.imagePath=settings.IMAGE_PATH+"/Templates/T_Chooser/"
 
         self.extrudeView=wx.Panel(self.parent, pos=(0,40), size=(16,16))
         self.gearView=   Templates.GearTemplate.GearTemplate(self.parent)

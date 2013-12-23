@@ -1,31 +1,34 @@
 import wx
-import settings as AppSettings
-from visual import *
+import GUI.settings as settings
+from myvisual import *
 from visual.filedialog import get_file
 
 class STLViewer(wx.Panel):
-    def __init__(self, parent, window, stl_file="", pos=wx.DefaultPosition, size=(800,400)):
+    def __init__(self, parent, stl_file="", pos=(0,80), size=(800,400)):
         super(STLViewer, self).__init__(parent, pos=pos, size=size)
-        #self.Show(False)
-        try:
-            if stl_file == "":
-                self.file=get_file()
-            else:
-                self.file=stl_file
-        except IOError:
-            dlg = wx.MessageDialog(self, 'Error: Not a valid filename.', 'Error Opening File', wx.OK|wx.ICON_INFORMATION)
-            dlg.ShowModal()
-            dlg.Destroy()
+        self.file = stl_file
+        self.viewer = None
+        self.Show(False)
 
-        w,h=self.GetSize()
-        #self._part_viewer =
-        display(window=AppSettings.main_window, x=100, y=100, width=300, height=300, forward=-vector(0,1,2))
-        newobject = stl_to_faces(self.file)
-        newobject.smooth()
-        #sizer = wx.BoxSizer(wx.HORIZONTAL)
-        #sizer.Add(self._part_viewer,1)
-        #sizer.Add(self._control_panel,1)
-        #self.SetSizer(sizer)
+    def Show(self, visible):
+        super(STLViewer, self).Show(visible)
+        if visible:
+            if settings.display_part:
+                if self.viewer == None:
+                    self.viewer = display(window=None, x=0, y=40, width=400, height=400, forward=-vector(0,1,2), background=(1,1,1), foreground=(0.086,0.702,0.870))
+                settings.display_part=False
+                scene.width = scene.height = 480
+                scene.autocenter = True
+                self.model = stl_to_faces(self.file)
+                if self.file != "":
+                    self.model = stl_to_faces(self.file)
+                    self.model.smooth()
+                while not settings.display_part:
+                    rate(100)
+        else:
+            settings.display_part=True
+            #self.viewer.window._OnExitApp(wx.CommandEvent())
+
 
 def stl_to_faces(fileinfo): # specify file
     # Accept a file name or a file descriptor; make sure mode is 'rb' (read binary)
@@ -88,24 +91,6 @@ def stl_to_faces(fileinfo): # specify file
     return faces(frame=f, pos=triPos, normal=triNor)
 
 
-def generate_view(parent=None, window=None, filename=""):
-    return STLViewer(parent, window, filename)
-
-
-#----------------------------------------------------------------------------------
-def main():
-    ProtoApp = wx.App()
-    frm = window(width=300, height=300, title='Widgets')
-
-    panel=generate_view(None, frm)
-
-    frm.SetSizer(sizer)
-    frm.Show(True)
-    ProtoApp.MainLoop()
-
-
-if __name__ == '__main__':
-    main()
 
 
 

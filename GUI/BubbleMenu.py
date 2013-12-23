@@ -1,6 +1,6 @@
 import wx
 import BubbleEvent
-import settings as AppSettings
+import GUI.settings as settings
 import platform
 
 class BubbleMenu(wx.Window):
@@ -14,7 +14,7 @@ class BubbleMenu(wx.Window):
         self.button=BubbleButton(self, bitmap)
         self.button.Disable()
         self.childIndex=0
-        self.SetBackgroundColour(AppSettings.defaultBackground)
+        self.SetBackgroundColour(settings.defaultBackground)
 
         #Gives the best positions to put the buttons given a certain number of them
         self.posIndices=[[7],
@@ -83,11 +83,11 @@ class BubbleButton(wx.PyControl):
             self.normal = normal
             self.pressed = pressed
         else:
-            self.normal=wx.Bitmap(AppSettings.IMAGE_PATH+"BubbleButtonTemplate.png")
+            self.normal=wx.Bitmap(settings.IMAGE_PATH+"BubbleButtonTemplate.png")
             if pressed != None:
                 self.pressed = pressed
             else:
-                self.pressed=wx.Bitmap(AppSettings.IMAGE_PATH+"BubbleButtonPressed.png")
+                self.pressed=wx.Bitmap(settings.IMAGE_PATH+"BubbleButtonPressed.png")
         self.name=name
         #Region is the area that is "clickable"
         #It consists of the PNG minus the transparent areas
@@ -176,7 +176,7 @@ class MenuButton(BubbleButton):
             if self.region.Contains(x, y):
                 self.post_event()
                 if self.target !=None:
-                    AppSettings.set_view(self.target)
+                    settings.set_view(self.target)
         self.clicked = False
 
     #overrides (BubbleButton)
@@ -184,31 +184,31 @@ class MenuButton(BubbleButton):
         dc = wx.AutoBufferedPaintDC(self)
         dc.SetBackground(wx.Brush(self.GetParent().GetBackgroundColour()))
         dc.Clear()
-        #if AppSettings.icon_view:
+        #if settings.icon_view:
         bitmap = self.normal
         if self.clicked:
             bitmap = self.pressed or bitmap
         dc.DrawBitmap(bitmap, 0, 0)
         #else:
         #if self.clicked:
-        #    dc.SetBrush(wx.Brush(AppSettings.secondBackground))
+        #    dc.SetBrush(wx.Brush(settings.secondBackground))
         #else:
-        #    dc.SetBrush(wx.Brush(AppSettings.defaultForeground))
-        #dc.SetPen(wx.Pen(AppSettings.defaultAccent, 5))
+        #    dc.SetBrush(wx.Brush(settings.defaultForeground))
+        #dc.SetPen(wx.Pen(settings.defaultAccent, 5))
         w,h=self.GetSize()
         #dc.DrawCircle(w/2, h/2, int(h*.35))
         if self.name!="":
             _butt_font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD)
             dc.SetFont(_butt_font)
-            dc.SetTextForeground(AppSettings.defaultForeground)
+            dc.SetTextForeground(settings.defaultForeground)
             dc.DrawText(self.name, int((w-len(self.name)*8)/2), int((h-16)/2))
 
 #----------------------------------------------------------------------------------
 def main():
     ProtoApp = wx.App()
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
-    imagePath=AppSettings.IMAGE_PATH+"Main/"
-    AppSettings.icon_view=False
+    imagePath=settings.IMAGE_PATH+"Main/"
+    settings.icon_view=False
     sizer=wx.BoxSizer(wx.HORIZONTAL)
     panel=BubbleButton(frm)
     panel2=MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 1")

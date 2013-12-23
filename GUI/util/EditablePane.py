@@ -1,5 +1,5 @@
 import wx
-import GUI.AppSettings as AppSettings
+import GUI.settings as settings
 
 class Figure:
     def __init__(self, draw_function=None, arguements=[], pen=None):

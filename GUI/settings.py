@@ -2,6 +2,8 @@ import wx
 import sys
 import os
 
+test = False
+
 #Resources Information:
 PATH=os.path.dirname(os.path.realpath(__file__))+'/'
 IMAGE_PATH=PATH+"images/"

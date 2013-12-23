@@ -1,14 +1,14 @@
 import wx
 import copy
 from ToolbarButton import *
-import settings as AppSettings
+import GUI.settings as settings
 import BubbleEvent
 
 class ProtoToolbar(wx.Panel):
     def __init__(self, parent, id=-1, position=(0,-80), size=wx.Size(800,40)):
         super(ProtoToolbar, self).__init__(parent, id, position, size)
         #self.Show(False)
-        self.imagePath=AppSettings.IMAGE_PATH
+        self.imagePath=settings.IMAGE_PATH
 
         self.backButton=  ToolbarButton(self, wx.Bitmap(self.imagePath+'back.png'),         wx.Bitmap(self.imagePath+'back_select.png'), wx.Bitmap(self.imagePath+'back_disable.png'), name="back")
         self.quitButton=  ToolbarButton(self, wx.Bitmap(self.imagePath+'quit.png'),         wx.Bitmap(self.imagePath+'quit_select.png'), name="quit")
@@ -37,4 +37,4 @@ class ProtoToolbar(wx.Panel):
         if cmd ==self.quitButton.name:
             self.GetParent().Destroy()
         if cmd == self.backButton.name:
-            AppSettings.goto_prev_page()
+            settings.goto_prev_page()

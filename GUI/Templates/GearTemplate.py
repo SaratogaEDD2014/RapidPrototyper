@@ -10,10 +10,11 @@
 
 import math
 import wx
-import GUI.settings as AppSettings
+import GUI.settings as settings
 import GUI.util.plot as plot
 import GUI.util.editors as editors
 from GUI.util.convert_stl import *
+from GUI.PartViewer import *
 
 shapes=['trapezoid','triangle', 'rectangle','sprocket']
 
@@ -26,7 +27,7 @@ def drange(start, stop, step):
 class GearTemplate(wx.Panel):
     def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="trapezoid"):
         super(GearTemplate, self).__init__(parent, pos=(0,40), size=(800,400))
-        self.SetBackgroundColour(AppSettings.defaultBackground)
+        self.SetBackgroundColour(settings.defaultBackground)
         self.Show(False)
         self.lines=[]
         self.gearDim={}#dict for standard gear values
@@ -35,9 +36,9 @@ class GearTemplate(wx.Panel):
 
         self.editors=self.makeEditors()
         self.updateButton = wx.Button(self, 1, 'Update')
-        self.preview_button = wx.Button(self, 2, 'Preview')
+        self.print_button = wx.Button(self, 2, 'Print')
         self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
-        self.Bind(wx.EVT_BUTTON, self.OnPreview, id=2)
+        self.Bind(wx.EVT_BUTTON, self.OnPrint, id=2)
 
         self.setDim("Number of Teeth", numTeeth)
         self.setDim("Pitch Diameter",pitchDiameter)
@@ -62,7 +63,7 @@ class GearTemplate(wx.Panel):
             temp.SetBackgroundColour(self.GetBackgroundColour())
         editorSizer.Add(temp)#spacer
         button_sizer.Add(self.updateButton)
-        button_sizer.Add(self.preview_button)
+        button_sizer.Add(self.print_button)
         editorSizer.Add(button_sizer)
         masterSizer.Add(self.display)
         temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
@@ -77,18 +78,10 @@ class GearTemplate(wx.Panel):
         self.grid = plot.PlotGraphics(self.lines, 'Custom Gear')
         self.display.Draw(self.grid)
 
-    def OnPreview(self, event):
-        if AppSettings.display_part:
-            #self.viewer = display(window=AppSettings.main_window, x=150, y=150, width=800, height=400, forward=-vector(0,1,2))
-            AppSettings.display_part=False
-            scene.width = scene.height = 480
-            scene.autocenter = True
-            self.model = stl_to_faces(AppSettings.PATH+'examples/temp_file.stl')
-            self.model.smooth()
-            while not AppSettings.display_part:
-                rate(100)
-        else:
-            AppSettings.display_part=True
+    def OnPrint(self, event):
+        self.generate_vertices(self.rim_circle, self.bore_circle, self.hub_circle)
+        part_viewer = STLViewer(settings.main_window.win, settings.PATH+'examples/temp_file.stl')
+        settings.set_view(part_viewer)
 
     def setLines(self, nlines):
         self.lines=nlines
@@ -149,8 +142,7 @@ class GearTemplate(wx.Panel):
         if points!=None: points.append(points[0])
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
         plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
-        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=AppSettings.defaultAccent))
-        self.generate_vertices(points, boreCircle, hubCircle)
+        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
         return plotlines
 
     def rectangle(self, inc, outr, inr):
@@ -186,8 +178,7 @@ class GearTemplate(wx.Panel):
         if points!=None: points.append(points[0])
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
         plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
-        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=AppSettings.defaultAccent))
-        self.generate_vertices(points, boreCircle, hubCircle)
+        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
         return plotlines
 
     def trapezoid(self, inc, outr, inr):
@@ -221,10 +212,12 @@ class GearTemplate(wx.Panel):
             boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
             hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
         if points!=None: points.append(points[0])
+        self.rim_circle = points
+        self.bore_circle = boreCircle
+        self.hub_circle = hubCircle
         plotlines= [plot.PolyLine(points, width=1, legend="gear")]
         plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
-        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=AppSettings.defaultAccent))
-        self.generate_vertices(points, boreCircle, hubCircle)
+        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
         return plotlines
 
     def sprocket(self, inc, outr, inr):
@@ -233,12 +226,20 @@ class GearTemplate(wx.Panel):
         for theta in drange(0, 2*math.pi, inc):
             theta+=5*inc/16
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             theta+=3*inc/16
             points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             theta+=5*inc/16
             points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
             theta+=3*inc/16
             points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
         #if points!=None: points+=points[0:3]
         return [plot.PolySpline(points, width=1, legend="gear")]
 
@@ -254,7 +255,9 @@ class GearTemplate(wx.Panel):
 
         gear=[]
         shapeFunctions={"triangle":self.triangle, "rectangle":self.rectangle, "trapezoid":self.trapezoid, "sprocket":self.sprocket}
-        for line in shapeFunctions[self.getDim("Tooth Shape")](inc, outr, inr):
+        polyshapes = shapeFunctions[self.getDim("Tooth Shape")](inc, outr, inr)
+
+        for line in polyshapes:
             gear.append(line)
         self.lines=gear
 
@@ -328,7 +331,7 @@ class GearTemplate(wx.Panel):
         return (staticSizer, hubStaticSizer)
 
     def generate_vertices(self, points, bore, hub):
-        self.file=open(AppSettings.PATH+'examples/temp_file.stl','w')
+        self.file=open(settings.PATH+'examples/temp_file.stl','w')
         self.add_to_stl("solid shape")
         thickness=self.getDim("Thickness")
         hub_thick=self.getHubDim("Thickness")
@@ -401,7 +404,7 @@ class GearTemplate(wx.Panel):
 #----------------------------------------------------------------------------------
 def main():
     ProtoApp = wx.App()
-    frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
+    frm = wx.Frame(None, -1, 'Gear Display', pos=(0,0), size=(800,400))
 
     sizer=wx.BoxSizer(wx.HORIZONTAL)
     panel=GearTemplate(frm)
