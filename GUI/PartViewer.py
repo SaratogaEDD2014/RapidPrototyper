@@ -7,6 +7,10 @@ class STLViewer(wx.Panel):
     def __init__(self, parent, stl_file="", pos=(0,80), size=(800,400)):
         super(STLViewer, self).__init__(parent, pos=pos, size=size)
         self.file = stl_file
+        self.title = wx.StaticText(self, label="Printer View Screen", pos=(400, 30))
+        self.title.SetForegroundColour(wx.Colour(255,255,255))
+        self.printb = wx.Button(self, label="Print", pos=(500, 50))
+        self.cancelb = wx.Button(self, label="Cancel", pos=(410, 50))
         self.viewer = None
         self.Show(False)
 
