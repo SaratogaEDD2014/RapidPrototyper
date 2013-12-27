@@ -224,18 +224,18 @@ class DynamicButton(BubbleButton):
         dc = wx.AutoBufferedPaintDC(self)
         dc.SetBackground(wx.Brush(self.GetParent().GetBackgroundColour()))
         dc.Clear()
-        dc.SetPen(wx.Pen(settings.secondAccent, 5))
+        dc.SetPen(wx.Pen(settings.button_outline, 5))
         w,h = self.GetSize()
         min_dim = min(h, w)
 
         rect = wx.Rect(0, 0, w, h)
         dc.SetClippingRegionAsRegion(wx.RegionFromPoints(gen_circle_points(w/2, h/2, min_dim/2)))
-        dc.GradientFillConcentric(rect, settings.defaultForeground, settings.secondForeground, wx.Point(w/2, h/2))
+        dc.GradientFillConcentric(rect, settings.button_inside, settings.button_outside, wx.Point(w/2, h/2))
 
         if self.name!="" :
-            _butt_font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD)
+            _butt_font = wx.Font(45, wx.SWISS, wx.NORMAL, wx.BOLD)
             dc.SetFont(_butt_font)
-            dc.SetTextForeground(settings.defaultForeground)
+            dc.SetTextForeground(settings.button_text)
             dc.DrawText(self.name, int((w-len(self.name)*8)/2), int((h-16)/2))
 
 def drange(start, stop, step):
@@ -256,18 +256,18 @@ def main():
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
     imagePath= settings.IMAGE_PATH+"Main/"
     settings.icon_view=False
-    sizer = wx.BoxSizer(wx.HORIZONTAL)
-    panel = BubbleButton(frm)
-    panel2 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 1")
-    panel3 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 2")
-    panel4 = DynamicButton(frm)
-    sizer.Add(panel)
-    sizer.Add(panel2)
-    sizer.Add(panel3)
-    sizer.Add(panel4)
-    panel.Show(True)
+    #sizer = wx.BoxSizer(wx.HORIZONTAL)
+    #panel = BubbleButton(frm)
+    #panel2 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 1")
+    #panel3 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 2")
+    panel4 = DynamicButton(frm, "Test")
+    #sizer.Add(panel)
+    #sizer.Add(panel2)
+    #sizer.Add(panel3)
+    #sizer.Add(panel4)
+    #panel.Show(True)
 
-    frm.SetSizer(sizer)
+    #frm.SetSizer(sizer)
     frm.Show(True)
     ProtoApp.MainLoop()
 

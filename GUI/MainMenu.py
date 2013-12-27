@@ -23,15 +23,15 @@ class MainMenu(BubbleMenu):
         self.openRecentView=OpenRecent.OpenRecent(self.parent)
 
         if(settings.icon_view):
-            self.quickPrint=MenuButton(self, wx.Bitmap(self.imagePath+"QuickPrint.png"), wx.Bitmap(self.imagePath+"QuickPrintPress.png"), target=self.quickPrintView)
-            self.advancedSetup=MenuButton(self, wx.Bitmap(self.imagePath+"AdvancedSetup.png"), wx.Bitmap(self.imagePath+"AdvancedSetupPress.png"), target= self.advancedSetupView)
-            self.templates=MenuButton(self, wx.Bitmap(self.imagePath+"Templates.png"), wx.Bitmap(self.imagePath+"TemplatesPress.png"), target=self.templatesView)
-            self.openRecent=MenuButton(self, wx.Bitmap(self.imagePath+"OpenRecent.png"), wx.Bitmap(self.imagePath+"OpenRecentPress.png"), target=self.openRecentView)
+            self.quickPrint = MenuButton(self, wx.Bitmap(self.imagePath+"QuickPrint.png"), wx.Bitmap(self.imagePath+"QuickPrintPress.png"), target=self.quickPrintView)
+            self.advancedSetup = MenuButton(self, wx.Bitmap(self.imagePath+"AdvancedSetup.png"), wx.Bitmap(self.imagePath+"AdvancedSetupPress.png"), target= self.advancedSetupView)
+            self.templates = MenuButton(self, wx.Bitmap(self.imagePath+"Templates.png"), wx.Bitmap(self.imagePath+"TemplatesPress.png"), target=self.templatesView)
+            self.openRecent = MenuButton(self, wx.Bitmap(self.imagePath+"OpenRecent.png"), wx.Bitmap(self.imagePath+"OpenRecentPress.png"), target=self.openRecentView)
         else:
-            self.quickPrint=MenuButton(self, name='Quick\nPrint', target=self.quickPrintView)
-            self.advancedSetup=MenuButton(self,name='Advanced\nSetup', target= self.advancedSetupView)
-            self.templates=MenuButton(self, name='Templates', target=self.templatesView)
-            self.openRecent=MenuButton(self, name='Open\nRecent', target=self.openRecentView)
+            self.quickPrint = DynamicButton(self, name='Quick\nPrint', target=self.quickPrintView)
+            self.advancedSetup = DynamicButton(self,name='Advanced\nSetup', target= self.advancedSetupView)
+            self.templates = DynamicButton(self, name='Templates', target=self.templatesView)
+            self.openRecent = DynamicButton(self, name='Open\nRecent', target=self.openRecentView)
 
         self.buttonList=[self.quickPrint, self.advancedSetup, self.templates, self.openRecent]
         self.setChildren(self.buttonList)

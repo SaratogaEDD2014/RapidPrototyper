@@ -82,6 +82,10 @@ defaultBackground=wx.Colour(30,106,246)
 secondBackground=wx.Colour(140,175,200)
 defaultAccent=wx.Colour(255,125,75)
 secondAccent=wx.Colour(230,70,50)
+button_inside=wx.Colour(0,0,255)
+button_outside=wx.Colour(0,0,255)
+button_outline=wx.Colour(255,255,255)
+button_text=wx.Colour(255,255,255)
 
 def set_property_color(key, color):
     cfg.WriteInt(key+'R', color.Red())
