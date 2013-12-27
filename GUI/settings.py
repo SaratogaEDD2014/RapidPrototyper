@@ -83,19 +83,21 @@ secondBackground=wx.Colour(140,175,200)
 defaultAccent=wx.Colour(255,125,75)
 secondAccent=wx.Colour(230,70,50)
 
-def set_property_color(self, key, color):
+def set_property_color(key, color):
     cfg.WriteInt(key+'R', color.Red())
     cfg.WriteInt(key+'G', color.Green())
     cfg.WriteInt(key+'B', color.Blue())
 
-def get_property_color(self,key):
-    red=cfg.ReadInt(key+'R', color.Red())
-    green=cfg.ReadInt(key+'G', color.Red())
-    blue=cfg.ReadInt(key+'B', color.Red())
+def get_property_color(key, defaults=[0,0,0]):
+    red=cfg.ReadInt(key+'R', defaults[0])
+    green=cfg.ReadInt(key+'G', defaults[1])
+    blue=cfg.ReadInt(key+'B', defaults[2])
     return wx.Colour(red, green, blue)
 
-def set_layer_depth(self, depth):
+def set_layer_depth(depth):
     cfg.WriteFloat('layerDepth', depth)
 
-def get_layer_depth(self):
+def get_layer_depth():
     return cfg.ReadFloat('layerDepth')
+
+get_property_color("default_background")

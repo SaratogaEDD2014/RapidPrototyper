@@ -2,6 +2,7 @@ import wx
 import BubbleEvent
 import GUI.settings as settings
 import platform
+import math
 
 class BubbleMenu(wx.Window):
     def __init__(self, parent, bitmap, name="", children=[], id=-1, pos=wx.DefaultPosition, size=(400, 400)):
@@ -203,19 +204,67 @@ class MenuButton(BubbleButton):
             dc.SetTextForeground(settings.defaultForeground)
             dc.DrawText(self.name, int((w-len(self.name)*8)/2), int((h-16)/2))
 
+class DynamicButton(BubbleButton):
+    def __init__(self, parent, name="", target=None):
+        super(DynamicButton, self).__init__(parent, None, None, name)
+        self.target=target
+
+    #@overrides(BubbleButton)
+    def on_left_up(self, event):
+        if self.clicked:
+            x, y = event.GetPosition()
+            if self.region.Contains(x, y):
+                self.post_event()
+                if self.target !=None:
+                    settings.set_view(self.target)
+        self.clicked = False
+
+    #overrides (BubbleButton)
+    def on_paint(self, event):
+        dc = wx.AutoBufferedPaintDC(self)
+        dc.SetBackground(wx.Brush(self.GetParent().GetBackgroundColour()))
+        dc.Clear()
+        dc.SetPen(wx.Pen(settings.secondAccent, 5))
+        w,h = self.GetSize()
+        min_dim = min(h, w)
+
+        rect = wx.Rect(0, 0, w, h)
+        dc.SetClippingRegionAsRegion(wx.RegionFromPoints(gen_circle_points(w/2, h/2, min_dim/2)))
+        dc.GradientFillConcentric(rect, settings.defaultForeground, settings.secondForeground, wx.Point(w/2, h/2))
+
+        if self.name!="" :
+            _butt_font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD)
+            dc.SetFont(_butt_font)
+            dc.SetTextForeground(settings.defaultForeground)
+            dc.DrawText(self.name, int((w-len(self.name)*8)/2), int((h-16)/2))
+
+def drange(start, stop, step):
+    r = start
+    while r < stop:
+        yield r
+        r += step
+
+def gen_circle_points(x, y, r):
+    points=[]
+    for theta in drange(0, 2*math.pi, .005):
+        points.append([x+(r*math.cos(theta)), y+(r*math.sin(theta))])
+    return points
+
 #----------------------------------------------------------------------------------
 def main():
     ProtoApp = wx.App()
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
-    imagePath=settings.IMAGE_PATH+"Main/"
+    imagePath= settings.IMAGE_PATH+"Main/"
     settings.icon_view=False
-    sizer=wx.BoxSizer(wx.HORIZONTAL)
-    panel=BubbleButton(frm)
-    panel2=MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 1")
-    panel3=MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 2")
+    sizer = wx.BoxSizer(wx.HORIZONTAL)
+    panel = BubbleButton(frm)
+    panel2 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 1")
+    panel3 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 2")
+    panel4 = DynamicButton(frm)
     sizer.Add(panel)
     sizer.Add(panel2)
     sizer.Add(panel3)
+    sizer.Add(panel4)
     panel.Show(True)
 
     frm.SetSizer(sizer)
@@ -225,4 +274,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
