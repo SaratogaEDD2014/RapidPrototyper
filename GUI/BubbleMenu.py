@@ -233,10 +233,24 @@ class DynamicButton(BubbleButton):
         dc.GradientFillConcentric(rect, settings.button_inside, settings.button_outside, wx.Point(w/2, h/2))
 
         if self.name!="" :
-            _butt_font = wx.Font(45, wx.SWISS, wx.NORMAL, wx.BOLD)
+            length_calc = self.name
+            num_lines = (self.name.count("\n")+1)
+            text_area_factor = .95 #percent of horizontal area available for text
+            if num_lines > 1:
+                text_area_factor = .85
+                index = length_calc.find("\n")
+                length_calc = length_calc[0:index]
+
+            #find desired text area
+            text_area_width = self.GetSize()[0]*text_area_factor
+            text_point_size = int((text_area_width/7.11222063894596))
+            _butt_font = wx.Font(text_point_size, wx.SWISS, wx.NORMAL, wx.BOLD)
             dc.SetFont(_butt_font)
             dc.SetTextForeground(settings.button_text)
-            dc.DrawText(self.name, int((w-len(self.name)*8)/2), int((h-16)/2))
+            #use object and text width to center it
+            w,h = self.GetSize()
+            tw,th = dc.GetTextExtent(length_calc)
+            dc.DrawText(self.name, (w-tw)/2, (h-(th*num_lines))/2)
 
 def drange(start, stop, step):
     r = start
@@ -260,7 +274,7 @@ def main():
     #panel = BubbleButton(frm)
     #panel2 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 1")
     #panel3 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 2")
-    panel4 = DynamicButton(frm, "Test")
+    panel4 = DynamicButton(frm, "Test\nwho")
     #sizer.Add(panel)
     #sizer.Add(panel2)
     #sizer.Add(panel3)

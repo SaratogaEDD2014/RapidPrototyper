@@ -13,6 +13,7 @@ class ProtoFrame(window):
         self.win.SetBackgroundColour(settings.defaultBackground)
         self.imagePath=settings.IMAGE_PATH+"Main/"
         self.title=title
+        settings.icon_view = False
         self.toolbar=ProtoToolbar.ProtoToolbar(self.win)
         self.toolbar.Show(True)
         self.menu=MainMenu.MainMenu(self.win)
