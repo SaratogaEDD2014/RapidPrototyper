@@ -10,7 +10,7 @@ import Templates.GearTemplate
 
 class TemplateChooser(DynamicBubbleMenu):
     def __init__(self, parent):
-        BubbleMenu.__init__(self, parent, wx.Bitmap(settings.IMAGE_PATH+"Main/"+"BubbleTitle.png"), "Shape Menu", size=wx.Size(440,440))
+        super(TemplateChooser, self).__init__(parent, "Shape Menu")
         self.parent=parent
         self.Show(False)
         self.imagePath=settings.IMAGE_PATH+"/Templates/T_Chooser/"
@@ -46,3 +46,13 @@ class TemplateChooser(DynamicBubbleMenu):
 
         self.buttonList=[self.extrude, self.gear, self.mug, self.ring, self.ring2, self.vase]
         self.setChildren(self.buttonList)
+if __name__ == "__main__":
+    app = wx.App()
+    frm = wx.Frame(None, size=(800,800))
+    settings.icon_view = False
+    menu = TemplateChooser(frm)
+    frm.Show(True)
+    menu.Show(True)
+    menu.SendSizeEvent()
+    menu.CenterOnParent()
+    app.MainLoop()

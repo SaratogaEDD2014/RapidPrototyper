@@ -13,7 +13,7 @@ import wx
 
 class MainMenu(DynamicBubbleMenu):
     def __init__(self, parent):
-        super(MainMenu, self).__init__(parent, "Main Menu", size=wx.Size(440,440))
+        super(MainMenu, self).__init__(parent, "Main Menu")
         self.imagePath=settings.IMAGE_PATH+"Main/"
         self.parent=parent
 

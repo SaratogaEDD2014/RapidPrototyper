@@ -30,6 +30,7 @@ def goto_prev_page():
         temp=prev_page[len(prev_page)-1]
         current=get_current_page()
         current.Show(False)
+        del current
         prev_page.remove(temp)
         set_current_page(temp)#Do not "set_view" because that will add to previous pages
         refresh_view_panel()
@@ -41,7 +42,7 @@ def get_prev_page():
 def set_current_page(page):
     global currentPage
     currentPage=page
-    #page.Show(True)
+    page.Show(True)
 
 def get_current_page():
     global currentPage
