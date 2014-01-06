@@ -5,6 +5,7 @@ import os
 test = False
 
 #Resources Information:
+NAME = 'Charlie'
 PATH=os.path.dirname(os.path.realpath(__file__))+'/'
 IMAGE_PATH=PATH+"images/"
 sys.path.append(PATH[:PATH.rfind("GUI")])
@@ -29,11 +30,9 @@ def goto_prev_page():
         temp=prev_page[len(prev_page)-1]
         current=get_current_page()
         current.Show(False)
-        del current
         prev_page.remove(temp)
-        set_current_page(temp)
+        set_current_page(temp)#Do not "set_view" because that will add to previous pages
         refresh_view_panel()
-
 def get_prev_page():
     if len(prev_page)>0:
         return prev_page[len(prev_page)-1]
@@ -42,7 +41,7 @@ def get_prev_page():
 def set_current_page(page):
     global currentPage
     currentPage=page
-    page.Show(True)
+    #page.Show(True)
 
 def get_current_page():
     global currentPage
@@ -73,19 +72,25 @@ LAYER_DEPTH=.01 #IN INCHES
 
 
 #UI------------------------------------------------------------------------
-icon_view=True
+icon_view = True
+toolbar_h = 40
+toolbar_w = 800
+app_w = 800
+app_h = 440
 #Colors
-defaultForeground=wx.Colour(255,255,255)
-secondForeground=wx.Colour(200,200,200)
-defaultBackground=wx.Colour(30,106,246)
-#defaultBackground=wx.Colour(255,0,0)
-secondBackground=wx.Colour(140,175,200)
-defaultAccent=wx.Colour(255,125,75)
-secondAccent=wx.Colour(230,70,50)
-button_inside=wx.Colour(0,0,255)
-button_outside=wx.Colour(0,0,255)
-button_outline=wx.Colour(255,255,255)
-button_text=wx.Colour(255,255,255)
+defaultForeground = wx.Colour(255,255,255)
+secondForeground = wx.Colour(200,200,200)
+defaultBackground = wx.Colour(30,106,246)
+#defaultBackground = wx.Colour(255,0,0)
+secondBackground = wx.Colour(140,175,200)
+defaultAccent = wx.Colour(255,125,75)
+secondAccent = wx.Colour(230,70,50)
+button_inside = wx.Colour(0,0,255)
+button_outside = wx.Colour(0,0,255)
+button_outline = wx.Colour(255,255,255)
+button_text = wx.Colour(255,255,255)
+toolbar_bottom = wx.Colour(177, 177, 177)
+toolbar_top = wx.Colour(228, 228, 228)
 
 def set_property_color(key, color):
     cfg.WriteInt(key+'R', color.Red())
