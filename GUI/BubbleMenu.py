@@ -1,3 +1,4 @@
+from GUI.util.app_util import dim_color
 import wx
 import BubbleEvent
 import GUI.settings as settings
@@ -100,9 +101,9 @@ class DynamicBubbleMenu(BubbleMenu):
 
         title_size = int((min_dim/3.0))
         button_size = int(title_size*.7)
-        for butt in (range(4)+range(5, len(self.children))):
-            self.children[butt].SetSize((button_size, button_size))
-            self.children[butt].Refresh()
+        for butt in self.children:
+            butt.SetSize((button_size, button_size))
+            butt.Refresh()
         self.button.SetSize((title_size, title_size))
 
 
@@ -241,6 +242,7 @@ class DynamicButton(BubbleButton):
         self.target=target
         self.inner_color = inner_color
         self.outer_color = outer_color
+        self.clicked_color = dim_color(self.inner_color, 80)
         self.text_color = text_color
         self.outline = outline
 
@@ -270,7 +272,8 @@ class DynamicButton(BubbleButton):
         #print("dimensions= "+str((w,h)))
         self.region=wx.RegionFromPoints(gen_circle_points(w/2, h/2, min_dim/2))
         dc.SetClippingRegionAsRegion(self.region)
-        dc.GradientFillConcentric(rect, self.inner_color, self.outer_color, wx.Point(w/2, h/2))
+        inner = self.clicked_color if self.clicked else self.inner_color
+        dc.GradientFillConcentric(rect, inner, self.outer_color, wx.Point(w/2, h/2))
 
         if self.name!="" :
             length_calc = self.name
@@ -305,25 +308,34 @@ def gen_circle_points(x, y, r):
     return points
 
 #----------------------------------------------------------------------------------
-def main():
+def dynamic_demo():
     ProtoApp = wx.App()
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
     imagePath= settings.IMAGE_PATH+"Main/"
     settings.icon_view=False
-    #sizer = wx.BoxSizer(wx.HORIZONTAL)
-    #panel = BubbleButton(frm)
-    #panel2 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 1")
-    #panel3 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 2")
     panel4 = DynamicButton(frm, "Test\nwho")
-    #sizer.Add(panel)
-    #sizer.Add(panel2)
-    #sizer.Add(panel3)
-    #sizer.Add(panel4)
-    #panel.Show(True)
-
-    #frm.SetSizer(sizer)
     frm.Show(True)
     ProtoApp.MainLoop()
+
+def main():
+    app = wx.App()
+    frm = wx.Frame(None, size=(800,800))
+    settings.icon_view = False
+    menu = DynamicBubbleMenu(frm)
+    menu.extrude=DynamicButton(menu, name='Extrusion')
+    menu.gear=   DynamicButton(menu, name='Gear')
+    menu.mug=    DynamicButton(menu, name='Mug')
+    menu.ring=   DynamicButton(menu, name='Ring')
+    menu.ring2=  DynamicButton(menu, name='Revolve')
+    menu.vase=   DynamicButton(menu, name='Temp')
+    menu.buttonList=[menu.extrude, menu.gear, menu.mug, menu.ring, menu.ring2, menu.vase]
+    menu.setChildren(menu.buttonList)
+
+    frm.Show(True)
+    menu.Show(True)
+    menu.SendSizeEvent()
+    menu.CenterOnParent()
+    app.MainLoop()
 
 
 if __name__ == '__main__':
