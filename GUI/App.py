@@ -14,45 +14,46 @@ class ProtoFrame(window):
         settings.icon_view = False
         self.win.Show(False)
         self.win.SetBackgroundColour(settings.defaultBackground)
-        self.win.Bind(wx.EVT_SIZE, self.OnSize)
+        self.win.Bind(wx.EVT_SIZE, self.on_size)
+        self.win.Bind(wx.EVT_PAINT, self.on_paint)
         self.imagePath=settings.IMAGE_PATH+"Main/"
         self.title=title
         self.toolbar=ProtoToolbar.ProtoToolbar(self.win)
+        settings.toolbar_h = 40
         self.toolbar.Show(True)
         self.menu=MainMenu.MainMenu(self.win)
+        self.current = self.menu
         settings.set_view=self.set_view
-        settings.main_window=self
+        settings.main_window=self.win
         settings.refresh_view_panel=self.refresh_view_panel
         settings.set_view(self.menu)
         self.win.Maximize()
         self.win.Show(True)
 
-    def OnSize(self, event):
-        event.Skip()
-        w,h = self.win.GetSize()
-        settings.app_w = w
-        settings.app_h = h-settings.toolbar_h
-        settings.refresh_view_panel()
+    def on_size(self, event):
+        event.Skip(True)
+        settings.app_w, settings.app_h = self.win.GetSize()
+
+    def on_paint(self, event):
+        event.skip()
+        app_w = settings.app_w
+        app_h = settings.app_h
+        self.current.Show(False)
+        self.toolbar.Show(False)
+        self.toolbar.SetSize((app_w, settings.toolbar_h))
+        self.current.SetSize((app_w/2, app_h-toolbar_h))
+        x = (app_w-self.current.GetSize()[0])/2     #Calculate explicit centered position, sizers mess things up
+        y = toolbar_h
+        self.current.SetPosition((x,y))
+        self.toolbar.SetSize((app_w, toolbar_h))
+
+
 
     def set_view(self, viewPanel):
         if(viewPanel!=None):
-            settings.add_prev_page(settings.get_current_page())
+            settings.set_current_page(settings.get_current_page())
             settings.set_current_page(viewPanel)
-            settings.refresh_view_panel()
-            load=wx.Panel(self.win, pos=(0,0), size=self.win.GetSize())
-            self.win.SendSizeEvent()
-            load.Destroy()
-
-    def refresh_view_panel(self):
-        mastersizer=wx.BoxSizer(wx.VERTICAL)
-        self.toolbar.Refresh()
-        mastersizer.Add(self.toolbar)
-        sizer=wx.BoxSizer(wx.HORIZONTAL)
-        current=settings.get_current_page()
-        sizer.Add(wx.Panel(self.win, size=((self.win.GetSize()[0]-current.GetSize()[0])/2,20)))
-        sizer.Add(current)
-        mastersizer.Add(sizer)
-        self.win.SetSizer(mastersizer)
+            self.current = settings.get_current_page()
 
 
 def main():

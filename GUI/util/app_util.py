@@ -15,6 +15,12 @@ class BlankGradient(wx.Window):
             w,h = self.GetSize()
             dc.GradientFillLinear((0, 0, w, h), self.color1, self.color2, self.orientation)
 
+def dim_color(color, dim_value=10):
+    r = max(color.Red()-25, 0)
+    g = max(color.Green()-25, 0)
+    b = max(color.Blue()-25, 0)
+    return wx.Colour(r,g,b)
+
 def draw_centered_text(obj, text, scale=1.0, font=None, dc = None):
     """Draws given string centered on given object"""
     text_area_width = obj.GetSize()[0]*scale

@@ -6,7 +6,7 @@ import GUI.util.app_util as blank_graphics
 import BubbleEvent
 
 class ProtoToolbar(wx.Panel):
-    def __init__(self, parent, id=-1, position=wx.DefaultPosition, size=wx.Size(settings.app_w, settings.toolbar_h)):
+    def __init__(self, parent, id=-1, position=(0,0), size=wx.Size(settings.app_w, settings.toolbar_h)):
         super(ProtoToolbar, self).__init__(parent, id, position, size)
         #self.Show(False)
         self.imagePath=settings.IMAGE_PATH
@@ -21,7 +21,6 @@ class ProtoToolbar(wx.Panel):
         self.Refresh()
 
     def on_paint(self, event):
-        self.SetSize((settings.app_w, settings.toolbar_h))
         settings.toolbar_w,settings.toolbar_h = self.GetSize()
         self.blank_space.SetSize((settings.app_w-self.backButton.GetSize()[0]-self.quitButton.GetSize()[0], self.backButton.GetSize()[1]))
         self.backButton.SetPosition((0,0))
