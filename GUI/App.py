@@ -24,7 +24,8 @@ class ProtoFrame(window):
         settings.set_view=self.set_view
         settings.main_window=self.win
         settings.set_view(self.menu)
-        self.win.Maximize()
+        if settings.icon_view==False:
+            self.win.Maximize()
         self.win.Show(True)
 
     def on_paint(self, event):
@@ -35,7 +36,7 @@ class ProtoFrame(window):
         self.toolbar.SetSize((app_w, settings.toolbar_h))
         self.toolbar.Refresh()
         current = settings.get_current_page()
-        current.SetSize((app_w/2, app_h-settings.toolbar_h))
+        current.SetSize((app_w, app_h-settings.toolbar_h))
         x = (app_w-current.GetSize()[0])/2     #Calculate explicit centered position, sizers mess things up
         y = settings.toolbar_h
         current.SetPosition((x,y))
@@ -46,7 +47,7 @@ class ProtoFrame(window):
         if(viewPanel!=None):
             settings.add_prev_page(settings.get_current_page())
             settings.set_current_page(viewPanel)
-            self.win.SendSizeEvent()
+            self.win.Refresh()
 
 
 def main():

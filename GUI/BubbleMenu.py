@@ -56,6 +56,11 @@ class BubbleMenu(wx.Window):
         #    self.children[butt].Refresh()
         self.Refresh()
 
+    def SetSize(self, size):
+        """Ensures menu is always a square"""
+        min_dim = min(size[0], size[1])
+        super(BubbleMenu, self).SetSize((min_dim, min_dim))
+
     def Add(self, button):
         self.AddMany([button])
 
