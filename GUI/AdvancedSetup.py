@@ -6,4 +6,4 @@ class AdvancedSetup(wx.Panel):
         wx.Panel.__init__(self, parent, id, pos, size)
         self.Show(False)
         wx.StaticText(self, -1,"Advanced Print")
-        self.SetBackgroundColour(settings.defaultBackground)
+        self.SetBackgroundColour(settings.defaultForeground)

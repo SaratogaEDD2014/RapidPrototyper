@@ -80,7 +80,7 @@ class GearTemplate(wx.Panel):
 
     def OnPrint(self, event):
         self.generate_vertices(self.rim_circle, self.bore_circle, self.hub_circle)
-        part_viewer = STLViewer(settings.main_window.win, settings.PATH+'examples/temp_file.stl')
+        part_viewer = STLViewer(settings.main_window, settings.PATH+'examples/temp_file.stl')
         settings.set_view(part_viewer)
 
     def setLines(self, nlines):

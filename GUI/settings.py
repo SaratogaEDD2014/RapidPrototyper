@@ -33,7 +33,7 @@ def goto_prev_page():
         del current
         prev_page.remove(temp)
         set_current_page(temp)#Do not "set_view" because that will add to previous pages
-        refresh_view_panel()
+        #main_window.SendSizeEvent()
 def get_prev_page():
     if len(prev_page)>0:
         return prev_page[len(prev_page)-1]
@@ -49,8 +49,6 @@ def get_current_page():
     return currentPage
 
 def set_view(view):
-    pass
-def refresh_view_panel():
     pass
 
 #Recent and example files

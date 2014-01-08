@@ -17,10 +17,10 @@ class MainMenu(DynamicBubbleMenu):
         self.imagePath=settings.IMAGE_PATH+"Main/"
         self.parent=parent
 
-        self.quickPrintView=QuickPrint.QuickPrint(self)
-        self.advancedSetupView=AdvancedSetup.AdvancedSetup(self)
-        self.templatesView=TemplateChooser.TemplateChooser(self)
-        self.openRecentView=OpenRecent.OpenRecent(self)
+        self.quickPrintView=QuickPrint.QuickPrint(self.parent)
+        self.advancedSetupView=AdvancedSetup.AdvancedSetup(self.parent)
+        self.templatesView=TemplateChooser.TemplateChooser(self.parent)
+        self.openRecentView=OpenRecent.OpenRecent(self.parent)
 
         if(settings.icon_view):
             self.quickPrint = MenuButton(self, wx.Bitmap(self.imagePath+"QuickPrint.png"), wx.Bitmap(self.imagePath+"QuickPrintPress.png"), target=self.quickPrintView)
