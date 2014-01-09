@@ -77,15 +77,28 @@ toolbar_w = 800
 app_w = 800
 app_h = 440
 #Colors
+"""
 defaultForeground = wx.Colour(255,255,255)
 secondForeground = wx.Colour(200,200,200)
 defaultBackground = wx.Colour(30,106,246)
-#defaultBackground = wx.Colour(255,0,0)
 secondBackground = wx.Colour(140,175,200)
 defaultAccent = wx.Colour(255,125,75)
 secondAccent = wx.Colour(230,70,50)
 button_inside = wx.Colour(0,0,255)
 button_outside = wx.Colour(0,0,255)
+button_outline = wx.Colour(255,255,255)
+button_text = wx.Colour(255,255,255)
+toolbar_bottom = wx.Colour(177, 177, 177)
+toolbar_top = wx.Colour(228, 228, 228)
+"""
+defaultForeground = wx.Colour(30,100,245)
+secondForeground = wx.Colour(200,200,200)
+defaultBackground = wx.Colour(245,245,245)
+secondBackground = wx.Colour(140,175,200)
+defaultAccent = wx.Colour(255,125,75)
+secondAccent = wx.Colour(230,70,50)
+button_inside = wx.Colour(51, 123, 255)
+button_outside = wx.Colour(0, 75, 225)
 button_outline = wx.Colour(255,255,255)
 button_text = wx.Colour(255,255,255)
 toolbar_bottom = wx.Colour(177, 177, 177)
