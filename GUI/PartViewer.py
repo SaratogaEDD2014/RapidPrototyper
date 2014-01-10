@@ -27,7 +27,8 @@ class STLViewer(wx.Panel):
                     rate(100)
         else:
             settings.display_part=True
-            #self.viewer.window._OnExitApp(wx.CommandEvent())
+            if self.viewer != None:
+                self.viewer._destroy()
 
 
 def stl_to_faces(fileinfo): # specify file

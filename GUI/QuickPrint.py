@@ -24,8 +24,6 @@ class QuickPrint(wx.Panel):
                 dlg.Destroy()
         else:
             super(QuickPrint, self).Show(visible)
-            if self.disp != None:
-                self.disp._destroy()
 
 def main():
     ProtoApp = wx.App()
