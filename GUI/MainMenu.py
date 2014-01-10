@@ -11,27 +11,37 @@ import AdvancedSetup
 import GUI.settings as settings
 import wx
 
-class MainMenu(BubbleMenu):
+class MainMenu(DynamicBubbleMenu):
     def __init__(self, parent):
-        BubbleMenu.__init__(self, parent, wx.Bitmap(settings.IMAGE_PATH+"Main/"+"BubbleTitle.png"), "Main Menu", size=wx.Size(440,440))
+        super(MainMenu, self).__init__(parent, "Main Menu")
         self.imagePath=settings.IMAGE_PATH+"Main/"
         self.parent=parent
 
-        self.quickPrintView=QuickPrint.QuickPrint(self.parent)
-        self.advancedSetupView=AdvancedSetup.AdvancedSetup(self.parent)
-        self.templatesView=TemplateChooser.TemplateChooser(self.parent)
-        self.openRecentView=OpenRecent.OpenRecent(self.parent)
+        self.quickPrintView=QuickPrint.QuickPrint(self)
+        self.advancedSetupView=AdvancedSetup.AdvancedSetup(self)
+        self.templatesView=TemplateChooser.TemplateChooser(self)
+        self.openRecentView=OpenRecent.OpenRecent(self)
 
         if(settings.icon_view):
-            self.quickPrint=MenuButton(self, wx.Bitmap(self.imagePath+"QuickPrint.png"), wx.Bitmap(self.imagePath+"QuickPrintPress.png"), target=self.quickPrintView)
-            self.advancedSetup=MenuButton(self, wx.Bitmap(self.imagePath+"AdvancedSetup.png"), wx.Bitmap(self.imagePath+"AdvancedSetupPress.png"), target= self.advancedSetupView)
-            self.templates=MenuButton(self, wx.Bitmap(self.imagePath+"Templates.png"), wx.Bitmap(self.imagePath+"TemplatesPress.png"), target=self.templatesView)
-            self.openRecent=MenuButton(self, wx.Bitmap(self.imagePath+"OpenRecent.png"), wx.Bitmap(self.imagePath+"OpenRecentPress.png"), target=self.openRecentView)
+            self.quickPrint = MenuButton(self, wx.Bitmap(self.imagePath+"QuickPrint.png"), wx.Bitmap(self.imagePath+"QuickPrintPress.png"), target=self.quickPrintView)
+            self.advancedSetup = MenuButton(self, wx.Bitmap(self.imagePath+"AdvancedSetup.png"), wx.Bitmap(self.imagePath+"AdvancedSetupPress.png"), target= self.advancedSetupView)
+            self.templates = MenuButton(self, wx.Bitmap(self.imagePath+"Templates.png"), wx.Bitmap(self.imagePath+"TemplatesPress.png"), target=self.templatesView)
+            self.openRecent = MenuButton(self, wx.Bitmap(self.imagePath+"OpenRecent.png"), wx.Bitmap(self.imagePath+"OpenRecentPress.png"), target=self.openRecentView)
         else:
-            self.quickPrint=MenuButton(self, name='Quick\nPrint', target=self.quickPrintView)
-            self.advancedSetup=MenuButton(self,name='Advanced\nSetup', target= self.advancedSetupView)
-            self.templates=MenuButton(self, name='Templates', target=self.templatesView)
-            self.openRecent=MenuButton(self, name='Open\nRecent', target=self.openRecentView)
+            self.quickPrint = DynamicButton(self, name='Quick\nPrint', target=self.quickPrintView)
+            self.advancedSetup = DynamicButton(self,name='Advanced\nSetup', target= self.advancedSetupView)
+            self.templates = DynamicButton(self, name='Templates', target=self.templatesView)
+            self.openRecent = DynamicButton(self, name='Open\nRecent', target=self.openRecentView)
 
         self.buttonList=[self.quickPrint, self.advancedSetup, self.templates, self.openRecent]
         self.setChildren(self.buttonList)
+
+if __name__ == "__main__":
+    app = wx.App()
+    frm = wx.Frame(None, size=(800,800))
+    menu = MainMenu(frm)
+    frm.Show(True)
+    menu.Show(True)
+    menu.SendSizeEvent()
+    menu.CenterOnParent()
+    app.MainLoop()

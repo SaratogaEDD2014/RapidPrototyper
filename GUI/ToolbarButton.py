@@ -1,4 +1,5 @@
 import wx
+import GUI.settings
 
 class ToolbarButton(wx.PyControl):
     def __init__(self, parent, normal, pressed=None, disabled=None, name=None):
@@ -6,8 +7,9 @@ class ToolbarButton(wx.PyControl):
         #self.Show(False)
         self.normal = normal
         self.pressed = pressed
-        self.disabled=disabled
+        self.disabled = disabled
         self.name=name
+        self.SetBestSize(self.normal.GetSize())
         #Region is the area that is "clickable"
         #It consists of the PNG minus the transparent areas
         self.region = wx.RegionFromBitmapColour(normal, wx.Colour(0, 0, 0, 0))

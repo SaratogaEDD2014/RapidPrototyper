@@ -2,6 +2,7 @@ import wx
 import BubbleEvent
 import GUI.settings as settings
 import platform
+import math
 
 class BubbleMenu(wx.Window):
     def __init__(self, parent, bitmap, name="", children=[], id=-1, pos=wx.DefaultPosition, size=(400, 400)):
@@ -40,6 +41,19 @@ class BubbleMenu(wx.Window):
         if len(self.children)>0:
             self.updateChildren()
         self.Center()
+        self.Bind(wx.EVT_SIZE, self.on_size)
+
+    def on_size(self, event):
+        event.Skip(True)
+        min_dim = min(settings.app_w, settings.app_h)
+        min_dim = int(.95*min_dim)
+        self.SetSize((min_dim, min_dim))
+
+        button_size = int((self.GetSize()[0]/3.0)*.7)
+        #for butt in (range(4)+range(5, len(self.children))):
+        #    self.children[butt].SetSize((button_size, button_size))
+        #    self.children[butt].Refresh()
+        self.Refresh()
 
     def Add(self, button):
         self.AddMany([button])
@@ -72,6 +86,24 @@ class BubbleMenu(wx.Window):
         self.childIndex+=1
         return self.children[self.childIndex-1]
 
+class DynamicBubbleMenu(BubbleMenu):
+    def __init__(self, parent, name="", children=[], id=-1, pos=wx.DefaultPosition, size=(400, 400)):
+        super(DynamicBubbleMenu, self).__init__(parent, None, name, children, id, pos, size)
+        self.button=DynamicButton(self, self.name, settings.defaultForeground, settings.defaultForeground, settings.defaultBackground, settings.defaultBackground)
+        self.button.Disable()
+
+    def on_size(self, event):
+        event.Skip(True)
+        min_dim = min(settings.app_w, settings.app_h)
+        min_dim = int(.95*min_dim)
+        self.SetSize((min_dim, min_dim))
+
+        title_size = int((min_dim/3.0))
+        button_size = int(title_size*.7)
+        for butt in (range(4)+range(5, len(self.children))):
+            self.children[butt].SetSize((button_size, button_size))
+            self.children[butt].Refresh()
+        self.button.SetSize((title_size, title_size))
 
 
 
@@ -203,26 +235,96 @@ class MenuButton(BubbleButton):
             dc.SetTextForeground(settings.defaultForeground)
             dc.DrawText(self.name, int((w-len(self.name)*8)/2), int((h-16)/2))
 
+class DynamicButton(BubbleButton):
+    def __init__(self, parent, name="", inner_color=settings.button_inside, outer_color=settings.button_outside, text_color=settings.button_text, outline=settings.button_outline, target=None):
+        super(DynamicButton, self).__init__(parent, None, None, name)
+        self.target=target
+        self.inner_color = inner_color
+        self.outer_color = outer_color
+        self.text_color = text_color
+        self.outline = outline
+
+    def DoGetBestSize(self):
+        return self.GetSize()
+
+    #@overrides(BubbleButton)
+    def on_left_up(self, event):
+        if self.clicked:
+            x, y = event.GetPosition()
+            if self.region.Contains(x, y):
+                self.post_event()
+                if self.target !=None:
+                    settings.set_view(self.target)
+        self.clicked = False
+
+    #overrides (BubbleButton)
+    def on_paint(self, event):
+        dc = wx.AutoBufferedPaintDC(self)
+        dc.SetBackground(wx.Brush(self.GetParent().GetBackgroundColour()))
+        dc.Clear()
+        dc.SetPen(wx.Pen(self.outline, 5))
+        w,h = self.GetSize()
+        min_dim = min(h, w)
+
+        rect = wx.Rect(0, 0, w, h)
+        #print("dimensions= "+str((w,h)))
+        self.region=wx.RegionFromPoints(gen_circle_points(w/2, h/2, min_dim/2))
+        dc.SetClippingRegionAsRegion(self.region)
+        dc.GradientFillConcentric(rect, self.inner_color, self.outer_color, wx.Point(w/2, h/2))
+
+        if self.name!="" :
+            length_calc = self.name
+            num_lines = (self.name.count("\n")+1)
+            text_area_factor = .95 #percent of horizontal area available for text
+            if num_lines > 1:
+                text_area_factor = .85
+                index = length_calc.find("\n")
+                length_calc = length_calc[0:index]
+
+            #find desired text area
+            text_area_width = self.GetSize()[0]*text_area_factor
+            text_point_size = int((text_area_width/7.11222063894596))
+            _butt_font = wx.Font(text_point_size, wx.SWISS, wx.NORMAL, wx.BOLD)
+            dc.SetFont(_butt_font)
+            dc.SetTextForeground(self.text_color)
+            #use object and text width to center it
+            w,h = self.GetSize()
+            tw,th = dc.GetTextExtent(length_calc)
+            dc.DrawText(self.name, (w-tw)/2, (h-(th*num_lines))/2)
+
+def drange(start, stop, step):
+    r = start
+    while r < stop:
+        yield r
+        r += step
+
+def gen_circle_points(x, y, r):
+    points=[]
+    for theta in drange(0, 2*math.pi, .005):
+        points.append([x+(r*math.cos(theta)), y+(r*math.sin(theta))])
+    return points
+
 #----------------------------------------------------------------------------------
 def main():
     ProtoApp = wx.App()
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
-    imagePath=settings.IMAGE_PATH+"Main/"
+    imagePath= settings.IMAGE_PATH+"Main/"
     settings.icon_view=False
-    sizer=wx.BoxSizer(wx.HORIZONTAL)
-    panel=BubbleButton(frm)
-    panel2=MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 1")
-    panel3=MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 2")
-    sizer.Add(panel)
-    sizer.Add(panel2)
-    sizer.Add(panel3)
-    panel.Show(True)
+    #sizer = wx.BoxSizer(wx.HORIZONTAL)
+    #panel = BubbleButton(frm)
+    #panel2 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 1")
+    #panel3 = MenuButton(frm, wx.Bitmap(imagePath+"QuickPrint.png"), wx.Bitmap(imagePath+"QuickPrintPress.png"), target=None, name="test 2")
+    panel4 = DynamicButton(frm, "Test\nwho")
+    #sizer.Add(panel)
+    #sizer.Add(panel2)
+    #sizer.Add(panel3)
+    #sizer.Add(panel4)
+    #panel.Show(True)
 
-    frm.SetSizer(sizer)
+    #frm.SetSizer(sizer)
     frm.Show(True)
     ProtoApp.MainLoop()
 
 
 if __name__ == '__main__':
     main()
-

@@ -8,6 +8,7 @@ class QuickPrint(wx.Panel):
     def __init__(self, parent, stl_file="", id=-1, pos=(0,40), size=wx.Size(800,440)):
         wx.Panel.__init__(self, parent, id, pos, size)
         self.SetBackgroundColour(settings.defaultBackground)
+        self.disp = None
         self.file=stl_file
         self.Show(False)
     def Show(self, visible):
