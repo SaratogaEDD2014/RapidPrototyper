@@ -4,13 +4,13 @@ from myvisual import *
 from visual.filedialog import get_file
 
 class STLViewer(wx.Panel):
-    def __init__(self, parent, stl_file="", pos=(0,80), size=(800,400)):
+    def __init__(self, parent, stl_file="", pos=(0,80), size=(settings.app_w,settings.app_h)):
         super(STLViewer, self).__init__(parent, pos=pos, size=size)
         self.file = stl_file
-        self.title = wx.StaticText(self, label="Printer View Screen", pos=(400, 30))
+        self.title = wx.StaticText(self, label="Printer View Screen", pos=(settings.app_w*3/4, 30))
         self.title.SetForegroundColour(wx.Colour(255,255,255))
-        self.printb = wx.Button(self, label="Print", pos=(500, 50))
-        self.cancelb = wx.Button(self, label="Cancel", pos=(410, 50))
+        self.printb = wx.Button(self, label="Print", pos=(settings.app_w*3/4, 50))
+        self.cancelb = wx.Button(self, label="Cancel", pos=(settings.app_w*3/4 -90, 50))
         self.viewer = None
         self.Show(False)
 
@@ -19,7 +19,7 @@ class STLViewer(wx.Panel):
         if visible:
             if settings.display_part:
                 if self.viewer == None:
-                    self.viewer = display(window=None, x=0, y=40, width=400, height=400, forward=-vector(0,1,2), background=(1,1,1), foreground=(0.086,0.702,0.870))
+                    self.viewer = display(window=None, x=0, y=settings.toolbar_h+30, width=(settings.app_w*2)/3, height=settings.app_h, forward=-vector(0,1,2), background=(1,1,1), foreground=(0.086,0.702,0.870))
                 settings.display_part=False
                 scene.width = scene.height = 480
                 scene.autocenter = True
@@ -31,7 +31,8 @@ class STLViewer(wx.Panel):
                     rate(100)
         else:
             settings.display_part=True
-            #self.viewer.window._OnExitApp(wx.CommandEvent())
+            if self.viewer != None:
+                self.viewer._destroy()
 
 
 def stl_to_faces(fileinfo): # specify file
