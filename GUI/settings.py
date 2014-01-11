@@ -72,10 +72,13 @@ LAYER_DEPTH=.01 #IN INCHES
 
 #UI------------------------------------------------------------------------
 icon_view = True
+temp_app = wx.App()
+app_w, app_h = wx.GetDisplaySize()
 toolbar_h = 40
-toolbar_w = 800
-app_w = 800
-app_h = 440
+app_h = app_h - toolbar_h
+toolbar_w = app_w
+temp_app.Destroy()
+
 #Colors
 """
 defaultForeground = wx.Colour(255,255,255)

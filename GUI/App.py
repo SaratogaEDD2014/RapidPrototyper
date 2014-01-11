@@ -10,7 +10,7 @@ from visual import *
 class ProtoFrame(window):
     def __init__(self, parent, id, title):
         #super(ProtoFrame, self).__init__(parent, id, title, size=wx.Size(800, 480))
-        window.__init__(self, width=800, height=480, x=8, y=30, title=title)
+        window.__init__(self, width=1200, height=700, x=8, y=30, title=title)
         settings.icon_view = False
         self.win.Show(False)
         self.win.SetBackgroundColour(settings.defaultBackground)
@@ -34,13 +34,13 @@ class ProtoFrame(window):
         app_w = settings.app_w
         app_h = settings.app_h
         self.toolbar.SetSize((app_w, settings.toolbar_h))
-        self.toolbar.Refresh()
         current = settings.get_current_page()
         current.SetSize((app_w, app_h-settings.toolbar_h))
         x = (app_w-current.GetSize()[0])/2     #Calculate explicit centered position, sizers mess things up
         y = settings.toolbar_h
         current.SetPosition((x,y))
         current.Refresh()
+        self.toolbar.Refresh()
 
 
     def set_view(self, viewPanel):

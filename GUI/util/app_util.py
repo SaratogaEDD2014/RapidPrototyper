@@ -15,6 +15,30 @@ class BlankGradient(wx.Window):
             w,h = self.GetSize()
             dc.GradientFillLinear((0, 0, w, h), self.color1, self.color2, self.orientation)
 
+class DynamicPanel(wx.Panel):
+    def __init__(self, parent, size=(200, 200)):
+        super(DynamicPanel, self).__init__(parent, size=size)
+        self.SetBackgroundColour(wx.Colour(255,200,160))
+        self.elements =[]
+        self.Bind(wx.EVT_SIZE, self.on_size)
+
+    def on_size(self, event):
+        self.SetSize(self.GetParent().GetSize())
+        w,h = self.GetSize()
+        element_h = int(h*.8/(len(self.elements)+1))
+        buff = element_h/2
+        dim = buff
+        p = (0,buff)
+        s = (w, dim)
+        buffers = []
+        for element in self.elements:
+            spacer = wx.Panel(self, pos=p, size=s)
+            buffers.append(spacer)
+            p = (p[0], p[1]+dim)
+            element.SetSize(s)
+            element.SetPosition(p)
+            p = (p[0], p[1]+dim)
+
 def dim_color(color, dim_value=10):
     r = max(color.Red()-25, 0)
     g = max(color.Green()-25, 0)

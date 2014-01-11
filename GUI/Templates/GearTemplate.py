@@ -13,6 +13,7 @@ import wx
 import GUI.settings as settings
 import GUI.util.plot as plot
 import GUI.util.editors as editors
+from GUI.util.app_util import DynamicPanel
 from GUI.util.convert_stl import *
 from GUI.PartViewer import *
 
@@ -26,19 +27,19 @@ def drange(start, stop, step):
 
 class GearTemplate(wx.Panel):
     def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="trapezoid"):
-        super(GearTemplate, self).__init__(parent, pos=(0,40), size=(800,400))
-        self.SetBackgroundColour(settings.defaultBackground)
+        super(GearTemplate, self).__init__(parent, pos=(0,settings.toolbar_h), size=(settings.app_w,settings.app_h))
+        self.SetBackgroundColour(wx.Colour(255, 200, 150))#settings.defaultBackground)
         self.Show(False)
+        self.Bind(wx.EVT_SIZE, self.OnSize)
         self.lines=[]
         self.gearDim={}#dict for standard gear values
         self.hubDim={} #dict for hub dimensions
         self.file=None
 
-        self.editors=self.makeEditors()
-        self.updateButton = wx.Button(self, 1, 'Update')
-        self.print_button = wx.Button(self, 2, 'Print')
-        self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
-        self.Bind(wx.EVT_BUTTON, self.OnPrint, id=2)
+        self.display = plot.PlotCanvas(self, pos=(0,0), size=(self.GetSize()[0]/2, self.GetSize()[1]))
+        self.display.SetBackgroundColour(wx.Colour(240,240,240))
+        self.edit_panel = wx.Panel(self, pos=(self.GetSize()[0]*5/8, 0), size=(self.GetSize()[0]/2, self.GetSize()[1]))
+        self.makeEditors()
 
         self.setDim("Number of Teeth", numTeeth)
         self.setDim("Pitch Diameter",pitchDiameter)
@@ -47,31 +48,13 @@ class GearTemplate(wx.Panel):
         self.setDim("Tooth Shape",shape)
         self.setHubDim("Thickness",hubThickness)
         self.setHubDim("Hub Diameter",hubDiameter)
-
-        self.display= plot.PlotCanvas(self, pos=wx.DefaultPosition, size=(400,400))
-        self.display.SetBackgroundColour(wx.Colour(240,240,240))
-
-        masterSizer=wx.BoxSizer(wx.HORIZONTAL)
-        editorSizer=wx.BoxSizer(wx.VERTICAL)
-        button_sizer=wx.GridSizer(0,2,0,12)
-        temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
-        temp.SetBackgroundColour(self.GetBackgroundColour())
-        editorSizer.Add(temp)#spacer
-        for e in self.editors:
-            editorSizer.Add(e)
-            temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
-            temp.SetBackgroundColour(self.GetBackgroundColour())
-        editorSizer.Add(temp)#spacer
-        button_sizer.Add(self.updateButton)
-        button_sizer.Add(self.print_button)
-        editorSizer.Add(button_sizer)
-        masterSizer.Add(self.display)
-        temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
-        temp.SetBackgroundColour(self.GetBackgroundColour())
-        masterSizer.Add(temp)#spacer
-        masterSizer.Add(editorSizer)
-        self.SetSizer(masterSizer)
         self.OnUpdate(None)
+
+    def OnSize(self, event):
+        event.Skip()
+        self.display.SetSize((self.GetSize()[0]/2, self.GetSize()[1]))
+        self.SendSizeEvent()
+
 
     def OnUpdate(self, event):
         self.makeGear()
@@ -327,8 +310,19 @@ class GearTemplate(wx.Panel):
         hubStaticSizer.Add(hubPanel)
         #TODO: Implement keyway option
 
+        self.updateButton = wx.Button(self, 1, 'Update')
+        self.print_button = wx.Button(self, 2, 'Print')
+        self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
+        self.Bind(wx.EVT_BUTTON, self.OnPrint, id=2)
+        button_sizer = wx.GridSizer(1,2,5, self.edit_panel.GetSize()[0]/80)
+        button_sizer.Add(self.updateButton)
+        button_sizer.Add(self.print_button)
 
-        return (staticSizer, hubStaticSizer)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(staticSizer)
+        sizer.Add(hubStaticSizer)
+        sizer.Add(button_sizer)
+        self.edit_panel.SetSizer(sizer)
 
     def generate_vertices(self, points, bore, hub):
         self.file=open(settings.PATH+'examples/temp_file.stl','w')
@@ -408,7 +402,7 @@ def main():
 
     sizer=wx.BoxSizer(wx.HORIZONTAL)
     panel=GearTemplate(frm)
-    sizer.Add(panel)
+    sizer.Add(panel, flag=wx.EXPAND)
     panel.Show(True)
 
     frm.SetSizer(sizer)
