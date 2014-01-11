@@ -15,7 +15,6 @@ import GUI.util.plot as plot
 import GUI.util.editors as editors
 from GUI.util.convert_stl import *
 from GUI.PartViewer import *
-from GUI.BubbleMenu import DynamicButton
 
 shapes=['trapezoid','triangle', 'rectangle','sprocket']
 
@@ -36,8 +35,8 @@ class GearTemplate(wx.Panel):
         self.file=None
 
         self.editors=self.makeEditors()
-        self.updateButton = DynamicButton(self, "Update", settings.defaultForeground, settings.defaultForeground, settings.defaultBackground)
-        self.print_button = DynamicButton(self, "Print", settings.defaultForeground, settings.defaultForeground, settings.defaultBackground)
+        self.updateButton = wx.Button(self, 1, 'Update')
+        self.print_button = wx.Button(self, 2, 'Print')
         self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
         self.Bind(wx.EVT_BUTTON, self.OnPrint, id=2)
 
@@ -52,16 +51,25 @@ class GearTemplate(wx.Panel):
         self.display= plot.PlotCanvas(self, pos=wx.DefaultPosition, size=(400,400))
         self.display.SetBackgroundColour(wx.Colour(240,240,240))
 
-        masterSizer=wx.GridSizer(1,2,10,10)
-        editorSizer=wx.BoxSizer(wx.VERTICAL)#(3,1,20,20)
+        masterSizer=wx.BoxSizer(wx.HORIZONTAL)
+        editorSizer=wx.BoxSizer(wx.VERTICAL)
         button_sizer=wx.GridSizer(0,2,0,12)
+        temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
+        temp.SetBackgroundColour(self.GetBackgroundColour())
+        editorSizer.Add(temp)#spacer
         for e in self.editors:
-            editorSizer.Add(e, flag=wx.EXPAND)
-        button_sizer.Add(self.updateButton, flag=wx.EXPAND)
-        button_sizer.Add(self.print_button, flag=wx.EXPAND)
-        editorSizer.Add(button_sizer, flag=wx.EXPAND)
-        masterSizer.Add(self.display, flag=wx.EXPAND)
-        masterSizer.Add(editorSizer, flag=wx.EXPAND)
+            editorSizer.Add(e)
+            temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
+            temp.SetBackgroundColour(self.GetBackgroundColour())
+        editorSizer.Add(temp)#spacer
+        button_sizer.Add(self.updateButton)
+        button_sizer.Add(self.print_button)
+        editorSizer.Add(button_sizer)
+        masterSizer.Add(self.display)
+        temp=wx.Panel(self, pos=(-20,-20), size=(16,16))
+        temp.SetBackgroundColour(self.GetBackgroundColour())
+        masterSizer.Add(temp)#spacer
+        masterSizer.Add(editorSizer)
         self.SetSizer(masterSizer)
         self.OnUpdate(None)
 
