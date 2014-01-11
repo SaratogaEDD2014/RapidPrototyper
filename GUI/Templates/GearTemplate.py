@@ -13,9 +13,9 @@ import wx
 import GUI.settings as settings
 import GUI.util.plot as plot
 import GUI.util.editors as editors
-from GUI.util.app_util import DynamicPanel
 from GUI.util.convert_stl import *
 from GUI.PartViewer import *
+from GUI.BubbleMenu import DynamicButton
 
 shapes=['trapezoid','triangle', 'rectangle','sprocket']
 
@@ -27,20 +27,20 @@ def drange(start, stop, step):
 
 class GearTemplate(wx.Panel):
     def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="trapezoid"):
-        super(GearTemplate, self).__init__(parent, pos=(0,settings.toolbar_h), size=(settings.app_w,settings.app_h))
-        self.SetBackgroundColour(wx.Colour(255, 200, 150))#settings.defaultBackground)
+        super(GearTemplate, self).__init__(parent, pos=(0,40), size=(settings.app_w,settings.app_h-50))
+        self.SetBackgroundColour(settings.defaultBackground)
         self.Show(False)
-        self.Bind(wx.EVT_SIZE, self.OnSize)
         self.lines=[]
         self.gearDim={}#dict for standard gear values
         self.hubDim={} #dict for hub dimensions
         self.file=None
 
-        self.display = plot.PlotCanvas(self, pos=(0,0), size=(self.GetSize()[0]/2, self.GetSize()[1]))
-        self.display.SetBackgroundColour(wx.Colour(240,240,240))
-        self.edit_panel = wx.Panel(self, pos=(self.GetSize()[0]*5/8, 0), size=(self.GetSize()[0]/2, self.GetSize()[1]))
-        self.edit_panel.SetBackgroundColour(wx.Colour(255,0,0))
-        self.makeEditors()
+        self.editors=self.makeEditors()
+        button_panel = wx.Window(self, size=(self.GetSize()[0]/2,self.GetSize()[1]/3), pos=(self.GetSize()[0]/2,(self.GetSize()[1]*2)/3))
+        self.updateButton = DynamicButton(button_panel, "Update", settings.defaultForeground, settings.defaultForeground, settings.defaultBackground)
+        self.print_button = DynamicButton(button_panel, "Print", settings.defaultForeground, settings.defaultForeground, settings.defaultBackground)
+        self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
+        self.Bind(wx.EVT_BUTTON, self.OnPrint, id=2)
 
         self.setDim("Number of Teeth", numTeeth)
         self.setDim("Pitch Diameter",pitchDiameter)
@@ -49,13 +49,25 @@ class GearTemplate(wx.Panel):
         self.setDim("Tooth Shape",shape)
         self.setHubDim("Thickness",hubThickness)
         self.setHubDim("Hub Diameter",hubDiameter)
-        self.OnUpdate(None)
 
-    def OnSize(self, event):
-        event.Skip()
-        self.display.SetSize((self.GetSize()[0]/2, self.GetSize()[1]))
-        self.edit_panel.SetSize((self.GetSize()[0]/2, self.GetSize()[1]))
-        self.edit_panel.SetPosition((self.display.GetSize()[0], 0))
+        self.display= plot.PlotCanvas(self, pos=wx.DefaultPosition, size=((settings.app_w*2)/3,settings.app_h-50))
+        self.display.SetBackgroundColour(settings.defaultForeground)
+        self.display.SetForegroundColour(settings.defaultBackground)
+        self.display.SetGridColour(settings.defaultBackground)
+
+        masterSizer=wx.GridSizer(1,2,10,10)
+        editorSizer=wx.BoxSizer(wx.VERTICAL)#(3,1,20,20)
+        button_sizer=wx.GridSizer(0,2,30,30)
+        for e in self.editors:
+            editorSizer.Add(e, flag=wx.EXPAND)
+        button_sizer.Add(self.updateButton, flag=wx.EXPAND)
+        button_sizer.Add(self.print_button, flag=wx.EXPAND)
+        button_panel.SetSizer(button_sizer)
+        editorSizer.Add(button_panel)
+        masterSizer.Add(self.display, flag=wx.EXPAND)
+        masterSizer.Add(editorSizer, flag=wx.EXPAND)
+        self.SetSizer(masterSizer)
+        self.OnUpdate(None)
 
     def OnUpdate(self, event):
         self.makeGear()
@@ -64,7 +76,7 @@ class GearTemplate(wx.Panel):
 
     def OnPrint(self, event):
         self.generate_vertices(self.rim_circle, self.bore_circle, self.hub_circle)
-        part_viewer = STLViewer(settings.main_window, settings.PATH+'examples/temp_file.stl')
+        part_viewer = STLViewer(settings.main_window.win, settings.PATH+'examples/temp_file.stl')
         settings.set_view(part_viewer)
 
     def setLines(self, nlines):
@@ -124,9 +136,9 @@ class GearTemplate(wx.Panel):
             boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
             hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
         if points!=None: points.append(points[0])
-        plotlines= [plot.PolyLine(points, width=1, legend="gear")]
-        plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
-        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
+        plotlines= [plot.PolyLine(points, width=3, legend="gear", colour=settings.defaultBackground)]
+        plotlines.append(plot.PolyLine(boreCircle, width=3, legend="bore", colour=settings.defaultBackground))
+        plotlines.append(plot.PolyLine(hubCircle, width=3, legend="hub", colour=settings.defaultAccent))
         return plotlines
 
     def rectangle(self, inc, outr, inr):
@@ -160,9 +172,9 @@ class GearTemplate(wx.Panel):
             hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
 
         if points!=None: points.append(points[0])
-        plotlines= [plot.PolyLine(points, width=1, legend="gear")]
-        plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
-        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
+        plotlines= [plot.PolyLine(points, width=3, legend="gear", colour=settings.defaultBackground)]
+        plotlines.append(plot.PolyLine(boreCircle, width=3, legend="bore", colour=settings.defaultBackground))
+        plotlines.append(plot.PolyLine(hubCircle, width=3, legend="hub", colour=settings.defaultAccent))
         return plotlines
 
     def trapezoid(self, inc, outr, inr):
@@ -199,9 +211,9 @@ class GearTemplate(wx.Panel):
         self.rim_circle = points
         self.bore_circle = boreCircle
         self.hub_circle = hubCircle
-        plotlines= [plot.PolyLine(points, width=1, legend="gear")]
-        plotlines.append(plot.PolyLine(boreCircle, width=1, legend="bore"))
-        plotlines.append(plot.PolyLine(hubCircle, width=1, legend="hub", colour=settings.defaultAccent))
+        plotlines= [plot.PolyLine(points, width=3, legend="gear", colour=settings.defaultBackground)]
+        plotlines.append(plot.PolyLine(boreCircle, width=3, legend="bore", colour=settings.defaultBackground))
+        plotlines.append(plot.PolyLine(hubCircle, width=3, legend="hub", colour=settings.defaultAccent))
         return plotlines
 
     def sprocket(self, inc, outr, inr):
@@ -225,7 +237,7 @@ class GearTemplate(wx.Panel):
             boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
             hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
         #if points!=None: points+=points[0:3]
-        return [plot.PolySpline(points, width=1, legend="gear")]
+        return [plot.PolySpline(points, width=3, legend="Sprocket", colour=settings.defaultBackground)]
 
 
 
@@ -247,69 +259,72 @@ class GearTemplate(wx.Panel):
 
     def makeEditors(self):
         """Generates buttons, spincontrols, etc. to edit gear parameters"""
-        elements = []
     #Standard Gear info-------------------------------------------------------------
+        gearBox=wx.StaticBox(self, -1, 'Gear Dimensions:')
+        gearBox.SetForegroundColour(settings.defaultForeground)
+        gearBox.SetBackgroundColour(self.GetBackgroundColour())
+        #should improve coloring on linux system
+        gearPanel=wx.Panel(self)
+        gearPanel.SetBackgroundColour(self.GetBackgroundColour())
+
         #number of teeth
-        self.gearDim["Number of Teeth"]=editors.TouchSpin(self.edit_panel, limits=(0,100), increment=1,name="Number of Teeth")
+        self.gearDim["Number of Teeth"]=editors.TouchSpin(gearPanel, limits=(0,100), increment=1,name="Number of Teeth")
         self.gearDim["Number of Teeth"].SetPrecision(0)
         #pitchDiameter
-        self.gearDim["Pitch Diameter"]=editors.TouchSpin(self.edit_panel,limits=(0,10),increment=0.05, name="Pitch Diameter")
+        self.gearDim["Pitch Diameter"]=editors.TouchSpin(gearPanel,limits=(0,10),increment=0.05, name="Pitch Diameter")
         self.gearDim["Pitch Diameter"].SetPrecision(3)
         #Thickness
-        self.gearDim["Thickness"]=editors.TouchSpin(self.edit_panel,limits=(0,10),increment=0.05,name="Thickness")
+        self.gearDim["Thickness"]=editors.TouchSpin(gearPanel,limits=(0,10),increment=0.05,name="Thickness")
         self.gearDim["Thickness"].SetPrecision(3)
         #Bore Diameter
-        self.gearDim["Bore Diameter"]=editors.TouchSpin(self.edit_panel,limits=(0,10),increment=0.05,name="Bore Diameter")
+        self.gearDim["Bore Diameter"]=editors.TouchSpin(gearPanel,limits=(0,10),increment=0.05,name="Bore Diameter")
         self.gearDim["Bore Diameter"].SetPrecision(3)
         #tooth shape
-        self.gearDim["Tooth Shape"]=wx.ComboBox(self.edit_panel, value=shapes[0], choices=shapes, name="Tooth Shape")
+        self.gearDim["Tooth Shape"]=wx.ComboBox(gearPanel, value=shapes[0], choices=shapes, name="Tooth Shape")
 
 
+        gearBoxSizer=wx.GridSizer(len(self.gearDim),2,8,8)
         for dim in self.gearDim:
-            #temp = wx.Panel(self.edit_panel)
-            #text = wx.StaticText(temp, -1, self.gearDim[dim].GetName()+":")
-            #text.SetForegroundColour(wx.Colour(255,255,255))
-            #text.SetBackgroundColour(self.GetBackgroundColour())
-            #temp_sizer = wx.GridSizer(1,2,10,10)
-            #temp_sizer.Add(text, flag=wx.EXPAND)
-            #temp_sizer.Add(self.gearDim[dim])
-            #temp.SetSizer(temp_sizer)
-            #elements.append(temp)
-            elements.append(self.gearDim[dim])
+            temp=wx.StaticText(gearPanel,-1, self.gearDim[dim].GetName()+":", size=(125,-1))
+            temp.SetBackgroundColour(gearPanel.GetBackgroundColour())
+            temp.SetForegroundColour(settings.defaultForeground)
+            gearBoxSizer.Add(temp)
+            gearBoxSizer.Add(self.gearDim[dim], flag=wx.ALIGN_RIGHT)
+        gearPanel.SetSizer(gearBoxSizer)
+
+        staticSizer=wx.StaticBoxSizer(gearBox)
+        staticSizer.Add(gearPanel)
 
         #Hub info-------------------------------------------------------------
+        hubBox=wx.StaticBox(self, -1, 'Hub Dimensions:')
+        hubBox.SetForegroundColour(settings.defaultForeground)
+        hubBox.SetBackgroundColour(self.GetBackgroundColour())
+        hubBoxSizer=wx.GridSizer(len(self.hubDim),2,8,8)
+        #better linux coloring
+        hubPanel=wx.Panel(self)
+        hubPanel.SetBackgroundColour(self.GetBackgroundColour())
+
         #Thickness
-        self.hubDim["Thickness"]=editors.TouchSpin(self.edit_panel,limits=(0,10),increment=0.05,name="Thickness")
+        self.hubDim["Thickness"]=editors.TouchSpin(hubPanel,limits=(0,10),increment=0.05,name="Thickness")
         self.hubDim["Thickness"].SetPrecision(3)
         #Bore Diameter
-        self.hubDim["Hub Diameter"]=editors.TouchSpin(self.edit_panel,limits=(0,10),increment=0.05, name="Hub Diameter")
+        self.hubDim["Hub Diameter"]=editors.TouchSpin(hubPanel,limits=(0,10),increment=0.05, name="Hub Diameter")
         self.hubDim["Hub Diameter"].SetPrecision(3)
 
         for dim in self.hubDim:
-            #temp = wx.Panel(self.edit_panel)
-            #text = wx.StaticText(temp, -1, self.hubDim[dim].GetName()+":")
-            #text.SetForegroundColour(wx.Colour(255,255,255))
-            #text.SetBackgroundColour(self.GetBackgroundColour())
-            #temp_sizer = wx.GridSizer(1,2,10,10)
-            #temp_sizer.Add(text, flag=wx.EXPAND)
-            #temp_sizer.Add(self.hubDim[dim])
-            #temp.SetSizer(temp_sizer)
-            #elements.append(temp)
-            elements.append(self.hubDim[dim])
+            temp=wx.StaticText(hubPanel,-1,self.hubDim[dim].GetName()+":", size=(125,-1))
+            temp.SetForegroundColour(settings.defaultForeground)
+            temp.SetBackgroundColour(hubPanel.GetBackgroundColour())
+            hubBoxSizer.Add(temp)
+            hubBoxSizer.Add(self.hubDim[dim], flag=wx.ALIGN_RIGHT)
+        hubPanel.SetSizer(hubBoxSizer)
 
+        hubStaticSizer=wx.StaticBoxSizer(hubBox)
+        hubStaticSizer.Add(hubPanel)
         #TODO: Implement keyway option
-        self.updateButton = wx.Button(self, 1, 'Update')
-        self.print_button = wx.Button(self, 2, 'Print')
-        self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
-        self.Bind(wx.EVT_BUTTON, self.OnPrint, id=2)
-        button_sizer = wx.GridSizer(1,2,5, self.edit_panel.GetSize()[0]/80)
-        button_sizer.Add(self.updateButton)
-        button_sizer.Add(self.print_button)
-        butt_panel = wx.Panel(self.edit_panel)
-        butt_panel.SetSizer(button_sizer)
-        elements.append(butt_panel)
 
-        self.edit_panel.elements = elements
+
+        return (staticSizer, hubStaticSizer)
 
     def generate_vertices(self, points, bore, hub):
         self.file=open(settings.PATH+'examples/temp_file.stl','w')
@@ -389,7 +404,7 @@ def main():
 
     sizer=wx.BoxSizer(wx.HORIZONTAL)
     panel=GearTemplate(frm)
-    sizer.Add(panel, flag=wx.EXPAND)
+    sizer.Add(panel)
     panel.Show(True)
 
     frm.SetSizer(sizer)

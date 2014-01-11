@@ -111,7 +111,7 @@ def main():
     touchspin=TouchSpin(frm)
     lblspin=LabeledSpin(frm)
     sizer.Add(touchspin)
-    sizer.Add(lblspin)
+    sizer.Add(lblspin, flag=wx.EXPAND)
     #panel.Show(True)
 
     frm.SetSizer(sizer)

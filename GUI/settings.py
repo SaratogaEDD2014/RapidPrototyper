@@ -94,7 +94,7 @@ button_text = wx.Colour(255,255,255)
 toolbar_bottom = wx.Colour(177, 177, 177)
 toolbar_top = wx.Colour(228, 228, 228)
 """
-defaultForeground = wx.Colour(30,100,245)
+defaultForeground = wx.Colour(30,75,205)
 secondForeground = wx.Colour(200,200,200)
 defaultBackground = wx.Colour(245,245,245)
 secondBackground = wx.Colour(140,175,200)
