@@ -28,7 +28,7 @@ def drange(start, stop, step):
 class GearTemplate(wx.Panel):
     def __init__(self, parent, numTeeth=25, pitchDiameter=3.0, bore=1.0, thickness=.25, hubDiameter=0, hubThickness=0, shape="trapezoid"):
         super(GearTemplate, self).__init__(parent, pos=(0,40), size=(settings.app_w,settings.app_h-50))
-        self.SetBackgroundColour(settings.defaultBackground)
+        self.SetBackgroundColour(settings.defaultForeground)
         self.Show(False)
         self.lines=[]
         self.gearDim={}#dict for standard gear values
@@ -37,8 +37,9 @@ class GearTemplate(wx.Panel):
 
         self.editors=self.makeEditors()
         button_panel = wx.Window(self, size=(self.GetSize()[0]/2,self.GetSize()[1]/3), pos=(self.GetSize()[0]/2,(self.GetSize()[1]*2)/3))
-        self.updateButton = DynamicButton(button_panel, "Update", settings.defaultForeground, settings.defaultForeground, settings.defaultBackground)
-        self.print_button = DynamicButton(button_panel, "Print", settings.defaultForeground, settings.defaultForeground, settings.defaultBackground)
+        button_panel.SetBackgroundColour(settings.defaultForeground)
+        self.updateButton = DynamicButton(button_panel, "Update", settings.defaultBackground, settings.defaultBackground, settings.defaultForeground)
+        self.print_button = DynamicButton(button_panel, "Print", settings.defaultBackground, settings.defaultBackground, settings.defaultForeground)
         self.Bind(wx.EVT_BUTTON, self.OnUpdate, id=1)
         self.Bind(wx.EVT_BUTTON, self.OnPrint, id=2)
 
@@ -51,11 +52,11 @@ class GearTemplate(wx.Panel):
         self.setHubDim("Hub Diameter",hubDiameter)
 
         self.display= plot.PlotCanvas(self, pos=wx.DefaultPosition, size=((settings.app_w*2)/3,settings.app_h-50))
-        self.display.SetBackgroundColour(settings.defaultForeground)
-        self.display.SetForegroundColour(settings.defaultBackground)
-        self.display.SetGridColour(settings.defaultBackground)
+        self.display.SetBackgroundColour(settings.defaultBackground)
+        self.display.SetForegroundColour(settings.defaultForeground)
+        self.display.SetGridColour(settings.defaultForeground)
 
-        masterSizer=wx.GridSizer(1,2,10,10)
+        masterSizer=wx.GridSizer(1,2,0,0)
         editorSizer=wx.BoxSizer(wx.VERTICAL)#(3,1,20,20)
         button_sizer=wx.GridSizer(0,2,30,30)
         for e in self.editors:
@@ -136,8 +137,8 @@ class GearTemplate(wx.Panel):
             boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
             hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
         if points!=None: points.append(points[0])
-        plotlines= [plot.PolyLine(points, width=3, legend="gear", colour=settings.defaultBackground)]
-        plotlines.append(plot.PolyLine(boreCircle, width=3, legend="bore", colour=settings.defaultBackground))
+        plotlines= [plot.PolyLine(points, width=3, legend="gear", colour=settings.defaultForeground)]
+        plotlines.append(plot.PolyLine(boreCircle, width=3, legend="bore", colour=settings.defaultForeground))
         plotlines.append(plot.PolyLine(hubCircle, width=3, legend="hub", colour=settings.defaultAccent))
         return plotlines
 
@@ -172,8 +173,8 @@ class GearTemplate(wx.Panel):
             hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
 
         if points!=None: points.append(points[0])
-        plotlines= [plot.PolyLine(points, width=3, legend="gear", colour=settings.defaultBackground)]
-        plotlines.append(plot.PolyLine(boreCircle, width=3, legend="bore", colour=settings.defaultBackground))
+        plotlines= [plot.PolyLine(points, width=3, legend="gear", colour=settings.defaultForeground)]
+        plotlines.append(plot.PolyLine(boreCircle, width=3, legend="bore", colour=settings.defaultForeground))
         plotlines.append(plot.PolyLine(hubCircle, width=3, legend="hub", colour=settings.defaultAccent))
         return plotlines
 
@@ -211,8 +212,8 @@ class GearTemplate(wx.Panel):
         self.rim_circle = points
         self.bore_circle = boreCircle
         self.hub_circle = hubCircle
-        plotlines= [plot.PolyLine(points, width=3, legend="gear", colour=settings.defaultBackground)]
-        plotlines.append(plot.PolyLine(boreCircle, width=3, legend="bore", colour=settings.defaultBackground))
+        plotlines= [plot.PolyLine(points, width=3, legend="gear", colour=settings.defaultForeground)]
+        plotlines.append(plot.PolyLine(boreCircle, width=3, legend="bore", colour=settings.defaultForeground))
         plotlines.append(plot.PolyLine(hubCircle, width=3, legend="hub", colour=settings.defaultAccent))
         return plotlines
 
@@ -237,7 +238,7 @@ class GearTemplate(wx.Panel):
             boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
             hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
         #if points!=None: points+=points[0:3]
-        return [plot.PolySpline(points, width=3, legend="Sprocket", colour=settings.defaultBackground)]
+        return [plot.PolySpline(points, width=3, legend="Sprocket", colour=settings.defaultForeground)]
 
 
 
@@ -261,7 +262,7 @@ class GearTemplate(wx.Panel):
         """Generates buttons, spincontrols, etc. to edit gear parameters"""
     #Standard Gear info-------------------------------------------------------------
         gearBox=wx.StaticBox(self, -1, 'Gear Dimensions:')
-        gearBox.SetForegroundColour(settings.defaultForeground)
+        gearBox.SetForegroundColour(settings.defaultBackground)
         gearBox.SetBackgroundColour(self.GetBackgroundColour())
         #should improve coloring on linux system
         gearPanel=wx.Panel(self)
@@ -287,7 +288,7 @@ class GearTemplate(wx.Panel):
         for dim in self.gearDim:
             temp=wx.StaticText(gearPanel,-1, self.gearDim[dim].GetName()+":", size=(125,-1))
             temp.SetBackgroundColour(gearPanel.GetBackgroundColour())
-            temp.SetForegroundColour(settings.defaultForeground)
+            temp.SetForegroundColour(settings.defaultBackground)
             gearBoxSizer.Add(temp)
             gearBoxSizer.Add(self.gearDim[dim], flag=wx.ALIGN_RIGHT)
         gearPanel.SetSizer(gearBoxSizer)
@@ -297,7 +298,7 @@ class GearTemplate(wx.Panel):
 
         #Hub info-------------------------------------------------------------
         hubBox=wx.StaticBox(self, -1, 'Hub Dimensions:')
-        hubBox.SetForegroundColour(settings.defaultForeground)
+        hubBox.SetForegroundColour(settings.defaultBackground)
         hubBox.SetBackgroundColour(self.GetBackgroundColour())
         hubBoxSizer=wx.GridSizer(len(self.hubDim),2,8,8)
         #better linux coloring
@@ -313,7 +314,7 @@ class GearTemplate(wx.Panel):
 
         for dim in self.hubDim:
             temp=wx.StaticText(hubPanel,-1,self.hubDim[dim].GetName()+":", size=(125,-1))
-            temp.SetForegroundColour(settings.defaultForeground)
+            temp.SetForegroundColour(settings.defaultBackground)
             temp.SetBackgroundColour(hubPanel.GetBackgroundColour())
             hubBoxSizer.Add(temp)
             hubBoxSizer.Add(self.hubDim[dim], flag=wx.ALIGN_RIGHT)
