@@ -87,6 +87,7 @@ class LabeledSpin(wx.Panel):
         super(LabeledSpin, self).__init__(parent, id, pos=pos)
         if self.GetParent():
             self.SetBackgroundColour(self.GetParent().GetBackgroundColour())
+        self.SetBackgroundColour(settings.defaultAccent)
         self.text=wx.StaticText(self, -1, name)
         self.control=TouchSpin(self, -1, value=value, limits=(min,max))
         sizer=wx.BoxSizer(wx.HORIZONTAL)
@@ -106,7 +107,7 @@ def main():
     ProtoApp = wx.App()
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
 
-    sizer=wx.BoxSizer(wx.HORIZONTAL)
+    sizer=wx.GridSizer(1,2)
     touchspin=TouchSpin(frm)
     lblspin=LabeledSpin(frm)
     sizer.Add(touchspin)

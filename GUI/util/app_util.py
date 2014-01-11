@@ -38,6 +38,32 @@ class DynamicPanel(wx.Panel):
             element.SetSize(s)
             element.SetPosition(p)
             p = (p[0], p[1]+dim)
+"""
+class DynamicPanelBox(DynamicPanel):
+    def __init__(self, parent, name=None, size=(200,200)):
+        super(DynamicPanelBox, self).__init__(parent, size=(size[0]*.9, size[1]*.9))
+        self.name = name
+        self.Bind(wx.EVT_PAINT, self.on_paint)
+
+    def on_paint(self, event):
+        event.Skip()
+        dc = wx.PaintDC(self)
+        dc.Clear()
+        dc.SetPen(wx.Pen(settings.defaultForeground, 3))
+        dc.SetTextForeground(settings.defaultForeground)
+        w,h = self.GetSize()
+        w = (w*.9)
+        h = (h*.85)
+        fillet = int(min(self.GetSize())*.1)
+        if self.name!=None:
+            text_width = dc.GetTextExtent(self.name)[0]
+            dc.DrawText(self.name, fillet+5, 5)
+        else:
+            text_width = 0
+        dc.DrawArc(fillet,1, 1,fillet, fillet, fillet)
+        dc.DrawArc(1,h-fillet, fillet,h, fillet, h-fillet)
+        dc.DrawArc(w,fillet, w-fillet,1, w-fillet,fillet)
+        dc.DrawArc(w-fillet,h, w,h-fillet, w-fillet,h-fillet)"""
 
 def dim_color(color, dim_value=10):
     r = max(color.Red()-25, 0)
@@ -61,3 +87,17 @@ def draw_centered_text(obj, text, scale=1.0, font=None, dc = None):
     w,h = obj.GetSize()
     tw,th = dc.GetTextExtent(text)
     dc.DrawText(text, (w-tw)/2, (h-th)/2)
+
+def main():
+    app = wx.App()
+    frm = wx.Frame(None)
+    panel = DynamicPanel(frm, size=(800, 800))
+    text  = wx.StaticText(panel, label="test 1")
+    text2 = wx.StaticText(panel, label="test 2")
+    text3 = wx.StaticText(panel, label="test 3")
+    text4 = wx.StaticText(panel, label="test 4")
+    elements = [text, text2, text3, text4]
+    panel.elements = elements
+    frm.Show(True)
+    app.MainLoop()
+#main()
