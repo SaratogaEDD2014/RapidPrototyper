@@ -1,0 +1,15 @@
+Most Buttons Created on cooltext.com
+
+Blue bubble buttons:
+    Gradient=Center
+    Color 1= (80,132,180)5084b4    #469fcc
+    Color 2= (11,29,143)0b1d8f     #3247d1
+    Font=Bebasneue
+    Font-color=White
+    Shadow=Glow
+    Effect=Glass
+    Dimension(button)=150x150
+    Dimension(title)=250x250
+Blue Selected Buttons:
+    Same as above except:
+    
