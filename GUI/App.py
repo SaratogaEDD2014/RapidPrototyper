@@ -11,7 +11,7 @@ class ProtoFrame(window):
     def __init__(self, parent, id, title):
         #super(ProtoFrame, self).__init__(parent, id, title, size=wx.Size(800, 480))
         window.__init__(self, width=1200, height=700, x=8, y=30, title=title)
-        settings.icon_view = False
+        settings.icon_view = False #temporary until config file is done
         self.win.Show(False)
         self.win.SetBackgroundColour(settings.defaultBackground)
         self.win.Bind(wx.EVT_PAINT, self.on_paint)
@@ -24,13 +24,14 @@ class ProtoFrame(window):
         settings.set_view=self.set_view
         settings.main_window=self.win
         settings.set_view(self.menu)
+        self.win.Show(True)
         if settings.icon_view==False:
             self.win.Maximize()
-        self.win.Show(True)
 
     def on_paint(self, event):
         event.Skip(True)
         settings.app_w, settings.app_h = self.win.GetSize()
+        settings.app_h -= settings.toolbar_h
         app_w = settings.app_w
         app_h = settings.app_h
         self.toolbar.SetSize((app_w, settings.toolbar_h))
