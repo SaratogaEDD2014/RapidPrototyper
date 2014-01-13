@@ -114,8 +114,8 @@ class DynamicBubbleMenu(BubbleMenu):
 
 
 class BubbleButton(wx.PyControl):
-    def __init__(self, parent, normal=None, pressed=None, name=""):
-        super(BubbleButton, self).__init__(parent, -1, style=wx.BORDER_NONE)
+    def __init__(self, parent, normal=None, pressed=None, name="", id=-1):
+        super(BubbleButton, self).__init__(parent, id, style=wx.BORDER_NONE)
         self.style=wx.BORDER_NONE
         if normal != None:
             self.normal = normal
@@ -145,7 +145,8 @@ class BubbleButton(wx.PyControl):
         return self.normal.GetSize()
 
     def post_event(self):
-        event = BubbleEvent.BubbleEvent(self, None)
+        event = wx.CommandEvent(wx.EVT_BUTTON.typeId, self.GetId())
+        event.SetEventObject(self)
         wx.PostEvent(self, event)
 
     def Enable(self, *args, **kwargs):
@@ -203,8 +204,8 @@ class BubbleButton(wx.PyControl):
         self.clicked = False
 
 class MenuButton(BubbleButton):
-    def __init__(self, parent, normal=None, pressed=None, name="", target=None):
-        super(MenuButton, self).__init__(parent, normal, pressed, name)
+    def __init__(self, parent, normal=None, pressed=None, name="", target=None, id=-1):
+        super(MenuButton, self).__init__(parent, normal, pressed, name, id=id)
         self.target=target
 
     #@overrides(BubbleButton)
@@ -242,8 +243,8 @@ class MenuButton(BubbleButton):
             dc.DrawText(self.name, int((w-len(self.name)*8)/2), int((h-16)/2))
 
 class DynamicButton(BubbleButton):
-    def __init__(self, parent, name="", inner_color=settings.button_inside, outer_color=settings.button_outside, text_color=settings.button_text, outline=settings.button_outline, target=None):
-        super(DynamicButton, self).__init__(parent, None, None, name)
+    def __init__(self, parent, name="", inner_color=settings.button_inside, outer_color=settings.button_outside, text_color=settings.button_text, outline=settings.button_outline, target=None, id=-1):
+        super(DynamicButton, self).__init__(parent, None, None, name, id=id)
         self.target=target
         self.inner_color = inner_color
         self.outer_color = outer_color
@@ -283,7 +284,7 @@ class DynamicButton(BubbleButton):
         if self.name!="" :
             length_calc = self.name
             num_lines = (self.name.count("\n")+1)
-            text_area_factor = .95 #percent of horizontal area available for text
+            text_area_factor = .90 #percent of horizontal area available for text
             if num_lines > 1:
                 text_area_factor = .85
                 index = length_calc.find("\n")
@@ -297,6 +298,46 @@ class DynamicButton(BubbleButton):
             dc.SetTextForeground(self.text_color)
             #use object and text width to center it
             w,h = self.GetSize()
+            tw,th = dc.GetTextExtent(length_calc)
+            dc.DrawText(self.name, (w-tw)/2, (h-(th*num_lines))/2)
+
+class DynamicButtonRect(DynamicButton):
+    def __init__(self, parent, name="", inner_color=settings.button_inside, outer_color=settings.button_outside, text_color=settings.button_text, outline=settings.button_outline, target=None, id=-1):
+        super(DynamicButtonRect, self).__init__(parent, name, inner_color, outer_color, text_color, outline, target, id=id)
+    #@Overrides DynamicButton
+    def on_paint(self, event):
+        dc = wx.AutoBufferedPaintDC(self)
+        dc.SetBackground(wx.Brush(self.GetParent().GetBackgroundColour()))
+        dc.Clear()
+        dc.SetPen(wx.Pen(self.outline, 5))
+        w,h = self.GetSize()
+        min_dim = min(h, w)
+
+        rect = wx.Rect(0, 0, w, h)
+        self.region = wx.Region(0, 0, w, h)
+        inner = self.clicked_color if self.clicked else self.inner_color
+        dc.GradientFillLinear((0,0,w,h/2), self.outer_color, inner, wx.SOUTH)
+        dc.GradientFillLinear((0,h/2,w,h), inner, self.outer_color, wx.SOUTH)
+
+        if self.name!="" :
+            length_calc = self.name
+            num_lines = (self.name.count("\n")+1)
+            text_area_factor = .95 #percent of horizontal area available for text
+            if num_lines > 1:
+                text_area_factor = .85
+                index = length_calc.find("\n")
+                length_calc = length_calc[0:index]
+
+            #find desired text area
+            text_area_width = self.GetSize()[0]*text_area_factor
+            size_by_w = int((text_area_width/7.11222063894596))
+            size_by_h = int((h/1.55260934361633))
+            text_point_size = min(size_by_h, size_by_w)
+
+            _butt_font = wx.Font(text_point_size, wx.SWISS, wx.NORMAL, wx.BOLD)
+            dc.SetFont(_butt_font)
+            dc.SetTextForeground(self.text_color)
+            #use object and text width to center it
             tw,th = dc.GetTextExtent(length_calc)
             dc.DrawText(self.name, (w-tw)/2, (h-(th*num_lines))/2)
 
