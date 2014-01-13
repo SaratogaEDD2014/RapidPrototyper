@@ -1,5 +1,6 @@
 import wx
 import GUI.settings as settings
+from GUI.BubbleMenu import DynamicButtonRect
 from myvisual import *
 from visual.filedialog import get_file
 
@@ -9,8 +10,12 @@ class STLViewer(wx.Panel):
         self.file = stl_file
         self.title = wx.StaticText(self, label="Printer View Screen", pos=(settings.app_w*3/4, 30))
         self.title.SetForegroundColour(wx.Colour(255,255,255))
-        self.printb = wx.Button(self, label="Print", pos=(settings.app_w*3/4, 50))
-        self.cancelb = wx.Button(self, label="Cancel", pos=(settings.app_w*3/4 -90, 50))
+        self.printb = DynamicButtonRect(self, "Print")
+        self.printb.SetSize((settings.app_w/4, settings.app_h/7))
+        self.printb.SetPosition((int(settings.app_w*.7), 10))
+        self.cancelb = DynamicButtonRect(self, "Cancel")
+        self.cancelb.SetSize((settings.app_w/4, settings.app_h/7))
+        self.cancelb.SetPosition((int(settings.app_w*.7), settings.app_h/5))
         self.viewer = None
         self.Show(False)
 
@@ -19,7 +24,7 @@ class STLViewer(wx.Panel):
         if visible:
             if settings.display_part:
                 if self.viewer == None:
-                    self.viewer = display(window=None, x=0, y=settings.toolbar_h+30, width=(settings.app_w*2)/3, height=settings.app_h, forward=-vector(0,1,2), background=(1,1,1), foreground=(0.086,0.702,0.870))
+                    self.viewer = display(window=None, x=0, y=settings.toolbar_h+20, width=(settings.app_w*2)/3, height=settings.app_h, forward=-vector(0,1,2), background=(1,1,1), foreground=(0.086,0.702,0.870))
                 settings.display_part=False
                 scene.width = scene.height = 480
                 scene.autocenter = True
