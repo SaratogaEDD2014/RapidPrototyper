@@ -106,6 +106,7 @@ class LabeledSpin(wx.Panel):
 class DynamicDataDisplay(wx.Window):
     def __init__(self, parent, value, pos=wx.DefaultPosition, size=wx.DefaultSize):
         super(DynamicDataDisplay, self).__init__(parent, pos=pos, size=size)
+        self.SetBackgroundColour(settings.defaultBackground)
         self.value = value
         self.Bind(wx.EVT_PAINT, self.on_paint)
     def on_paint(self, event):
