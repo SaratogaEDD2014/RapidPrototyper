@@ -57,5 +57,5 @@ def main():
     ProtoApp.MainLoop()
 
 if __name__ == '__main__':
-    #GUI.splash_screen.show_splash(settings.NAME)
+    GUI.splash_screen.show_splash(settings.NAME)
     main()
