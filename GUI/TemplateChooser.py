@@ -6,7 +6,7 @@
 from BubbleMenu import *
 import GUI.settings as settings
 import wx
-import Templates.GearTemplate
+import Templates.gear
 
 class TemplateChooser(DynamicBubbleMenu):
     def __init__(self, parent):
@@ -16,7 +16,7 @@ class TemplateChooser(DynamicBubbleMenu):
         self.imagePath=settings.IMAGE_PATH+"/Templates/T_Chooser/"
 
         self.extrudeView=wx.Panel(self.parent, pos=(0,40), size=(16,16))
-        self.gearView=   Templates.GearTemplate.GearTemplate(self.parent)
+        self.gearView=   Templates.gear.GearTemplate(self.parent)
         self.mugView=    wx.Panel(self.parent, pos=(0,40), size=(16,16))
         self.ringView=   wx.Panel(self.parent, pos=(0,40), size=(16,16))
         self.ring2View=  wx.Panel(self.parent, pos=(0,40), size=(16,16))
