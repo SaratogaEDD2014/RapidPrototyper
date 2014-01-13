@@ -65,13 +65,13 @@ class DynamicPanelBox(DynamicPanel):
         dc.DrawArc(w,fillet, w-fillet,1, w-fillet,fillet)
         dc.DrawArc(w-fillet,h, w,h-fillet, w-fillet,h-fillet)"""
 
-def dim_color(color, dim_value=10):
-    r = max(color.Red()-25, 0)
-    g = max(color.Green()-25, 0)
-    b = max(color.Blue()-25, 0)
+def dim_color(color, dim_value=25):
+    r = min(max(color.Red()-dim_value, 0), 255)
+    g = min(max(color.Green()-dim_value, 0), 255)
+    b = min(max(color.Blue()-dim_value, 0), 255)
     return wx.Colour(r,g,b)
 
-def draw_centered_text(obj, text, scale=1.0, font=None, dc = None):
+def draw_centered_text(obj, text, scale=1.0, font=None, dc = None, color=settings.button_text):
     """Draws given string centered on given object"""
     text_area_width = obj.GetSize()[0]*scale
     text_point_size = int((text_area_width/7.11222063894596))
@@ -82,11 +82,64 @@ def draw_centered_text(obj, text, scale=1.0, font=None, dc = None):
     if dc == None:
         dc = wx.ClientDC(obj)
     dc.SetFont(font)
-    dc.SetTextForeground(settings.button_text)
+    dc.SetTextForeground(color)
     #use object and text width to center it
     w,h = obj.GetSize()
     tw,th = dc.GetTextExtent(text)
     dc.DrawText(text, (w-tw)/2, (h-th)/2)
+
+def draw_text_left(obj, text, scale=1.0, font=None, dc=None, color=settings.button_text):
+    """Draws given string left-justified on given object"""
+    text_area_width = obj.GetSize()[0]*scale
+    text_point_size = int((text_area_width/7.11222063894596))
+    if font == None:
+        #not set as default parameter because wx.Font obj cannot be created before wx.App
+        font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+    font.SetPointSize(text_point_size)
+    if dc == None:
+        dc = wx.ClientDC(obj)
+    dc.SetFont(font)
+    dc.SetTextForeground(color)
+    #use object and text width to center it
+    w,h = obj.GetSize()
+    tw,th = dc.GetTextExtent(text)
+    dc.DrawText(text, 0, (h-th)/2)
+
+def draw_text_right(obj, text, scale=1.0, font=None, dc=None, color=settings.button_text):
+    """Draws given string left-justified on given object"""
+    text_area_width = obj.GetSize()[0]*scale
+    text_point_size = int((text_area_width/7.11222063894596))
+    if font == None:
+        #not set as default parameter because wx.Font obj cannot be created before wx.App
+        font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+    font.SetPointSize(text_point_size)
+    if dc == None:
+        dc = wx.ClientDC(obj)
+    dc.SetFont(font)
+    dc.SetTextForeground(color)
+    #use object and text width to center it
+    w,h = obj.GetSize()
+    tw,th = dc.GetTextExtent(text)
+    dc.DrawText(text, w-tw, (h-th)/2)
+
+class TitleBreak(wx.Window):
+    def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=(200,50), label="Title", color=settings.defaultForeground):
+        super(TitleBreak, self).__init__(parent, id, pos, size)
+        self.SetBackgroundColour(self.GetParent().GetBackgroundColour())
+        self.text = label
+        self.color = color
+        self.Bind(wx.EVT_PAINT, self.on_paint)
+
+    def on_paint(self, event):
+        event.Skip(True)
+        dc = wx.PaintDC(self)
+        dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
+        dc.Clear()
+        w,h = self.GetSize()
+        dc.GradientFillLinear((0,(h*7)/15, (w*3)/10,h/15), self.GetBackgroundColour(), self.color, wx.EAST)
+        dc.GradientFillLinear(((w*7)/10,(h*7)/15, (w*3)/10,h/15), self.color, self.GetBackgroundColour(), wx.EAST)
+        draw_centered_text(self, self.text, (.25), dc=dc, color=self.color)
+
 
 def main():
     app = wx.App()
@@ -95,9 +148,10 @@ def main():
     text  = wx.StaticText(panel, label="test 1")
     text2 = wx.StaticText(panel, label="test 2")
     text3 = wx.StaticText(panel, label="test 3")
-    text4 = wx.StaticText(panel, label="test 4")
+    text4 = TitleBreak(panel, label="heyyyyyy")
     elements = [text, text2, text3, text4]
     panel.elements = elements
     frm.Show(True)
     app.MainLoop()
-#main()
+if __name__ =='__main__':
+    main()
