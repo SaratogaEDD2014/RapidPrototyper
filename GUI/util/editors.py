@@ -2,6 +2,7 @@ import wx
 import GUI.settings
 from GUI.BubbleMenu import *
 from GUI.util.calc_dialog import *
+from GUI.util.app_util import draw_centered_text, draw_text_left
 
 class TouchSpin(wx.Window):
     def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, precision=2, name="NoName"):  #TODO: add style/formatting flags for constructor
@@ -102,19 +103,163 @@ class LabeledSpin(wx.Panel):
     def SetValue(self, val):
         self.control.SetValue(val)
 
+class DynamicDataDisplay(wx.Window):
+    def __init__(self, parent, value, pos=wx.DefaultPosition, size=wx.DefaultSize):
+        super(DynamicDataDisplay, self).__init__(parent, pos=pos, size=size)
+        self.value = value
+        self.Bind(wx.EVT_PAINT, self.on_paint)
+    def on_paint(self, event):
+        event.Skip(True)
+        dc = wx.PaintDC(self)
+        dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
+        dc.Clear()
+        draw_centered_text(self, str(self.value), 1.0, dc=dc, color=settings.defaultForeground)
+
+    def SetValue(self, num):
+        self.value = num
+        self.Refresh()
+    def GetValue(self):
+        return self.value
+
+class DimensionEditor(wx.Window):
+    def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, precision=2, name="NoName", text_color=settings.defaultBackground):
+        super(DimensionEditor, self).__init__(parent, id, pos, size)
+        self.BackgroundColour = self.GetParent().GetBackgroundColour()
+        self._value=value
+        self._range=limits
+        self._precision=precision
+        self.increment=increment
+        self._name=name
+        self._text_color = text_color
+
+        w,h = self.GetSize()
+        self.label = wx.Window(self, size=(w/2, h))
+        #increase contrast of gradient
+        inside_color = dim_color(settings.defaultAccent, -30)
+        outside_color = dim_color(settings.defaultAccent, 20)
+        self.button = DynamicButtonRect(self, "Edit", inside_color, settings.defaultAccent, outline = settings.defaultAccent)
+        self.button.SetSize((w/4, h))
+        self.data = DynamicDataDisplay(self, value, size=(w/4,h))
+
+        self.Bind(wx.EVT_BUTTON, self.on_click)
+        self.Bind(wx.EVT_SIZE, self.on_size)
+        self.Bind(wx.EVT_PAINT, self.on_paint)
+
+    def on_paint(self, event):
+        event.Skip(True)
+        dc = wx.PaintDC(self.label)
+        dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
+        dc.Clear()
+        draw_text_left(self, self.name, .25, dc=dc, color=self._text_color)
+
+    def on_size(self, event):
+        event.Skip(True)
+        w,h = self.GetSize()
+        self.label.SetSize((w/2, h))
+        self.button.SetSize((w/5, h))
+        self.button.SetPosition(((3*w)/5,0))
+        self.data.SetSize((w/5, h))
+        self.data.SetPosition(((4*w)/5, 0))
+
+    def on_click(self, event):
+        source=event.GetEventObject()
+        if self.button is source:
+            self.value = calc_value('Edit '+self.name+':')
+
+    def SetValue(self, val):
+        self._value = val
+        self.data.SetValue(round(float(self._value),self._precision))
+    def GetValue(self):
+        return round(float(self._value),self._precision)
+    value=property(GetValue, SetValue)
+
+    def SetName(self, val):
+        self._name=val
+    def GetName(self):
+        return self._name
+    name=property(GetName, SetName)
+
+    def setIncrement(self, val):
+        self._inc=val
+    def getIncrement(self):
+        return self._inc
+    increment=property(getIncrement, setIncrement)
+
+    def SetPrecision(self, val):
+        self._precision=val
+    def GetPrecision(self):
+        return self._precision
+    precision=property(GetPrecision, SetPrecision)
+
+    def setRange(self, val):
+        self._range=val
+    def getRange(self):
+        return self._range
+    range=property(getRange, setRange)
+
+class DimensionComboBox(wx.Window):
+    def __init__(self, parent, value, choices, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize, name="NoName", text_color=settings.defaultBackground):
+        super(DimensionComboBox, self).__init__(parent, id, pos, size)
+        self.BackgroundColour = self.GetParent().GetBackgroundColour()
+        self._name=name
+        self._text_color = text_color
+
+        w,h = self.GetSize()
+        self.label = wx.Window(self, size=(w/2, h))
+        #increase contrast of gradient
+        self.box = wx.ComboBox(self, value=value, choices=choices)
+        self.box.SetSize((w/5, h))
+        self.box.SetPosition(((4*w)/5, 0))
+
+        self.Bind(wx.EVT_SIZE, self.on_size)
+        self.Bind(wx.EVT_PAINT, self.on_paint)
+
+    def on_paint(self, event):
+        event.Skip(True)
+        dc = wx.PaintDC(self.label)
+        dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
+        dc.Clear()
+        draw_text_left(self, self.name, .25, dc=dc, color=self._text_color)
+
+    def on_size(self, event):
+        event.Skip(True)
+        w,h = self.GetSize()
+        self.label.SetSize((w/2, h))
+        self.box.SetSize((w/5, h))
+        self.box.SetPosition(((3*w)/4, 0))
+
+    def SetValue(self, val):
+        self.box.SetValue(val)
+    def GetValue(self):
+        return self.box.GetValue()
+    value=property(GetValue, SetValue)
+
+    def SetName(self, val):
+        self._name=val
+    def GetName(self):
+        return self._name
+    name=property(GetName, SetName)
 
 def main():
     ProtoApp = wx.App()
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
-
-    sizer=wx.GridSizer(1,2)
-    touchspin=TouchSpin(frm)
-    lblspin=LabeledSpin(frm)
+    panel1 = wx.Panel(frm)
+    panel1.SetBackgroundColour(wx.Colour(0,255,0))
+    mastersizer = wx.GridSizer(1,2)
+    panel = wx.Panel(frm)
+    sizer=wx.GridSizer(3,1)
+    touchspin = DimensionEditor(panel, name="hey")
+    lblspin = DimensionEditor(panel, name="two")
+    dynamic = DimensionEditor(panel)
     sizer.Add(touchspin)
     sizer.Add(lblspin, flag=wx.EXPAND)
-    #panel.Show(True)
-
-    frm.SetSizer(sizer)
+    sizer.Add(dynamic, flag=wx.EXPAND)
+    panel.SetSizer(sizer)
+    mastersizer.Add(panel1, flag=wx.EXPAND)
+    mastersizer.Add(panel, flag=wx.EXPAND)
+    frm.SetSizer(mastersizer)
+    #panel = DynamicDataDisplay(frm, 12, pos=(25,25), size=(100,100))
+    #panel.SetBackgroundColour(settings.defaultForeground)
     frm.Show(True)
     ProtoApp.MainLoop()
 
