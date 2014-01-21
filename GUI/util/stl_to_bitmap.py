@@ -150,6 +150,17 @@ class Facet:
             for line in (self.a, self.b, self.c):
                 print line.calc_xy(z)
 
+
+def OnSaveToFile( self, event ):
+        context = wx.ClientDC( self )
+        memory = wx.MemoryDC( )
+        x, y = self.ClientSize
+        bitmap = wx.EmptyBitmap( x, y, -1 )
+        memory.SelectObject( bitmap )
+        memory.Blit( 0, 0, x, y, context, 0, 0)
+        memory.SelectObject( wx.NullBitmap)
+        bitmap.SaveFile( 'test.bmp', wx.BITMAP_TYPE_BMP )
+
 #read text stl match keywords to grab the points to build the model
 def process_file(filename, bitmap_dir):
     f = open(filename,'r')
@@ -167,6 +178,10 @@ def process_file(filename, bitmap_dir):
     for facets in facets:
         facet.add_to_bmps(bitmap_dir, filename)
     f.close()
+
+def convert_stl_to_bitmap(stl_file):
+    wxBmap = wx.EmptyBitmap( 1, 1 )     # Create a bitmap container object. The size values are dummies.
+    wxBmap.LoadFile( filename, wx.BITMAP_TYPE_ANY )   # Load it with a file image.
 
 
 def main():
