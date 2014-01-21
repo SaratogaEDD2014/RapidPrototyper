@@ -1,4 +1,7 @@
-STEP = .125
+import wx
+import GUI.settings as settings
+
+STEP = 0.012
 
 def drange(start, stop, step):
     r = start
@@ -7,9 +10,10 @@ def drange(start, stop, step):
         r += step
 def drange_inclusive(start, stop, step):
     r = start
-    while r <= stop:
+    while r < stop:
         yield r
         r += step
+    yield stop
 
 def normalize(num, step=.01234):
     factor = round(num/step)
@@ -109,7 +113,7 @@ class Line3d():
             x = x_list[0][0]
             line_xy = LineSegment(self.x1, self.y1, self.x2, self.y2)
             y = line_xy.calc_y(x)
-            if len(y)<0:
+            if len(y)<1:
                 #Is not part of the domain
                 return None
             points.append((x, y[0][1]))
@@ -133,6 +137,12 @@ class Facet:
         self.b = Line3d(p2, p3)
         self.c = Line3d(p3, p1)
         self.normal = normal
+    def print_lines(self):
+        for line in (self.a, self.b, self.c):
+            """print (line.x1, line.y1, line.z1)
+            print (line.x2, line.y2, line.z2)
+            print"""
+            pass
     def max_z(self):
         return max(self.a.z1, self.a.z2,
                 self.b.z1, self.b.z2,
@@ -175,8 +185,9 @@ def process_file(filename, bitmap_dir):
                     p1,p2,p3 = triplet
                     facets.append(Facet(p1,p2,p3))
                     triplet = []
-    for facets in facets:
+    for facet in facets:
         facet.add_to_bmps(bitmap_dir, filename)
+    print "done"
     f.close()
 
 def convert_stl_to_bitmap(stl_file):
@@ -196,8 +207,9 @@ def main():
     p2 = Point3D(0,0,0)
     p3 = Point3D(1,1,1)
     face = Facet(p1, p2, p3)
-    face.add_to_bmps()
+    #face.add_to_bmps()
     #l_3D = Line3d(p2, p1)
+    process_file(settings.PATH+'examples/temp_file.stl', None)
     heyy = False
     while heyy:
         z = input("Give Z, I'll find its XY intercepts.")
