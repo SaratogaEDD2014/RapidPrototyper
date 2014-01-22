@@ -1,7 +1,9 @@
 import wx
 import GUI.settings as settings
+import os
 
 STEP = 0.012
+BITMAP_DIR = settings.PATH + 'generation_buffer/'
 
 def drange(start, stop, step):
     r = start
@@ -154,48 +156,73 @@ class Facet:
     def add_to_bmps(self, dir = None, filename=None):
         z1 = normalize(self.min_z(), STEP)
         z2 = normalize(self.max_z(), STEP)
+        name = filename.replace('.stl', '')
         for z in drange_inclusive(z1, z2, STEP):
-            print
-            print z
+            full_name = get_zlevel_full_name(z, dir, name)
+            bmp = get_zlevel_bmp(full_name)
+            dc = wx.MemoryDC()
+            dc.SelectObject(bmp)
+            dc.SetBrush(wx.Brush(wx.Colour(0,0,255)))
             for line in (self.a, self.b, self.c):
-                print line.calc_xy(z)
-
-
-def OnSaveToFile( self, event ):
-        context = wx.ClientDC( self )
-        memory = wx.MemoryDC( )
-        x, y = self.ClientSize
-        bitmap = wx.EmptyBitmap( x, y, -1 )
-        memory.SelectObject( bitmap )
-        memory.Blit( 0, 0, x, y, context, 0, 0)
-        memory.SelectObject( wx.NullBitmap)
-        bitmap.SaveFile( 'test.bmp', wx.BITMAP_TYPE_BMP )
+                for point in line.calc_xy(z):
+                    PPI = 400
+                    dc.DrawRectangle(0,0, point[0]*PPI, point[1]*PPI)
+            dc.SelectObject(wx.NullBitmap)
+            bmp.SaveFile(full_name, wx.BITMAP_TYPE_BMP)
 
 #read text stl match keywords to grab the points to build the model
-def process_file(filename, bitmap_dir):
+def process_file(filename):
     f = open(filename,'r')
+    basic_name = filename[filename.rfind('/'):]
+    print 'after cut' + basic_name
     facets = []
     triplet = []
     for line in f.readlines():
         words = line.split()
         if len(words) > 0:
             if words[0] =='vertex':
-                triplet.append((eval(words[1]), eval(words[2]), eval(words[3])))
+                #Get the points of the vertex:
+                #Normalize the Z component to a valid step layer, so we don't miss horizontal lines or facets
+                point = (eval(words[1]), eval(words[2]), normalize(eval(words[3]), STEP))
+                triplet.append(point)
                 if len(triplet) >= 3:
                     p1,p2,p3 = triplet
                     facets.append(Facet(p1,p2,p3))
                     triplet = []
     for facet in facets:
-        facet.add_to_bmps(bitmap_dir, filename)
+        facet.add_to_bmps(BITMAP_DIR, basic_name)
     print "done"
     f.close()
 
-def convert_stl_to_bitmap(stl_file):
-    wxBmap = wx.EmptyBitmap( 1, 1 )     # Create a bitmap container object. The size values are dummies.
-    wxBmap.LoadFile( filename, wx.BITMAP_TYPE_ANY )   # Load it with a file image.
+def get_zlevel_bmp(full_name):
+    """Returns wxBitmap for the given z-layer
+            -If a bitmap exists, it uses it as a base
+            -otherwise it creates an empty bitmap at that layer"""
+    if not os.path.isfile(full_name):
+        #if it doesn't exist, make a new bitmap
+        x, y = settings.BUILD_PIXELS
+        bitmap = wx.EmptyBitmap(x, y, -1)
+        print 'tried to save'+full_name
+        bitmap.SaveFile( full_name, wx.BITMAP_TYPE_BMP )
+    zbmp = wx.Bitmap(full_name)
+    #zbmp.LoadFile(full_name)
+    return zbmp
+
+def get_zlevel_full_name(z, path, name):
+    """Creates a unique bitmap name for each layer"""
+    #We use the z value and the name of the original file to generate a name
+    level_num = str(z)
+    decimal = len(level_num)- min(0, level_num.find('.')) #Record the places beyond the decimal, so 12 and .12 don't save to same layer
+    decimal = str(decimal)
+    level_num.replace('.','')#remove decimal point
+    prefix = path + name
+    suffix = '.bmp'
+    full_name = prefix + decimal + '-' + level_num + suffix
+    return full_name
 
 
 def main():
+    app = wx.App()
     """l = [12.34, 123.485602648, 1, 3.4, -7.6, -4]
     print l
     print normalize_list(l, .0002345)
@@ -209,7 +236,7 @@ def main():
     face = Facet(p1, p2, p3)
     #face.add_to_bmps()
     #l_3D = Line3d(p2, p1)
-    process_file(settings.PATH+'examples/temp_file.stl', None)
+    process_file(settings.PATH+'examples/temp_file.stl')
     heyy = False
     while heyy:
         z = input("Give Z, I'll find its XY intercepts.")
@@ -218,6 +245,7 @@ def main():
             print l_3D.calc_xy(z), '\n'
         else:
             heyy = False
+    app.Destroy()
 
 if __name__ == '__main__':
     main()
