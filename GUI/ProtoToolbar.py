@@ -4,6 +4,7 @@ from ToolbarButton import *
 import GUI.settings as settings
 import GUI.util.app_util as blank_graphics
 import BubbleEvent
+import sys
 
 class ProtoToolbar(wx.Panel):
     def __init__(self, parent, id=-1, position=(0,0), size=wx.Size(settings.app_w, settings.toolbar_h)):
@@ -34,7 +35,8 @@ class ProtoToolbar(wx.Panel):
     def toolbarEvent(self, event):
         cmd=event.GetEventObject().name
         if cmd == self.quitButton.name:
-            self.GetParent().Destroy()
+            #self.GetParent().Destroy()
+            sys.exit()
         if cmd == self.backButton.name:
             settings.goto_prev_page()
 
