@@ -20,4 +20,5 @@ Information and updates on both projects can be found at: http://saratogainvente
 
 Open source projects and contributors that have helped make this project possible:
 Michael Fogleman - His [Stack Overflow post](http://stackoverflow.com/questions/6449709/wxpython-changing-the-shape-of-bitmap-button) helped in our design of our circular and dynamically sized menu buttons
+
 Derek Lura and Bruce Sherwood - Their [STL file parser](http://www.vpython.org/contents/contributed/convert_stl.zip) for VPython is used to display our parts before printing
