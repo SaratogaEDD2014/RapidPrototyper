@@ -16,3 +16,8 @@ Who we are:
 The Saratoga Springs High School InventTeam, comprised of students from the Engineering Design and Development course, has been working on innovative projects for many years. This year's group is larger than ever, and has chosen to pursue two separate projects. The larger group includes the students hosting this repository, and is working on developing the 3D printer described above. The smaller group is working with local schools to develop elementary curriculums for STEM education.
 
 Information and updates on both projects can be found at: http://saratogainventeam.blogspot.com/
+
+
+Open source projects and contributors that have helped make this project possible:
+Michael Fogleman - His [Stack Overflow post](http://stackoverflow.com/questions/6449709/wxpython-changing-the-shape-of-bitmap-button) helped in our design of our circular and dynamically sized menu buttons
+Derek Lura and Bruce Sherwood - Their [STL file parser](http://www.vpython.org/contents/contributed/convert_stl.zip) for VPython is used to display our parts before printing
