@@ -13,17 +13,13 @@ class Layer(wx.MemoryDC):
         self.SetBrush(wx.Brush(wx.Colour(255,0,0)))
         self.SelectObject(self.bmp)
     def save(self):
-        self.SelectObject(wx.NullBitmap)
         self.bmp.SaveFile(self.name, wx.BITMAP_TYPE_BMP)
-        self.SelectObject(self.bmp)
     def demo_draw(self):
         self.DrawRectangle(0,0,50,50)
         self.SetPen(wx.Pen(wx.Colour(0,0,255), 3))
         self.DrawArc(25,25,75,75,50,50)
         self.SetBrush(wx.Brush(wx.Colour(50,190,50)))
         self.DrawCircle(80,80,18)
-    def close(self):
-        self.SelectObject(wx.NullBitmap)
 
 class LayerManager:
     def __init__(self, layer_step = .012, directory=None, filename=None, pixel_w=100, pixel_h=100):
