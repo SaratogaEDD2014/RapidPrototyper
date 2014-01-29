@@ -1,9 +1,13 @@
+from layer import *
+
 def normalize(num, step=.01234):
+    """Returns value rounded to nearest increment of step."""
     factor = round(num/step)
     num = step*factor
     return num
 
 def normalize_list(iterable, step=.01234):
+    """Returns a list of values rounded nearest to step."""
     l = []
     for element in iterable:
         l.append(normalize(element, step))
@@ -18,6 +22,7 @@ def fequal(a, b, error=.00001):
 
 
 class Line3d():
+    """3D Line defined by two 3D points. Converts line into two 2D lines for calculations."""
     def __init__(self, p1, p2):
         self.x1 = p1[0]
         self.y1 = p1[1]
@@ -25,7 +30,6 @@ class Line3d():
         self.x2 = p2[0]
         self.y2 = p2[1]
         self.z2 = p2[2]
-        
     def get_xy(self, z):
         line_xz = Line2D(self.x1, self.z1, self.x2, self.z2) #Define line with X as independent, Z as dependent
         x = line_xz.calc_x(z)                                #Calculate the specific X for the given Z
@@ -36,6 +40,7 @@ class Line3d():
 
 
 class Line2D():
+    """Two dimensional line, defined by two points."""
     def __init__(self, x1, y1, x2, y2):
         self.x1 = float(x1)
         self.y1 = float(y1)
@@ -61,7 +66,6 @@ class Point3D():
         self.x = float(x)
         self.y = float(y)
         self.z = float(z)
-
     def get_x(self):
         return self.x
     def set_x(self, num):
