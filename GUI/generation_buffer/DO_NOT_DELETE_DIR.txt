@@ -1,0 +1,2 @@
+*****This directory is very important********
+This is what we use to create bitmaps for each layer of printing
