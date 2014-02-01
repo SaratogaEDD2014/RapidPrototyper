@@ -4,6 +4,9 @@ import os
 
 STEP = 0.012
 BITMAP_DIR = settings.PATH + 'generation_buffer/'
+temp = wx.App()
+wPPI, hPPI = wx.GetDisplayPPI()
+temp.Destroy()
 
 def drange(start, stop, step):
     r = start
@@ -161,20 +164,27 @@ class Facet:
             full_name = get_zlevel_full_name(z, dir, name)
             bmp = get_zlevel_bmp(full_name)
             dc = wx.MemoryDC()
+            dc.SetPen(wx.Pen(wx.Colour(255,255,255), 1))
             dc.SelectObject(bmp)
             dc.SetBrush(wx.Brush(wx.Colour(0,0,255)))
+            level = []
             for line in (self.a, self.b, self.c):
                 for point in line.calc_xy(z):
-                    PPI = 400
-                    dc.DrawRectangle(0,0, point[0]*PPI, point[1]*PPI)
+                    level.append((int(point[0]*wPPI), int(point[1]*hPPI)))
+            if len(level)>1:
+                if len(level)==6:
+                    #All three segments are on in the plane
+                    dc.DrawPolygon(level)
+                else:
+                    dc.DrawLines(level)
             dc.SelectObject(wx.NullBitmap)
             bmp.SaveFile(full_name, wx.BITMAP_TYPE_BMP)
 
 #read text stl match keywords to grab the points to build the model
-def process_file(filename):
+def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=settings.BUILD_PIXELS[1]/(2*hPPI)):
+
     f = open(filename,'r')
     basic_name = filename[filename.rfind('/'):]
-    print 'after cut' + basic_name
     facets = []
     triplet = []
     for line in f.readlines():
@@ -183,12 +193,14 @@ def process_file(filename):
             if words[0] =='vertex':
                 #Get the points of the vertex:
                 #Normalize the Z component to a valid step layer, so we don't miss horizontal lines or facets
-                point = (eval(words[1]), eval(words[2]), normalize(eval(words[3]), STEP))
+                point = (eval(words[1]) + offsetx, eval(words[2]) + offsety, normalize(eval(words[3]), STEP))
+                #print point
                 triplet.append(point)
                 if len(triplet) >= 3:
                     p1,p2,p3 = triplet
                     facets.append(Facet(p1,p2,p3))
                     triplet = []
+    print "Made "+str(len(facets))+" facets"
     for facet in facets:
         facet.add_to_bmps(BITMAP_DIR, basic_name)
     print "done"
@@ -202,7 +214,6 @@ def get_zlevel_bmp(full_name):
         #if it doesn't exist, make a new bitmap
         x, y = settings.BUILD_PIXELS
         bitmap = wx.EmptyBitmap(x, y, -1)
-        print 'tried to save'+full_name
         bitmap.SaveFile( full_name, wx.BITMAP_TYPE_BMP )
     zbmp = wx.Bitmap(full_name)
     #zbmp.LoadFile(full_name)
