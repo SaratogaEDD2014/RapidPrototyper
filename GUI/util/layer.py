@@ -1,7 +1,15 @@
+from numpy import *
 import wx
 
-dir = 'C:/Users/s.krulcik/Documents/Temp/'
+#dir = 'C:/Users/s.krulcik/Documents/Temp/'
+directory = 'C:/Users/krulciks14/Pictures'
 name = 'size'
+
+def normalize(num, step=.01234):
+    """Returns value rounded to nearest increment of step."""
+    factor = round(num/step)
+    num = step*factor
+    return num
 
 class Layer(wx.MemoryDC):
     def __init__(self, z_level, directory, filename, pixel_w=100, pixel_h=100):
@@ -10,10 +18,22 @@ class Layer(wx.MemoryDC):
         self.z = z_level
         self.name = directory + filename + zcode + '.bmp'
         self.bmp = wx.EmptyBitmap(pixel_w, pixel_h)
-        self.SetBrush(wx.Brush(wx.Colour(255,0,0)))
+        self.SetBrush(wx.Brush(wx.Colour(255,255,255)))
+        self.SetPen(wx.Pen(wx.Colour(255,255,255)))
         self.SelectObject(self.bmp)
     def save(self):
         self.bmp.SaveFile(self.name, wx.BITMAP_TYPE_BMP)
+        print 'save'
+    def draw(self, items):
+        if len(items)>1:
+            if len(items)==6:
+                #All three segments are on in the plane
+                self.DrawPolygon(items)
+            else:
+                self.DrawLines(items)
+    def Destroy(self):
+        self.SelectObject(wx.NullBitmap)
+        super(Layer, self).Destroy()
     def demo_draw(self):
         self.DrawRectangle(0,0,50,50)
         self.SetPen(wx.Pen(wx.Colour(0,0,255), 3))
@@ -24,27 +44,26 @@ class Layer(wx.MemoryDC):
 class LayerManager:
     def __init__(self, layer_step = .012, directory=None, filename=None, pixel_w=100, pixel_h=100):
        """Maintians a list of layer objects and has utilities to manage them"""
-        self.name= filename
-        self.dir = directory
-        self.layers = []
-        self.step = layer_step
-        self.pixel_w = pixel_w
-        self.pixel_h = pixel_h
+       self.name= filename
+       self.dir = directory
+       self.layers = []
+       self.step = layer_step
+       self.pixel_w = pixel_w
+       self.pixel_h = pixel_h
 
     def get_layer(self, z):
-       """Compares given z to layers. If layer exists, return it; otherwise create lesser layers and desired layers"""
+        """Compares given z to layers. If layer exists, return it; otherwise create lesser layers and desired layers"""
         #Normalize Z
-        z = normalize(z, step)
-
-        if z > max_z()):
-            create_layers_below(z)
-        else
+        z = normalize(z, self.step)
+        if( z > self.max_z()):
+            self.create_layers_below(z)
+        else:
             for i in self.layers:
-                if i.z = z:
+                if i.z == z:
                     return i
 
     def max_z(self):
-       """returns maximum z-value in layers"""
+        """returns maximum z-value in layers"""
         max = 0
         for i in self.layers:
             if i.z > max:
@@ -55,13 +74,13 @@ class LayerManager:
         """Given Z, it works backwords to build up layers up to z."""
 
         # normalize Z
-        z = self.normalize(z)
+        z = normalize(z)
 
-        startZ = (self.layers.length * self.step)
+        startZ = len(self.layers) * self.step
         num_new_layers = (z - startZ) / self.step
 
         curZ = startZ + self.step
-        for i in range(num_new_layers - 1):
+        for i in arange(num_new_layers - 1):
             self.create_layer(curZ)
             curZ += self.step
 
@@ -74,25 +93,20 @@ class LayerManager:
         self.layers.append(layer)
     def create_layer(self, z):
         """Instantiates new layer, then adds it to list"""
-        new_layer = layer(z, self.dir, self.name, self.pixel_w, self.pixel_h)
-        add_layer(new_layer)
+        new_layer = Layer(z, self.dir, self.name, self.pixel_w, self.pixel_h)
+        self.add_layer(new_layer)
 
     def set_layer(self, z, layer):
         """Replaces a current layer in the list with new one"""
-        self.layers.index(get_layer(z)) = layer
+        index = self.layers.index(get_layer(z))
+        self.layers[index] = layer
 
-    def normalize(num, step=.01234):
-        """Returns value rounded to nearest increment of step."""
-        factor = round(num/step)
-        num = step*factor
-        return num
 
 
 
 def main():
     app = wx.App()
-    layer = Layer(.00123, dir, name)
-    layer.demo_draw()
-    layer.save()
+    manager = LayerManager(.0123, directory, name)
+    manager.get_layer(1.0)
     app.MainLoop()
 main()
