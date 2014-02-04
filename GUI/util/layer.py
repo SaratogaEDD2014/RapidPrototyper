@@ -23,8 +23,8 @@ class Layer(wx.MemoryDC):
 
 class LayerManager:
     def __init__(self, layer_step = .012, directory=None, filename=None, pixel_w=100, pixel_h=100):
-       """Maintians a list of layer objects and has utilities to manage them"""
-        self.name= filename
+        """Maintians a list of layer objects and has utilities to manage them"""
+        self.name = filename
         self.dir = directory
         self.layers = []
         self.step = layer_step
@@ -32,19 +32,18 @@ class LayerManager:
         self.pixel_h = pixel_h
 
     def get_layer(self, z):
-       """Compares given z to layers. If layer exists, return it; otherwise create lesser layers and desired layers"""
+        """Compares given z to layers. If layer exists, return it; otherwise create lesser layers and desired layers"""
         #Normalize Z
         z = normalize(z, step)
-
-        if z > max_z()):
+        if z > max_z():
             create_layers_below(z)
-        else
+        else:
             for i in self.layers:
-                if i.z = z:
+                if i.z == z:
                     return i
 
     def max_z(self):
-       """returns maximum z-value in layers"""
+        """returns maximum z-value in layers"""
         max = 0
         for i in self.layers:
             if i.z > max:
@@ -79,7 +78,9 @@ class LayerManager:
 
     def set_layer(self, z, layer):
         """Replaces a current layer in the list with new one"""
-        self.layers.index(get_layer(z)) = layer
+        i = self.layers.index(self.get_layer(z))
+        self.layers.remove(i)
+        self.layers.insert(i, layer)
 
     def normalize(num, step=.01234):
         """Returns value rounded to nearest increment of step."""
@@ -88,11 +89,10 @@ class LayerManager:
         return num
 
 
-
 def main():
     app = wx.App()
     layer = Layer(.00123, dir, name)
     layer.demo_draw()
-    layer.save()
+    #layer.save()
     app.MainLoop()
 main()

@@ -7,6 +7,7 @@ test = False
 #Resources Information:
 NAME = 'Charlie'
 BUILD_PIXELS = (1080, 960)
+BUILD_PPI = (int(BUILD_PIXELS[0]/9), int(BUILD_PIXELS[1]/6.5))
 PATH=os.path.dirname(os.path.realpath(__file__))+'/'
 IMAGE_PATH=PATH+"images/"
 sys.path.append(PATH[:PATH.rfind("GUI")])

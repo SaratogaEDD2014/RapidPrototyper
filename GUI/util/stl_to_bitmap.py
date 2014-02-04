@@ -1,11 +1,13 @@
+from layer import *
+from numpy import*
 import wx
 import GUI.settings as settings
 import os
 
-STEP = 0.012
+STEP = 0.012 * 5
 BITMAP_DIR = settings.PATH + 'generation_buffer/'
 temp = wx.App()
-wPPI, hPPI = wx.GetDisplayPPI()
+wPPI, hPPI = settings.BUILD_PPI
 temp.Destroy()
 
 def drange(start, stop, step):
@@ -166,7 +168,7 @@ class Facet:
             dc = wx.MemoryDC()
             dc.SetPen(wx.Pen(wx.Colour(255,255,255), 1))
             dc.SelectObject(bmp)
-            dc.SetBrush(wx.Brush(wx.Colour(0,0,255)))
+            dc.SetBrush(wx.Brush(wx.Colour(255,255,255)))
             level = []
             for line in (self.a, self.b, self.c):
                 for point in line.calc_xy(z):
