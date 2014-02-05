@@ -6,7 +6,6 @@ test = False
 
 #Resources Information:
 NAME = 'Charlie'
-BUILD_PIXELS = (1080, 960)
 PATH=os.path.dirname(os.path.realpath(__file__))+'/'
 IMAGE_PATH=PATH+"images/"
 sys.path.append(PATH[:PATH.rfind("GUI")])
@@ -68,7 +67,9 @@ def addRecentFile(filename):
 
 
 #Print Operations----------------------------------------------------------
-LAYER_DEPTH=.01 #IN INCHES
+LAYER_DEPTH=.012 *10 #IN INCHES
+BUILD_PIXELS = (1080, 960)
+BUILD_PPI = (BUILD_PIXELS[0]/9, BUILD_PIXELS[1]/6.5)
 
 
 #UI------------------------------------------------------------------------

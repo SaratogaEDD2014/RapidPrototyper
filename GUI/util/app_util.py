@@ -1,6 +1,23 @@
 import wx
 import GUI.settings as settings
 
+def normalize(num, step=.01234):
+    """Returns value rounded to nearest increment of step."""
+    factor = round(num/step)
+    num = step*factor
+    return num
+def normalize_list(iterable, step=.0001):
+    l = []
+    for element in iterable:
+        l.append(normalize(element, step))
+    return l
+def fequal(a, b, error=.0001):
+    """ Accounts for innacuracy in float storage.
+        Given two floats it determines if they are within
+        the acceptable error to be considered equal """
+    diff = abs(a-b)
+    return True if diff < error else False
+
 class BlankGradient(wx.Window):
     def __init__(self, parent=None, pos=wx.DefaultPosition, size=wx.DefaultSize, col1=wx.Colour(0, 0, 0), col2=wx.Colour(255, 255, 255), orientation=wx.NORTH):
         super(BlankGradient, self).__init__(parent, pos=pos, size=size)
