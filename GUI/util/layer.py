@@ -42,14 +42,31 @@ class LayerManager:
     def get_layer(self, z):
         """Compares given z to layers. If layer exists, return it; otherwise create lesser layers and desired layers"""
         #Normalize Z
+          z = normalize(z, self.step)
+        if(z > self.max_z()):
+        if z > self.max_z:
+            self.create_layers_below(z)
+            self.create_layer(z)
+        for i in self.layers:
+            if i.z == z:
+                return i
+        return self.layers[len(self.layers)-1]
+        """#Normalize Z
         z = normalize(z, self.step)
         if z > self.max_z:
             self.create_layers_below(z)
             self.create_layer(z)
-        return self.layers[int(round(z/self.step))]
+        return self.layers[int(round(z/self.step))]"""
 
     def get_max(self):
-        return len(self.layers)*self.step
+        if len(self.layers)>0:
+            max_z = self.layers[0]
+            for layer in self.layers:
+                if layer.z > max_z
+                    max_z = layer.z
+            return max_z
+        else: return 0.0
+        """return len(self.layers)*self.step"""
     max_z = property(get_max)
 
     def create_layers_below(self, z):
