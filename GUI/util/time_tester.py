@@ -34,7 +34,6 @@ def test1(process_function, test_designation):
     name = 'test_one_'
     designation = test_designation
     num_teeth  = [6, 12, 18, 24, 30, 36, 42]
-    num_facets = numpy.array(num_teeth)*56
     base_names = [(name+str(i)+'.stl') for i in range(len(num_teeth))]
     header_columns = ['Name', 'Num Teeth', 'Num Facets', designation]
 
@@ -53,13 +52,13 @@ def test1(process_function, test_designation):
     for i in range(len(base_names)):
         try:
             start_time = time.time()
-            process_function(test_path + base_names[i])
+            num_facets = process_function(test_path + base_names[i])
             process_time = str(time.time() - start_time)
         except:
             process_time = 'Error: Could not time, program failed.'
         wks.update_cell(data_row, 1, base_names[i])
         wks.update_cell(data_row, 2, num_teeth[i])
-        wks.update_cell(data_row, 3, num_facets[i])
+        wks.update_cell(data_row, 3, num_facets)
         wks.update_cell(data_row, 4, process_time)
         data_row += 1
     wks.update_cell(data_row, 1, "Seconds per facet:")
@@ -98,7 +97,8 @@ def test2(process_function, test_designation):
             start_time = time.time()
             process_function(test_path + base_names[i])
             process_time = str(time.time() - start_time)
-        except:
+        except Exception, e:
+            print e
             process_time = 'Error: Could not time, program failed.'
         wks.update_cell(data_row, 1, base_names[i])
         total_thickness = (thickness[i] + hub_thickness[i])
@@ -128,9 +128,9 @@ def as_alpha(index):
         return alpha[0]
 
 
-revision = 'A'
+revision = 'B'
 if __name__ == '__main__':
     app = wx.App()
-    test1(parser.process_file, 'Test'+revision)
+    #test1(parser.process_file, 'Test'+revision)
     test2(parser.process_file, 'Test'+revision)
     app.MainLoop()

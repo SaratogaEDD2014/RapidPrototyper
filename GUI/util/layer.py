@@ -1,5 +1,5 @@
 from numpy import *
-from app_util import normalize
+from app_util import normalize, fequal
 import wx
 import GUI.settings as settings
 
@@ -51,7 +51,7 @@ class LayerManager:
             return self.layers[len(self.layers)-1]
         else:
             for i in self.layers:
-                if i.z == z:
+                if fequal(i.z,z):
                     return i
                     break
         """#Normalize Z

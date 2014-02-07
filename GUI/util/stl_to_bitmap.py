@@ -76,13 +76,17 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
                     p1,p2,p3 = triplet
                     facets.append(Facet(p1,p2,p3))
                     triplet = []
-    print "Made "+str(len(facets))+" facets"
     for facet in facets:
         facet.add_to_bmps(layer_manager)
-    print "done"
     f.close()
+    return len(facets)
 
 def main():
+    app = wx.App()
+    process_file(settings.PATH+'examples/temp_file.stl')
+    app.Destroy()
+
+def test():
     app = wx.App()
     """l = [12.34, 123.485602648, 1, 3.4, -7.6, -4]
     print l
@@ -97,10 +101,6 @@ def main():
     face = Facet(p1, p2, p3)
     #face.add_to_bmps()
     #l_3D = Line3d(p2, p1)
-    import time
-    start = time.time()
-    process_file(settings.PATH+'examples/temp_file.stl')
-    print time.time()-start
     heyy = False
     while heyy:
         z = input("Give Z, I'll find its XY intercepts.")

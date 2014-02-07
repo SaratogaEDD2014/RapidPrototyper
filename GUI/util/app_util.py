@@ -15,8 +15,7 @@ def fequal(a, b, error=.0001):
     """ Accounts for innacuracy in float storage.
         Given two floats it determines if they are within
         the acceptable error to be considered equal """
-    diff = abs(a-b)
-    return True if diff < error else False
+    return abs(a-b) < error
 
 class BlankGradient(wx.Window):
     def __init__(self, parent=None, pos=wx.DefaultPosition, size=wx.DefaultSize, col1=wx.Colour(0, 0, 0), col2=wx.Colour(255, 255, 255), orientation=wx.NORTH):
