@@ -1,5 +1,6 @@
 from app_util import normalize, normalize_list, fequal
 from geometry_3D import *
+from layer import *
 from numpy import *
 import wx
 import GUI.settings as settings
@@ -29,17 +30,12 @@ class Facet:
         return min(self.a.z1, self.a.z2,
                 self.b.z1, self.b.z2,
                 self.c.z1, self.c.z2)
-    def add_to_bmps(self, dir = None, filename=None):
+    def add_to_bmps(self, manager):
         z1 = normalize(self.min_z(), STEP)
         z2 = normalize(self.max_z(), STEP)
         name = filename.replace('.stl', '')
         for z in arange(z1, z2+STEP, STEP):
-            full_name = get_zlevel_full_name(z, dir, name)
-            bmp = get_zlevel_bmp(full_name)
-            dc = wx.MemoryDC()
-            dc.SetPen(wx.Pen(wx.Colour(255,255,255), 1))
-            dc.SelectObject(bmp)
-            dc.SetBrush(wx.Brush(wx.Colour(0,0,255)))
+            layer = manager.get_layer(z)
             level = []
             for line in (self.a, self.b, self.c):
                 for point in line.calc_xy(z):
@@ -47,11 +43,10 @@ class Facet:
             if len(level)>1:
                 if len(level)==6:
                     #All three segments are on in the plane
-                    dc.DrawPolygon(level)
+                    layer.DrawPolygon(level)
                 else:
-                    dc.DrawLines(level)
-            dc.SelectObject(wx.NullBitmap)
-            bmp.SaveFile(full_name, wx.BITMAP_TYPE_BMP)
+                    layer.DrawLines(level)
+            layer.save()
 
 #read text stl match keywords to grab the points to build the model
 def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=settings.BUILD_PIXELS[1]/(2*hPPI)):
@@ -65,6 +60,7 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
             print e
     f = open(filename,'r')
     basic_name = filename[filename.rfind('/'):]
+    layer_manager = LayerManager(settings.LAYER_DEPTH, BITMAP_DIR, basic_name, settings.BUILD_PIXELS[0], settings.BUILD_PIXELS[1])
     facets = []
     triplet = []
     for line in f.readlines():
@@ -76,41 +72,15 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
                 point = (eval(words[1]) + offsetx, eval(words[2]) + offsety, normalize(eval(words[3]), STEP))
                 #print point
                 triplet.append(point)
-                if len(triplet) >= 3:
+                if len(triplet) == 3:
                     p1,p2,p3 = triplet
                     facets.append(Facet(p1,p2,p3))
                     triplet = []
     print "Made "+str(len(facets))+" facets"
     for facet in facets:
-        facet.add_to_bmps(BITMAP_DIR, basic_name)
+        facet.add_to_bmps(layer_manager)
     print "done"
     f.close()
-
-def get_zlevel_bmp(full_name):
-    """Returns wxBitmap for the given z-layer
-            -If a bitmap exists, it uses it as a base
-            -otherwise it creates an empty bitmap at that layer"""
-    if not os.path.isfile(full_name):
-        #if it doesn't exist, make a new bitmap
-        x, y = settings.BUILD_PIXELS
-        bitmap = wx.EmptyBitmap(x, y, -1)
-        bitmap.SaveFile( full_name, wx.BITMAP_TYPE_BMP )
-    zbmp = wx.Bitmap(full_name)
-    #zbmp.LoadFile(full_name)
-    return zbmp
-
-def get_zlevel_full_name(z, path, name):
-    """Creates a unique bitmap name for each layer"""
-    #We use the z value and the name of the original file to generate a name
-    level_num = str(z)
-    decimal = len(level_num)- min(0, level_num.find('.')) #Record the places beyond the decimal, so 12 and .12 don't save to same layer
-    decimal = str(decimal)
-    level_num.replace('.','')#remove decimal point
-    prefix = path + name
-    suffix = '.bmp'
-    full_name = prefix + decimal + '-' + level_num + suffix
-    return full_name
-
 
 def main():
     app = wx.App()
