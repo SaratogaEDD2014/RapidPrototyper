@@ -1,13 +1,13 @@
 ##TEST 1: NUMBER OF FACETS
 ##    Gear Dimensions:
 ##        bore diameter: 1.0
-##        number of teeth: [10, 20, 40, 80, 160, 320, 640]
+##        number of teeth: [6, 12, 18, 24, 30, 36, 42]
 ##        pitch diameter: 3.0
 ##        tooth shape: trapezoid
 ##        thickness: .25
 ##
-##        hub diameter: 2.0
-##        hub thickness: .25
+##        hub diameter: 0.0
+##        hub thickness: 0.0
 ##
 ##TEST 2: THICKNESS TEST
 ##    Gear Dimensions:
@@ -15,25 +15,25 @@
 ##        number of teeth: 16
 ##        pitch diameter: 3.0
 ##        tooth shape: trapezoid
-##        thickness: [1, 2, 3, 4, 5, 6, 7]
+##        thickness:[.2, .4, .6, .8, 1., 1.2, 1.4]
 ##
 ##        hub diameter: 2.0
-##        hub thickness: [1, 2, 3, 4, 5, 6, 7]
+##        hub thickness: [.2, .4, .6, .8, 1., 1.2, 1.4]
 import wx
 import time
 import gspread
 import numpy
 import GUI.util.stl_to_bitmap as parser
-import GUI.settings
+import GUI.settings as settings
 
-def test1(process_function):
+def test1(process_function, test_designation):
     #define test conditions and headers
     header_row = 1
     data_row = header_row + 1
     test_path = 'C:/Users/Robert Krulcik/Documents/GitHub/EfficiencyTesting/'
     name = 'test_one_'
-    designation = 'TestA'
-    num_teeth  = [10, 20, 40, 80, 160, 320]
+    designation = test_designation
+    num_teeth  = [6, 12, 18, 24, 30, 36, 42]
     num_facets = numpy.array(num_teeth)*56
     base_names = [(name+str(i)+'.stl') for i in range(len(num_teeth))]
     header_columns = ['Name', 'Num Teeth', 'Num Facets', designation]
@@ -69,18 +69,18 @@ def test1(process_function):
     end_seconds = as_alpha(4) + str(data_row-1)
     wks.update_cell(data_row, 2, "=SUM("+start_seconds+":"+end_seconds+")/SUM("+start_facets+":"+end_facets+")")
 
-def test2(process_function):
+def test2(process_function, test_designation):
     #define test conditions and headers
     header_row = 12
     data_row = header_row + 1
     test_path = 'C:/Users/Robert Krulcik/Documents/GitHub/EfficiencyTesting/'
     name = 'test_two_'
-    designation = 'TestA'
-    thickness  = [1, 2, 3, 4, 5, 6, 7]
+    designation = test_designation
+    thickness  = [.2, .4, .6, .8, 1., 1.2, 1.4]
     hub_thickness = thickness[:]
     base_names = [(name+str(i)+'.stl') for i in range(len(thickness))]
     header_columns = ['Name', 'Total Thickness (in.)', 'Num Layers', designation]
-    
+
     #Set up spreadsheet
     gc = gspread.login('skrulcik@gmail.com', 'cvzaijcyqyexknlf')
     doc = gc.open("ProfileSTL")
@@ -88,7 +88,7 @@ def test2(process_function):
         wks = doc.worksheet(designation)
     except:
         wks = doc.add_worksheet(designation, 100,50)
-    
+
     #Fill in headers
     for i in range(len(header_columns)):
         wks.update_cell(header_row, i+1, header_columns[i])   #i+1 is because there is no '0' in spreadsheet
@@ -103,7 +103,7 @@ def test2(process_function):
         wks.update_cell(data_row, 1, base_names[i])
         total_thickness = (thickness[i] + hub_thickness[i])
         wks.update_cell(data_row, 2, total_thickness)
-        num_layers = total_thickness/settings.LAYER_DEPTH
+        num_layers = round(total_thickness/settings.LAYER_DEPTH)
         wks.update_cell(data_row, 3, num_layers)
         wks.update_cell(data_row, 4, process_time)
         data_row += 1
@@ -128,9 +128,9 @@ def as_alpha(index):
         return alpha[0]
 
 
-
+revision = 'A'
 if __name__ == '__main__':
     app = wx.App()
-    #test1(parser.process_file)
-    test2(parser.process_file)
+    test1(parser.process_file, 'Test'+revision)
+    test2(parser.process_file, 'Test'+revision)
     app.MainLoop()
