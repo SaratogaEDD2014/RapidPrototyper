@@ -33,7 +33,6 @@ class Facet:
     def add_to_bmps(self, manager):
         z1 = normalize(self.min_z(), STEP)
         z2 = normalize(self.max_z(), STEP)
-        name = filename.replace('.stl', '')
         for z in arange(z1, z2+STEP, STEP):
             layer = manager.get_layer(z)
             level = []
@@ -60,7 +59,8 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
             print e
     f = open(filename,'r')
     basic_name = filename[filename.rfind('/'):]
-    layer_manager = LayerManager(settings.LAYER_DEPTH, BITMAP_DIR, basic_name, settings.BUILD_PIXELS[0], settings.BUILD_PIXELS[1])
+    name = basic_name.replace('.stl', '')
+    layer_manager = LayerManager(settings.LAYER_DEPTH, BITMAP_DIR, name, settings.BUILD_PIXELS[0], settings.BUILD_PIXELS[1])
     facets = []
     triplet = []
     for line in f.readlines():
@@ -97,7 +97,10 @@ def main():
     face = Facet(p1, p2, p3)
     #face.add_to_bmps()
     #l_3D = Line3d(p2, p1)
+    import time
+    start = time.time()
     process_file(settings.PATH+'examples/temp_file.stl')
+    print time.time()-start
     heyy = False
     while heyy:
         z = input("Give Z, I'll find its XY intercepts.")

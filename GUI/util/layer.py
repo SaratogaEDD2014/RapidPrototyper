@@ -10,7 +10,8 @@ class Layer(wx.MemoryDC):
         self.z = z_level
         self.name = directory + filename + zcode + '.bmp'
         self.bmp = wx.EmptyBitmap(pixel_w, pixel_h)
-        self.SetBrush(wx.Brush(wx.Colour(255,0,0)))
+        self.SetBrush(wx.Brush(wx.Colour(245,245,255)))
+        self.SetPen(wx.Pen(wx.Colour(255,255,255)))
         self.SelectObject(self.bmp)
     def save(self):
         self.bmp.SaveFile(self.name, wx.BITMAP_TYPE_BMP)
@@ -38,19 +39,21 @@ class LayerManager:
         self.step = layer_step
         self.pixel_w = pixel_w
         self.pixel_h = pixel_h
+        self.create_layer(0.0)
 
     def get_layer(self, z):
         """Compares given z to layers. If layer exists, return it; otherwise create lesser layers and desired layers"""
         #Normalize Z
-          z = normalize(z, self.step)
-        if(z > self.max_z()):
+        z = normalize(z, self.step)
         if z > self.max_z:
             self.create_layers_below(z)
             self.create_layer(z)
-        for i in self.layers:
-            if i.z == z:
-                return i
-        return self.layers[len(self.layers)-1]
+            return self.layers[len(self.layers)-1]
+        else:
+            for i in self.layers:
+                if i.z == z:
+                    return i
+                    break
         """#Normalize Z
         z = normalize(z, self.step)
         if z > self.max_z:
@@ -60,9 +63,9 @@ class LayerManager:
 
     def get_max(self):
         if len(self.layers)>0:
-            max_z = self.layers[0]
+            max_z = self.layers[0].z
             for layer in self.layers:
-                if layer.z > max_z
+                if layer.z > max_z:
                     max_z = layer.z
             return max_z
         else: return 0.0
@@ -101,10 +104,7 @@ class LayerManager:
         """Instantiates new layer, then adds it to list"""
         new_layer = Layer(z, self.directory, self.name, self.pixel_w, self.pixel_h)
         new_layer.save()
-        print new_layer.z
         self.add_layer(new_layer)
-        print len(self.layers)
-        print
 
     def set_layer(self, z, layer):
         """Replaces a current layer in the list with new one"""
@@ -126,4 +126,5 @@ def main():
     layer.demo_draw()
     layer.save()
     app.MainLoop()
-main()
+if __name__ == "__main__":
+    main()
