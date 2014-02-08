@@ -1,5 +1,5 @@
-from myvisual import *
-from myvisual.filedialog import get_file
+from nested_visual import *
+#from nested_visual.filedialog import get_file
 
 # Convert 3D .stl file ("stereo lithography") to faces object.
 

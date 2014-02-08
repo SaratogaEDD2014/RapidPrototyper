@@ -1,7 +1,8 @@
 import wx
+from numpy import array
 import GUI.settings as settings
 from GUI.BubbleMenu import DynamicButtonRect
-from myvisual import *
+from nested_visual import *
 from visual.filedialog import get_file
 
 class STLViewer(wx.Panel):
@@ -24,19 +25,26 @@ class STLViewer(wx.Panel):
         if visible:
             if settings.display_part:
                 if self.viewer == None:
-                    self.viewer = display(window=None, x=0, y=settings.toolbar_h+20, width=(settings.app_w*2)/3, height=settings.app_h, forward=-vector(0,1,2), background=(1,1,1), foreground=(0.086,0.702,0.870))
-                settings.display_part=False
-                scene.width = scene.height = 480
-                scene.autocenter = True
-                self.model = stl_to_faces(self.file)
+                    w = settings.main_v_window
+                    background = array(settings.defaultBackground.Get())/255.
+                    foreground = array(settings.defaultForeground.Get())/255.
+                    self.display = display(window=w, x=0, y=settings.toolbar_h, width=settings.app_w/2, height=settings.app_h, forward=-vector(0,1,2), background=background, foreground=foreground)
+                    w.panel.SetSize((settings.app_w/2,settings.app_w))
+                    w.win.SendSizeEvent()
+                settings.display_part = False
+                self.display.autocenter =True
                 if self.file != "":
                     self.model = stl_to_faces(self.file)
                     self.model.smooth()
-                while not settings.display_part:
-                    rate(100)
+##                    self.label = label(pos=self.model.pos, text=self.file,
+##                        xoffset=1, line=0, yoffset=100, space=100,)
+                    n = self.file.name
+                    n = n.replace('\\', '/')
+                    n = n[n.rfind('/')+1:]
+                    self.title = label(text=n, xoffset=-5, yoffset= -25, space=0.2, pos=(0,0), opacity=0.5)
         else:
             settings.display_part=True
-            #self.viewer.window._OnExitApp(wx.CommandEvent())
+
 
 
 def stl_to_faces(fileinfo): # specify file
