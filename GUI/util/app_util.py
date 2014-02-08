@@ -1,3 +1,4 @@
+from numpy import array
 import wx
 import GUI.settings as settings
 
@@ -86,6 +87,9 @@ def dim_color(color, dim_value=25):
     g = min(max(color.Green()-dim_value, 0), 255)
     b = min(max(color.Blue()-dim_value, 0), 255)
     return wx.Colour(r,g,b)
+
+def color_to_ones(color):
+    return array(color.Get())/255.
 
 def draw_centered_text(obj, text, scale=1.0, font=None, dc = None, color=settings.button_text):
     """Draws given string centered on given object"""

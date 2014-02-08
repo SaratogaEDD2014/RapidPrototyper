@@ -2,6 +2,7 @@ import wx
 from numpy import array
 import GUI.settings as settings
 from GUI.BubbleMenu import DynamicButtonRect
+from GUI.util.app_util import color_to_ones
 from nested_visual import *
 from visual.filedialog import get_file
 
@@ -26,15 +27,28 @@ class STLViewer(wx.Panel):
             if settings.display_part:
                 if self.viewer == None:
                     w = settings.main_v_window
-                    background = array(settings.defaultBackground.Get())/255.
-                    foreground = array(settings.defaultForeground.Get())/255.
-                    self.display = display(window=w, x=0, y=settings.toolbar_h, width=settings.app_w/2, height=settings.app_h, forward=-vector(0,1,2), background=background, foreground=foreground)
-                    w.panel.SetSize((settings.app_w/2,settings.app_w))
+                    background = color_to_ones(settings.defaultBackground)
+                    foreground = color_to_ones(settings.defaultForeground)
+                    self.display = display(window=w, x=0, y=settings.toolbar_h, width=(settings.app_w*2)/3, height=settings.app_h, up=(0,0,1), forward=vector(-1,-1,-1), background=background, foreground=foreground)
+                    self.base_frame = frame()
+                    self.part_frame = frame()
+                    self.x_axis = arrow(pos=(0,0,0), axis=(50,0,0), shaftwidth=.005, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame)
+                    self.x_label = label(text='X', xoffset=1, yoffset= 1, space=0.2, pos=(50,0,0), box=False, frame=self.base_frame)
+                    self.y_axis = arrow(pos=(0,0,0), axis=(0,50,0), shaftwidth=.005, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame)
+                    self.y_label = label(text='y', xoffset=1, yoffset= 0, space=0.2, pos=(0,50,0), box=False, frame=self.base_frame)
+                    self.z_axis = arrow(pos=(0,0,0), axis=(0,0,50), shaftwidth=.005, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame)
+                    self.z_label = label(text='Z', xoffset=1, yoffset= 1, space=0.2, pos=(0,0,50), box=False, frame=self.base_frame)
+                    build_l, build_w = settings.BUILD_AREA
+                    build_h = .02
+                    self.platform = box(pos=(build_l/2, build_w/2, -build_h/2),
+                        length=build_l, width=build_h, height=build_w, opacity=0.2,
+                        color=color_to_ones(settings.secondBackground), frame=self.base_frame)
+                    w.panel.SetSize(((settings.app_w*2)/3,settings.app_w))
                     w.win.SendSizeEvent()
                 settings.display_part = False
-                self.display.autocenter =True
+                #self.display.autocenter =True
                 if self.file != "":
-                    self.model = stl_to_faces(self.file)
+                    self.model = stl_to_faces(self.file, self.part_frame)
                     self.model.smooth()
 ##                    self.label = label(pos=self.model.pos, text=self.file,
 ##                        xoffset=1, line=0, yoffset=100, space=100,)
@@ -47,7 +61,7 @@ class STLViewer(wx.Panel):
 
 
 
-def stl_to_faces(fileinfo): # specify file
+def stl_to_faces(fileinfo, frm=None): # specify file
     # Accept a file name or a file descriptor; make sure mode is 'rb' (read binary)
     if isinstance(fileinfo, str):
         fd = open(fileinfo, mode='rb')
@@ -104,7 +118,10 @@ def stl_to_faces(fileinfo): # specify file
         triNor = array(triNor)
 
     # Compose faces in default frame
-    f = frame()
+    if frm == None:
+        f = frame()
+    else:
+        f = frm
     return faces(frame=f, pos=triPos, normal=triNor)
 
 

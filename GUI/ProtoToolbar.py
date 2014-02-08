@@ -35,8 +35,8 @@ class ProtoToolbar(wx.Panel):
     def toolbarEvent(self, event):
         cmd=event.GetEventObject().name
         if cmd == self.quitButton.name:
-            #self.GetParent().Destroy()
-            sys.exit()
+            wx.Exit()
+            #sys.exit()
         if cmd == self.backButton.name:
             settings.goto_prev_page()
 
