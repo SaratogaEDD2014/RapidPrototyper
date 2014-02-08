@@ -54,7 +54,9 @@ def test1(process_function, test_designation):
             start_time = time.time()
             num_facets = process_function(test_path + base_names[i])
             process_time = str(time.time() - start_time)
-        except:
+        except Exception, e:
+            print 'failed',e
+            num_facets = 0
             process_time = 'Error: Could not time, program failed.'
         wks.update_cell(data_row, 1, base_names[i])
         wks.update_cell(data_row, 2, num_teeth[i])
@@ -128,9 +130,9 @@ def as_alpha(index):
         return alpha[0]
 
 
-revision = 'B'
+revision = 'C'
 if __name__ == '__main__':
     app = wx.App()
-    #test1(parser.process_file, 'Test'+revision)
+    test1(parser.process_file, 'Test'+revision)
     test2(parser.process_file, 'Test'+revision)
     app.MainLoop()

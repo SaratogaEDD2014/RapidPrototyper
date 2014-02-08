@@ -45,7 +45,6 @@ class Facet:
                     layer.DrawPolygon(level)
                 else:
                     layer.DrawLines(level)
-            layer.save()
 
 #read text stl match keywords to grab the points to build the model
 def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=settings.BUILD_PIXELS[1]/(2*hPPI)):
@@ -78,6 +77,8 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
                     triplet = []
     for facet in facets:
         facet.add_to_bmps(layer_manager)
+    for layer in layer_manager.layers:
+        layer.save()
     f.close()
     return len(facets)
 
