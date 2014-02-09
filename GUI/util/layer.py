@@ -10,7 +10,7 @@ class Layer(wx.MemoryDC):
         self.z = z_level
         self.name = directory + filename + zcode + '.bmp'
         self.bmp = wx.EmptyBitmap(pixel_w, pixel_h)
-        self.SetBrush(wx.Brush(wx.Colour(245,245,255)))
+        self.SetBrush(wx.Brush(wx.Colour(45,45,255)))
         self.SetPen(wx.Pen(wx.Colour(255,255,255)))
         self.SelectObject(self.bmp)
     def save(self):
@@ -21,12 +21,8 @@ class Layer(wx.MemoryDC):
         self.DrawArc(25,25,75,75,50,50)
         self.SetBrush(wx.Brush(wx.Colour(50,190,50)))
         self.DrawCircle(80,80,18)
-    def demo_draw(self):
-        self.DrawRectangle(0,0,50,50)
-        self.SetPen(wx.Pen(wx.Colour(0,255,0), 3))
-        self.DrawArc(25,25,75,75,50,50)
-        self.SetBrush(wx.Brush(wx.Colour(100,100,255)))
-        self.DrawCircle(80,80,18)
+    def get_z(self):
+        return self.z
     def close(self):
         self.SelectObject(wx.NullBitmap)
 
@@ -39,6 +35,8 @@ class LayerManager:
         self.step = layer_step
         self.pixel_w = pixel_w
         self.pixel_h = pixel_h
+        self.max_z = 0
+        self.min_z = 0
         self.create_layer(0.0)
 
     def get_layer(self, z):
@@ -48,35 +46,25 @@ class LayerManager:
         if z > self.max_z:
             self.create_layers_below(z)
             self.create_layer(z)
+            #self.max_z = z #Done automatically in add method
             return self.layers[len(self.layers)-1]
-        else:
-            for i in self.layers:
-                if fequal(i.z,z):
-                    return i
-                    break
-        """#Normalize Z
-        z = normalize(z, self.step)
-        if z > self.max_z:
-            self.create_layers_below(z)
+        elif z < self.min_z:
+            self.create_layers_above(z)
             self.create_layer(z)
-        return self.layers[int(round(z/self.step))]"""
-
-    def get_max(self):
-        if len(self.layers)>0:
-            max_z = self.layers[0].z
-            for layer in self.layers:
-                if layer.z > max_z:
-                    max_z = layer.z
-            return max_z
-        else: return 0.0
-        """return len(self.layers)*self.step"""
-    max_z = property(get_max)
+            #self.min_z = z #Done automatically in add method
+            return self.layers[0]
+        else:
+            rel_z = z-self.min_z
+            index = int(round(rel_z/self.step))
+            return self.layers[index]
 
     def create_layers_below(self, z):
         """Given Z, it works backwords to build up layers up to z."""
-        z = normalize(z, self.step)
-        startZ = self.max_z
-        for layer_value in arange(startZ, z, self.step):
+        for layer_value in arange(self.max_z+self.step, z, self.step):
+            self.create_layer(layer_value)
+    def create_layers_above(self, z):
+        """Builds each layer from z lower than min up to min layer."""
+        for layer_value in arange(z+self.step, self.min_z, self.step):
             self.create_layer(layer_value)
 
     def set_layers(self, new_array):
@@ -85,20 +73,19 @@ class LayerManager:
 
     def add_layer(self, layer):
         """Add a single layer to layer list"""
-        if layer.z >= self.max_z:
-#            if layer.z != self.layers[len(self.layers)-1].z+self.step:
-#                #If there is a gap between max and new highest layer
-#                self.create_layers_below(layer.z)
+        if layer.z > self.max_z:
+            self.max_z = layer.z
             self.layers.append(layer)
+        elif layer.z < self.min_z:
+            self.min_z = layer.z
+            self.layers.insert(0, layer)
         else:
-            for i in range(len(self.layers)-1, -1, -1):
-                if layer.z > self.layers[i].z:
-                    if layer.z == self.layers[i+1]:
-                        #should avoid index out of bounds because of first if in function
-                        #This means a layer already exists here
-                        self.layers.remove(i+1, layer)
-                    self.layers.insert(i+1, layer)
+            self.layers.insert(len(self.layers)/2, layer)
+            self.sort_layers()
 
+    def sort_layers(self):
+        """Sorts layers by z-values so their indices can be calculated rather than searched for."""
+        self.layers.sort(key=Layer.get_z)
 
     def create_layer(self, z):
         """Instantiates new layer, then adds it to list"""
@@ -118,12 +105,27 @@ def main():
     name = 'stuff'
     app = wx.App()
     #layer = Layer(.00123, directory, name)
-    manager = LayerManager(.12, directory, name)
+    tests = [[(635, 417), (538, 461), (538, 461), (537, 457), (537, 457), (635, 417)],
+            [(668, 420), (538, 461), (538, 461), (538, 466), (538, 466), (668, 420)],
+            [(668, 420), (538, 466), (538, 466), (670, 435), (670, 435), (668, 420)],
+            [(668, 420), (670, 435), (670, 435), (538, 466), (538, 466), (668, 420)],
+            [(668, 420), (538, 466), (538, 466), (538, 461), (538, 461), (668, 420)],
+            [(670, 435), (538, 466), (538, 466), (539, 470), (539, 470), (670, 435)],
+            [(670, 435), (539, 470), (539, 470), (642, 454), (642, 454), (670, 435)],
+            [(670, 435), (642, 454), (642, 454), (539, 470), (539, 470), (670, 435)],
+            [(670, 435), (539, 470), (539, 470), (538, 466), (538, 466), (670, 435)],
+            [(642, 454), (539, 470), (539, 470), (539, 475), (539, 475), (642, 454)],
+            [(642, 454), (539, 475), (539, 475), (643, 467), (643, 467), (642, 454)],
+            [(642, 454), (643, 467), (643, 467), (539, 475), (539, 475), (642, 454)]]
+
+    manager = LayerManager(.12, directory, name, pixel_w=settings.BUILD_PIXELS[0], pixel_h=settings.BUILD_PIXELS[1])
     layer = manager.get_layer(1)
     layer.demo_draw()
     layer.save()
     layer = manager.get_layer(0)
     layer.demo_draw()
+    for level in tests:
+        layer.DrawPolygon(level)
     layer.save()
     app.MainLoop()
 if __name__ == "__main__":

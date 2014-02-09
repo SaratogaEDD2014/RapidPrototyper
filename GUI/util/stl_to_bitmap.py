@@ -47,8 +47,9 @@ class Facet:
                     layer.DrawLines(level)
 
 #read text stl match keywords to grab the points to build the model
-def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=settings.BUILD_PIXELS[1]/(2*hPPI)):
+def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=settings.BUILD_PIXELS[1]/(2*hPPI), dialog=None):
     #clear bmp storage directory
+    if dialog!=None: dialog.Update(10, 'Deleting Files...')
     for the_file in os.listdir(BITMAP_DIR):
         file_path = os.path.join(BITMAP_DIR, the_file)
         try:
@@ -62,6 +63,7 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
     layer_manager = LayerManager(settings.LAYER_DEPTH, BITMAP_DIR, name, settings.BUILD_PIXELS[0], settings.BUILD_PIXELS[1])
     facets = []
     triplet = []
+    if dialog!=None: dialog.Update(27, 'Generating Facets...')
     for line in f.readlines():
         words = line.split()
         if len(words) > 0:
@@ -75,16 +77,19 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
                     p1,p2,p3 = triplet
                     facets.append(Facet(p1,p2,p3))
                     triplet = []
+    if dialog!=None: dialog.Update(78, 'Slicing '+str(len(facets))+' facets...')
     for facet in facets:
         facet.add_to_bmps(layer_manager)
+    if dialog!=None: dialog.Update(88, 'Saving bitmaps...')
     for layer in layer_manager.layers:
         layer.save()
+    if dialog!=None: dialog.Update(100, 'Slicing complete, ready to print.')
     f.close()
     return len(facets)
 
 def main():
     app = wx.App()
-    process_file(settings.PATH+'examples/temp_file.stl')
+    process_file(settings.PATH+'examples/bottle.stl')
     app.Destroy()
 
 def test():

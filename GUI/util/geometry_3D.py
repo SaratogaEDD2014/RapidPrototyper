@@ -82,7 +82,7 @@ class Line3d():
             y = line_xy.calc_y(x)
             if len(y)<1:
                 #Is not part of the domain
-                return None
+                return []
             points.append((x, y[0][1]))
             if len(y)>1:
                 points.append((x, y[1][1]))
@@ -90,9 +90,9 @@ class Line3d():
             if len(x_list)>1:
                 x = x_list[1][0]
                 y = line_xy.calc_y(x)
-                if len(y)<0:
+                if len(y)<1:
                     #Is not part of the domain
-                    return None
+                    return []
                 points.append((x, y[0][1]))
                 if len(y)>1:
                     points.append((x, y[1][1]))

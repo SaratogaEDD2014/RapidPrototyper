@@ -68,7 +68,7 @@ def addRecentFile(filename):
 
 
 #Print Operations----------------------------------------------------------
-LAYER_DEPTH=.012*80 #IN INCHES
+LAYER_DEPTH=.012 #IN INCHES
 BUILD_PIXELS = (1080, 960)
 BUILD_AREA = (9.0,6.5)
 BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
