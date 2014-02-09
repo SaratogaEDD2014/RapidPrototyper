@@ -96,8 +96,8 @@ class window():
         _wx.Exit()
 
     def _OnKey(self, evt):
-        if evt.GetKeyCode() == wx.WXK_ESCAPE:
-            self.Close()
+        if evt.GetKeyCode() == _wx.WXK_ESCAPE:
+            _wx.Exit()
 
 
     def _OnMove(self, evt):
