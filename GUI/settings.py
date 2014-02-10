@@ -6,20 +6,20 @@ test = False
 
 #Resources Information:
 NAME = 'Charlie'
-BUILD_PIXELS = (1080, 960)
-PATH=os.path.dirname(os.path.realpath(__file__))+'/'
-IMAGE_PATH=PATH+"images/"
+PATH = os.path.dirname(os.path.realpath(__file__))+'/'
+IMAGE_PATH = PATH + "images/"
 sys.path.append(PATH[:PATH.rfind("GUI")])
-main_window=None
-display_part=True
+main_window = None
+main_v_window = None
+display_part = True
 
 #Matt's part
-cfg= wx.Config('config')
+cfg = wx.Config('config')
 
 #Runtime information
-prev_page=[]
+prev_page = []
 global currentPage
-currentPage=None
+currentPage = None
 
 def add_prev_page(page):
     if page != None:
@@ -28,8 +28,8 @@ def add_prev_page(page):
 
 def goto_prev_page():
     if len(prev_page)>=1:
-        temp=prev_page[len(prev_page)-1]
-        current=get_current_page()
+        temp = prev_page[len(prev_page)-1]
+        current = get_current_page()
         current.Show(False)
         del current
         prev_page.remove(temp)
@@ -42,7 +42,7 @@ def get_prev_page():
 
 def set_current_page(page):
     global currentPage
-    currentPage=page
+    currentPage = page
     page.Show(True)
 
 def get_current_page():
@@ -68,7 +68,10 @@ def addRecentFile(filename):
 
 
 #Print Operations----------------------------------------------------------
-LAYER_DEPTH=.01 #IN INCHES
+LAYER_DEPTH=.012 #IN INCHES
+BUILD_PIXELS = (1080, 960)
+BUILD_AREA = (9.0,6.5)
+BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
 
 
 #UI------------------------------------------------------------------------

@@ -4,7 +4,7 @@ import GUI.settings as settings
 import ProtoToolbar
 import MainMenu
 import GUI.splash_screen
-from visual import *
+from nested_visual import *
 
 
 class ProtoFrame(window):
@@ -15,17 +15,18 @@ class ProtoFrame(window):
         self.win.Show(False)
         self.win.SetBackgroundColour(settings.defaultBackground)
         self.win.Bind(wx.EVT_PAINT, self.on_paint)
-        self.imagePath=settings.IMAGE_PATH+"Main/"
-        self.title=title
-        self.toolbar=ProtoToolbar.ProtoToolbar(self.win)
+        self.imagePath = settings.IMAGE_PATH+"Main/"
+        self.title = title
+        self.toolbar = ProtoToolbar.ProtoToolbar(self.win)
         settings.toolbar_h = 40
         self.toolbar.Show(True)
         self.menu=MainMenu.MainMenu(self.win)
-        settings.set_view=self.set_view
-        settings.main_window=self.win
+        settings.set_view = self.set_view
+        settings.main_window = self.win
+        settings.main_v_window = self
         settings.set_view(self.menu)
         self.win.Show(True)
-        if settings.icon_view==False:
+        if settings.icon_view == False:
             self.win.Maximize()
 
     def on_paint(self, event):
@@ -43,7 +44,6 @@ class ProtoFrame(window):
         current.Refresh()
         self.toolbar.Refresh()
 
-
     def set_view(self, viewPanel):
         if(viewPanel!=None):
             settings.add_prev_page(settings.get_current_page())
@@ -51,11 +51,15 @@ class ProtoFrame(window):
             self.win.Refresh()
 
 
+
 def main():
     ProtoApp = wx.App()
     frame = ProtoFrame(None, -1, 'Blue Streaks EDD')
+    while True:
+        #This is for the VPython to run correctly
+        rate(100)
     ProtoApp.MainLoop()
 
 if __name__ == '__main__':
-    GUI.splash_screen.show_splash(settings.NAME)
+    #GUI.splash_screen.show_splash(settings.NAME)
     main()

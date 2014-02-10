@@ -14,6 +14,7 @@ import GUI.settings as settings
 import GUI.util.plot as plot
 import GUI.util.editors as editors
 import GUI.util.app_util as app_util
+from numpy import *
 from GUI.util.convert_stl import *
 from GUI.PartViewer import *
 from GUI.BubbleMenu import DynamicButtonRect
@@ -174,27 +175,79 @@ class GearTemplate(wx.Panel):
         #generate hub circle
         hub=self.getHubDim("Hub Diameter")/2.0 #convert diameter to radius
         hubCircle=[]
-        points.append([outr*trig(0) for trig in [math.cos, math.sin]])
-        boreCircle.append([bore*trig(0) for trig in [math.cos, math.sin]])
-        hubCircle.append([hub*trig(0) for trig in [math.cos, math.sin]])
 
-        for theta in drange(0, 2*math.pi, inc):
-            theta+=inc/4
-            points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
-            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
-            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
-            theta+=inc/4
-            points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
-            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
-            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
-            theta+=inc/4
-            points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
-            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
-            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
-            theta+=inc/4
-            points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
-            boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
-            hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
+        if bore > 0.0:
+            if hub >= bore:
+                points.append([outr*trig(0) for trig in [math.cos, math.sin]])
+                boreCircle.append([bore*trig(0) for trig in [math.cos, math.sin]])
+                hubCircle.append([hub*trig(0) for trig in [math.cos, math.sin]])
+                for theta in drange(0, 2*math.pi, inc):
+                    theta+=inc/4
+                    points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+                    boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+                    hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+                    boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+                    hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+                    boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+                    hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+                    boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+                    hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
+            else:
+                #A hub inside a bore us meaningless, so don't calculate it
+                points.append([outr*trig(0) for trig in [math.cos, math.sin]])
+                boreCircle.append([bore*trig(0) for trig in [math.cos, math.sin]])
+                for theta in drange(0, 2*math.pi, inc):
+                    theta+=inc/4
+                    points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+                    boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+                    boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+                    boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+                    boreCircle.append([bore*trig(theta) for trig in [math.cos, math.sin]])
+        else:
+            #There is no bore
+            if hub >= 0.0:
+                #There is still a hub, to mill or something
+                points.append([outr*trig(0) for trig in [math.cos, math.sin]])
+                boreCircle.append([bore*trig(0) for trig in [math.cos, math.sin]])
+                hubCircle.append([hub*trig(0) for trig in [math.cos, math.sin]])
+                for theta in drange(0, 2*math.pi, inc):
+                    theta+=inc/4
+                    points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+                    hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+                    hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+                    hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+                    hubCircle.append([hub*trig(theta) for trig in [math.cos, math.sin]])
+            else:
+                #hub and bore are both not existent
+                points.append([outr*trig(0) for trig in [math.cos, math.sin]])
+                for theta in drange(0, 2*math.pi, inc):
+                    theta+=inc/4
+                    points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([inr*trig(theta) for trig in [math.cos, math.sin]])
+                    theta+=inc/4
+                    points.append([outr*trig(theta) for trig in [math.cos, math.sin]])
+
         if points!=None: points.append(points[0])
         self.rim_circle = points
         self.bore_circle = boreCircle
@@ -331,6 +384,11 @@ class GearTemplate(wx.Panel):
         self.add_to_stl("solid shape")
         thickness=self.getDim("Thickness")
         hub_thick=self.getHubDim("Thickness")
+        if len(bore) == 0:
+            #Probable 0 but < gives leeway for other errors
+            bore = zeros((len(points), 3)).tolist() #numpy array of zeroes
+        if len(hub) == 0:
+            hub = bore[:]
 
         for i in range(0, len(points)-2):
             p1 = points[i][:] + [0.0]
@@ -347,17 +405,19 @@ class GearTemplate(wx.Panel):
             h2 = hub[i+1][:] + [0.0]
             h3 = h1[:2] + [thickness + hub_thick]
             h4 = h2[:2] + [thickness + hub_thick]
+            h5 = h1[:2] + [thickness]
+            h6 = h2[:2] + [thickness]
 
             normal = [0.0,0.0,-1.0]#point down
             a1=p1[:]
             a2=p2[:]
-            #self.print_facet(center, p2, p1, normal)
             self.print_rect_facets(p1, c1, c2, p2, normal)
 
             normal = [0.0, 0.0, 1.0] #point up
             a3 = p3[:]
             a4 = p4[:]
-            self.print_rect_facets(a3, a4, c4, c3, normal)
+            #self.print_rect_facets(a3, a4, c4, c3, normal)
+            self.print_rect_facets(a3, a4, h6, h5, normal)
             self.print_rect_facets(h3, h4, c6, c5, normal)
 
 
@@ -369,7 +429,7 @@ class GearTemplate(wx.Panel):
             self.print_rect_facets(c5, c6, c4, c3, normal)
 
             normal = [h2[0]-h1[0], h2[1]-h1[1], 0.0]
-            self.print_rect_facets(h1, h2, h4, h3, normal)
+            self.print_rect_facets(h5, h6, h4, h3, normal)
         self.add_to_stl("endsolid")
         self.file.close()
 

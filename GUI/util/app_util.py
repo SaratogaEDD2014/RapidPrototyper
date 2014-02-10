@@ -1,5 +1,22 @@
+from numpy import array
 import wx
 import GUI.settings as settings
+
+def normalize(num, step=.01234):
+    """Returns value rounded to nearest increment of step."""
+    factor = round(num/step)
+    num = step*factor
+    return num
+def normalize_list(iterable, step=.0001):
+    l = []
+    for element in iterable:
+        l.append(normalize(element, step))
+    return l
+def fequal(a, b, error=.0001):
+    """ Accounts for innacuracy in float storage.
+        Given two floats it determines if they are within
+        the acceptable error to be considered equal """
+    return abs(a-b) < error
 
 class BlankGradient(wx.Window):
     def __init__(self, parent=None, pos=wx.DefaultPosition, size=wx.DefaultSize, col1=wx.Colour(0, 0, 0), col2=wx.Colour(255, 255, 255), orientation=wx.NORTH):
@@ -70,6 +87,9 @@ def dim_color(color, dim_value=25):
     g = min(max(color.Green()-dim_value, 0), 255)
     b = min(max(color.Blue()-dim_value, 0), 255)
     return wx.Colour(r,g,b)
+
+def color_to_ones(color):
+    return array(color.Get())/255.
 
 def draw_centered_text(obj, text, scale=1.0, font=None, dc = None, color=settings.button_text):
     """Draws given string centered on given object"""

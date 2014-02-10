@@ -1,7 +1,10 @@
-import wx
 import GUI.settings as settings
+import wx
 from GUI.BubbleMenu import DynamicButtonRect
-from myvisual import *
+from GUI.util.app_util import color_to_ones
+from GUI.util.stl_to_bitmap import process_file
+from nested_visual import *
+from numpy import array
 from visual.filedialog import get_file
 
 class STLViewer(wx.Panel):
@@ -16,6 +19,8 @@ class STLViewer(wx.Panel):
         self.cancelb = DynamicButtonRect(self, "Cancel")
         self.cancelb.SetSize((settings.app_w/4, settings.app_h/7))
         self.cancelb.SetPosition((int(settings.app_w*.7), settings.app_h/5))
+        self.Bind(wx.EVT_BUTTON, self.on_print, self.printb)
+        self.Bind(wx.EVT_BUTTON, self.on_cancel, self.cancelb)
         self.viewer = None
         self.Show(False)
 
@@ -24,22 +29,49 @@ class STLViewer(wx.Panel):
         if visible:
             if settings.display_part:
                 if self.viewer == None:
-                    self.viewer = display(window=None, x=0, y=settings.toolbar_h+20, width=(settings.app_w*2)/3, height=settings.app_h, forward=-vector(0,1,2), background=(1,1,1), foreground=(0.086,0.702,0.870))
-                settings.display_part=False
-                scene.width = scene.height = 480
-                scene.autocenter = True
-                self.model = stl_to_faces(self.file)
+                    w = settings.main_v_window
+                    background = color_to_ones(settings.defaultBackground)
+                    foreground = color_to_ones(settings.defaultForeground)
+                    self.display = display(window=w, x=0, y=settings.toolbar_h, width=(settings.app_w*2)/3, height=settings.app_h, up=(0,0,1), forward=vector(-1,-1,-1), background=background, foreground=foreground)
+                    self.base_frame = frame()
+                    self.part_frame = frame()
+                    self.x_axis = arrow(pos=(0,0,0), axis=(50,0,0), shaftwidth=.02, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
+                    self.x_label = label(text='X', xoffset=1, yoffset= 1, space=0.2, pos=(50,0,0), box=False, frame=self.base_frame)
+                    self.y_axis = arrow(pos=(0,0,0), axis=(0,50,0), shaftwidth=.02, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
+                    self.y_label = label(text='y', xoffset=1, yoffset= 0, space=0.2, pos=(0,50,0), box=False, frame=self.base_frame)
+                    self.z_axis = arrow(pos=(0,0,0), axis=(0,0,50), shaftwidth=.02, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
+                    self.z_label = label(text='Z', xoffset=1, yoffset= 1, space=0.2, pos=(0,0,50), box=False, frame=self.base_frame)
+                    build_l, build_w = settings.BUILD_AREA
+                    build_h = .02
+                    self.platform = box(pos=(build_l/2, build_w/2, -build_h/2),
+                        length=build_l, width=build_h, height=build_w, opacity=0.2,
+                        color=color_to_ones(settings.secondBackground), frame=self.base_frame)
+                    w.panel.SetSize(((settings.app_w*2)/3,settings.app_w))
+                    w.win.SendSizeEvent()
+                settings.display_part = False
+                #self.display.autocenter =True
                 if self.file != "":
-                    self.model = stl_to_faces(self.file)
+                    self.model = stl_to_faces(file(self.file), self.part_frame)
                     self.model.smooth()
-                while not settings.display_part:
-                    rate(100)
+##                    self.label = label(pos=self.model.pos, text=self.file,
+##                        xoffset=1, line=0, yoffset=100, space=100,)
+                    n = self.file
+                    n = n.replace('\\', '/')
+                    n = n[n.rfind('/')+1:]
+                    self.title = label(text=n, xoffset=-5, yoffset= -25, space=0.2, pos=(0,0), opacity=0.5)
         else:
             settings.display_part=True
-            #self.viewer.window._OnExitApp(wx.CommandEvent())
+    def on_print(self, event):
+        self.dialog = wx.ProgressDialog("Processing "+self.file[self.file.rfind('/'):]+":", "Process is 10% complete.", 100, self)
+        self.dialog.ShowModal()
+        process_file(self.file, dialog = self.dialog)
+        self.dialog.Destroy()
+    def on_cancel(self, event):
+        settings.main_v_window.panel.SetSize((1,1))  #Makes display invisible, invoking the private _destroy removes whole window, not just display
+        settings.goto_prev_page()
 
 
-def stl_to_faces(fileinfo): # specify file
+def stl_to_faces(fileinfo, frm=None): # specify file
     # Accept a file name or a file descriptor; make sure mode is 'rb' (read binary)
     if isinstance(fileinfo, str):
         fd = open(fileinfo, mode='rb')
@@ -96,7 +128,10 @@ def stl_to_faces(fileinfo): # specify file
         triNor = array(triNor)
 
     # Compose faces in default frame
-    f = frame()
+    if frm == None:
+        f = frame()
+    else:
+        f = frm
     return faces(frame=f, pos=triPos, normal=triNor)
 
 
