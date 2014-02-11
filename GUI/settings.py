@@ -78,7 +78,6 @@ default_touchscreen = True
 if default_touchscreen:
     for i in range(0, wx.Display.GetCount()):
         xo,yo,w,h = wx.Display(i).GetGeometry()
-        print wx.Display(i).GetGeometry()
         if h== 600 and w==1024:
             #Is the default touchscreen
             app_x, app_y = xo, yo
