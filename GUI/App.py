@@ -1,10 +1,19 @@
 #!/usr/bin/python
-import wx
+import os
+import sys
+PATH=os.path.dirname(os.path.realpath(__file__))+'/'
+IMAGE_PATH=PATH+"images/"
+sys.path.append(PATH[:PATH.rfind("GUI")])
 import GUI.settings as settings
-import ProtoToolbar
-import MainMenu
+settings.PATH = PATH
+settings.IMAGE_PATH
+
+#Now that things are setup:
 import GUI.splash_screen
-from nested_visual import *
+import MainMenu
+import ProtoToolbar
+import wx
+from visual import *
 
 
 class ProtoFrame(window):
@@ -13,21 +22,26 @@ class ProtoFrame(window):
         window.__init__(self, width=1200, height=700, x=8, y=30, title=title)
         settings.icon_view = False #temporary until config file is done
         self.win.Show(False)
+        splash = GUI.splash_screen.show_splash(settings.NAME)
+        splash.say_hi()
         self.win.SetBackgroundColour(settings.defaultBackground)
         self.win.Bind(wx.EVT_PAINT, self.on_paint)
-        self.imagePath = settings.IMAGE_PATH+"Main/"
-        self.title = title
-        self.toolbar = ProtoToolbar.ProtoToolbar(self.win)
+        self.imagePath=settings.IMAGE_PATH+"Main/"
+        self.title=title
+        self.toolbar=ProtoToolbar.ProtoToolbar(self.win)
         settings.toolbar_h = 40
         self.toolbar.Show(True)
         self.menu=MainMenu.MainMenu(self.win)
-        settings.set_view = self.set_view
-        settings.main_window = self.win
-        settings.main_v_window = self
+        settings.set_view=self.set_view
+        settings.main_window=self.win
         settings.set_view(self.menu)
+        splash.wait(1.5)
+        splash.say_name()
+        splash.wait(2)
         self.win.Show(True)
-        if settings.icon_view == False:
+        if settings.icon_view==False:
             self.win.Maximize()
+        splash.say_bye()
 
     def on_paint(self, event):
         event.Skip(True)
@@ -44,6 +58,7 @@ class ProtoFrame(window):
         current.Refresh()
         self.toolbar.Refresh()
 
+
     def set_view(self, viewPanel):
         if(viewPanel!=None):
             settings.add_prev_page(settings.get_current_page())
@@ -51,15 +66,10 @@ class ProtoFrame(window):
             self.win.Refresh()
 
 
-
 def main():
     ProtoApp = wx.App()
     frame = ProtoFrame(None, -1, 'Blue Streaks EDD')
-    while True:
-        #This is for the VPython to run correctly
-        rate(100)
     ProtoApp.MainLoop()
 
 if __name__ == '__main__':
-    #GUI.splash_screen.show_splash(settings.NAME)
     main()
