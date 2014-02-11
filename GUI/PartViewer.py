@@ -35,12 +35,12 @@ class STLViewer(wx.Panel):
                     self.display = display(window=w, x=0, y=settings.toolbar_h, width=(settings.app_w*2)/3, height=settings.app_h, up=(0,0,1), forward=vector(-1,-1,-1), background=background, foreground=foreground)
                     self.base_frame = frame()
                     self.part_frame = frame()
-                    self.x_axis = arrow(pos=(0,0,0), axis=(50,0,0), shaftwidth=.02, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
-                    self.x_label = label(text='X', xoffset=1, yoffset= 1, space=0.2, pos=(50,0,0), box=False, frame=self.base_frame)
-                    self.y_axis = arrow(pos=(0,0,0), axis=(0,50,0), shaftwidth=.02, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
-                    self.y_label = label(text='y', xoffset=1, yoffset= 0, space=0.2, pos=(0,50,0), box=False, frame=self.base_frame)
-                    self.z_axis = arrow(pos=(0,0,0), axis=(0,0,50), shaftwidth=.02, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
-                    self.z_label = label(text='Z', xoffset=1, yoffset= 1, space=0.2, pos=(0,0,50), box=False, frame=self.base_frame)
+                    self.x_axis = arrow(pos=(0,0,0), axis=(12,0,0), shaftwidth=.02, headwidth=.08,color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
+                    self.x_label = label(text='X', xoffset=1, yoffset= 1, space=0.2, pos=(12,0,0), box=False, frame=self.base_frame)
+                    self.y_axis = arrow(pos=(0,0,0), axis=(0,8,0), shaftwidth=.02, headwidth=.08, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
+                    self.y_label = label(text='y', xoffset=1, yoffset= 0, space=0.2, pos=(0,8,0), box=False, frame=self.base_frame)
+                    self.z_axis = arrow(pos=(0,0,0), axis=(0,0,15), shaftwidth=.02, headwidth=.08, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
+                    self.z_label = label(text='Z', xoffset=1, yoffset= 1, space=0.2, pos=(0,0,15), box=False, frame=self.base_frame)
                     build_l, build_w = settings.BUILD_AREA
                     build_h = .02
                     self.platform = box(pos=(build_l/2, build_w/2, -build_h/2),
