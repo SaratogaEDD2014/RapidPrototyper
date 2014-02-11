@@ -1,42 +1,53 @@
-import wx
-import GUI.settings as settings
-from GUI.util.app_util import draw_centered_text
 import time
+import GUI.settings as settings
+import wx
+from GUI.util.app_util import draw_centered_text
 
 class Splash(wx.Frame):
+    HELLO = 1
+    NAME = 2
     def __init__(self, name="Charlie"):
         super(Splash, self).__init__(None, style=wx.NO_BORDER)
         self.CenterOnScreen()
         self.name=name
         self.SetBackgroundColour(settings.button_outside)
+        self._view_mode = HELLO
         self.Bind(wx.EVT_PAINT, self.on_paint)
         self.SetPosition((settings.app_x, settings.app_y))
         self.SetSize((settings.app_w, settings.app_h))
         self.Show(True)
 
+    def wait(self, seconds):
+        time.sleep(seconds)
 
     def on_paint(self, event):
         dc = wx.PaintDC(self)
-        text = 'Hello, '
-        text_area_factor = .4 #percent of horizontal area available for text
-        font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, 'Trebuchet MS')
-        draw_centered_text(self, text, text_area_factor, font, dc)
-        time.sleep(1.5)
-
         dc.Clear()
+        if self._view_mode == HELLO:
+            text = 'Hello, '
+            text_area_factor = .4 #percent of horizontal area available for text
+            font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, 'Trebuchet MS')
+            draw_centered_text(self, text, text_area_factor, font, dc)
+        elif self._view_mode == NAME:
+            text = "I'm " + self.name
+            text_area_factor = .7 #percent of horizontal area available for text
+            font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Trebuchet MS')
+            draw_centered_text(self, text, text_area_factor, font, dc)
 
-        text = "I'm " + self.name
-        text_area_factor = .7 #percent of horizontal area available for text
-        font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Trebuchet MS')
-        draw_centered_text(self, text, text_area_factor, font, dc)
-        time.sleep(2)
-
+    def say_bye(self):
         self.Close()
+    def say_hi(self):
+        self._view_mode = HELLO
+        self.Refresh()
+    def say_name(self):
+        self._view_mode = NAME
+        self.Refresh()
 
 
 def show_splash(name):
     app = wx.App()
     splash = Splash(name)
+    return splash
     app.MainLoop()
 
 if __name__ == '__main__':
