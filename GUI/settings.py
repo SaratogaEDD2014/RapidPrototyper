@@ -77,9 +77,18 @@ BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
 #UI------------------------------------------------------------------------
 icon_view = True
 temp_app = wx.App()
+app_x, app_y = 0,0
 app_w, app_h = wx.GetDisplaySize()
+default_touchscreen = True
+if default_touchscreen:
+    for i in range(0, wx.Display.GetCount()):
+        xo,yo,w,h = wx.Display(i).GetGeometry()
+        print wx.Display(i).GetGeometry()
+        if h== 600 and w==1024:
+            #Is the default touchscreen
+            app_x, app_y = xo, yo
+            app_w, app_h = 1024, 600
 toolbar_h = 40
-app_h = app_h - toolbar_h
 toolbar_w = app_w
 temp_app.Destroy()
 

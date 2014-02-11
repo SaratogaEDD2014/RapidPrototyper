@@ -10,7 +10,8 @@ class Splash(wx.Frame):
         self.name=name
         self.SetBackgroundColour(settings.button_outside)
         self.Bind(wx.EVT_PAINT, self.on_paint)
-        self.Maximize(True)
+        self.SetPosition((settings.app_x, settings.app_y))
+        self.SetSize((settings.app_w, settings.app_h))
         self.Show(True)
 
 
