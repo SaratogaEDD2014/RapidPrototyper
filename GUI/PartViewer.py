@@ -35,18 +35,18 @@ class STLViewer(wx.Panel):
                     self.display = display(window=w, x=0, y=settings.toolbar_h, width=(settings.app_w*2)/3, height=settings.app_h, up=(0,0,1), forward=vector(-1,-1,-1), background=background, foreground=foreground)
                     self.base_frame = frame()
                     self.part_frame = frame()
-                    self.x_axis = arrow(pos=(0,0,0), axis=(12,0,0), shaftwidth=.02, headwidth=.08,color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
-                    self.x_label = label(text='X', xoffset=1, yoffset= 1, space=0.2, pos=(12,0,0), box=False, frame=self.base_frame)
-                    self.y_axis = arrow(pos=(0,0,0), axis=(0,8,0), shaftwidth=.02, headwidth=.08, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
-                    self.y_label = label(text='y', xoffset=1, yoffset= 0, space=0.2, pos=(0,8,0), box=False, frame=self.base_frame)
-                    self.z_axis = arrow(pos=(0,0,0), axis=(0,0,15), shaftwidth=.02, headwidth=.08, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
-                    self.z_label = label(text='Z', xoffset=1, yoffset= 1, space=0.2, pos=(0,0,15), box=False, frame=self.base_frame)
-                    build_l, build_w = settings.BUILD_AREA
-                    build_h = .02
-                    self.platform = box(pos=(build_l/2, build_w/2, -build_h/2),
-                        length=build_l, width=build_h, height=build_w, opacity=0.2,
+                    build_l, build_w, build_h = settings.BUILD_AREA
+                    build_z = .02
+                    self.x_axis = arrow(pos=(0,0,0), axis=(int(build_l*1.2),0,0), shaftwidth=.02, headwidth=.08,color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
+                    self.x_label = label(text='X', xoffset=1, yoffset= 1, space=0.2, pos=(int(build_l*1.2),0,0), box=False, frame=self.base_frame)
+                    self.y_axis = arrow(pos=(0,0,0), axis=(0,int(build_w*1.2),0), shaftwidth=.02, headwidth=.08, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
+                    self.y_label = label(text='y', xoffset=1, yoffset= 0, space=0.2, pos=(0,int(build_w*1.2),0), box=False, frame=self.base_frame)
+                    self.z_axis = arrow(pos=(0,0,0), axis=(0,0,int(build_h*1.2)), shaftwidth=.02, headwidth=.08, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
+                    self.z_label = label(text='Z', xoffset=1, yoffset= 1, space=0.2, pos=(0,0,int(build_h*1.2)), box=False, frame=self.base_frame)
+                    self.platform = box(pos=(build_l/2, build_w/2, -build_z/2),
+                        length=build_l, width=build_z, height=build_w, opacity=0.2,
                         color=color_to_ones(settings.secondBackground), frame=self.base_frame)
-                    w.panel.SetSize(((settings.app_w*2)/3,settings.app_w))
+                    w.panel.SetSize(((settings.app_w*2)/3,settings.app_h))
                     w.win.SendSizeEvent()
                 settings.display_part = False
                 #self.display.autocenter =True
@@ -58,9 +58,13 @@ class STLViewer(wx.Panel):
                     n = self.file
                     n = n.replace('\\', '/')
                     n = n[n.rfind('/')+1:]
-                    self.title = label(text=n, xoffset=-5, yoffset= -25, space=0.2, pos=(0,0), opacity=0.5)
+                    self.title = label(text=n, xoffset=0, z=build_h*.75, line=0, pos=(0,0), opacity=0.5)
+                    while not settings.display_part:
+                        rate(100)
+
         else:
             settings.display_part=True
+
     def on_print(self, event):
         self.dialog = wx.ProgressDialog("Processing "+self.file[self.file.rfind('/'):]+":", "Process is 10% complete.", 100, self)
         self.dialog.ShowModal()
