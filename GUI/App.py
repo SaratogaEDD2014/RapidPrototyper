@@ -49,7 +49,6 @@ class ProtoFrame(window):
     def on_paint(self, event):
         event.Skip(True)
         settings.app_w, settings.app_h = self.win.GetSize()
-        settings.app_h -= settings.toolbar_h
         app_w = settings.app_w
         app_h = settings.app_h
         self.toolbar.SetSize((app_w, settings.toolbar_h))
