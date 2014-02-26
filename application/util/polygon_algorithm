@@ -5,39 +5,62 @@ tri1 = [(0,0),(1,0)]
 tri2 = [(1,0),(0,1)]
 tri3 = [(0,1),(0,0)]
 
+rect1 = [(1,1),(1,2)]
+rect2 = [(3,1),(3,2)]
+rect3 = [(1,1),(3,1)]
+rect4 = [(3,2),(1,2)]
 
 app = App()
 frm = Frame(None, size=(400,400))
 frm.Show(True)
 
+def process_couplet(couplet, runs):
+    attached = False
+    for run in runs:
+        i=0
+        while not attached and i<len(run):
+            if run[i][1] == couplet[0]:
+                if len(run) <= i+1:
+                    #Is the next point in the run
+                    run.append(couplet)
+                    attached = True
+                else:
+                    #Two possibilities:
+                    #1. Same segment again, happens a lot, do not repeat segment,
+                    #    leave opportunity for shared border polygons by not
+                    #    setting as attached
+                    #2. Different segmenet comes after, signifying definite
+                    #    side-sharing, so again leave attached False
+                    #Both cases show opportunity for another poly, so leave unnattached
+                    #so that a new run may be generated
+                    pass
+            i+=1
+    return attached
+
+def process_polygons(new_poly, polys):
+        for i in range(len(polys)):
+            if new_poly[0] == polys[i][len(polys[i])-1]:
+                #first element in new polygon is last in another
+                if len(new_poly)>1:
+                    polys[i] += new_poly[1:]#combine elements of polygons
+                    return True
+            elif new_poly[len(new_poly)-1] == polys[i][0]:
+                #last element in new polygon equals first in another
+                if len(polys[i])>1:
+                    polys[i] = new_poly + polys[i][1:]#combine elements, new first
+                    return True
+        return False
+
 def draw(event):
     couplets = [tri1, tri2, tri3]
+    couplets += [rect1, rect3, rect2, rect4]
     runs = [[]]
     runs[0].append(couplets[0])  #Initialize the first polygon with the first line
 
     if len(couplets) > 0:
         for couplet in couplets[1:]:
-            attached = False
-            for run in runs:
-                i=0
-                while not attached and i<len(run):
-                    if run[i][1] == couplet[0]:
-                        if len(run) <= i+1:
-                            #Is the next point in the run
-                            run.append(couplet)
-                            attached = True
-                        else:
-                            #Two possibilities:
-                            #1. Same segment again, happens a lot, do not repeat segment,
-                            #    leave opportunity for shared border polygons by not
-                            #    setting as attached
-                            #2. Different segmenet comes after, signifying definite
-                            #    side-sharing, so again leave attached False
-                            #Both cases show opportunity for another poly, so leave unnattached
-                            #so that a new run may be generated
-                            pass
-                    i+=1
-            if not attached:
+            success = process_couplet(couplet, runs)
+            if not success:
                 runs.append([couplet]) #Create new
         print runs
         polys = []
@@ -48,22 +71,20 @@ def draw(event):
                 new_poly.append(couplet[1])
             print 'new poly', new_poly
             if len(polys) > 0:
-                for poly in polys:
-                    if new_poly[0] == poly[len(poly)-1]:
-                        #first element in new polygon is last in another
-                        if len(new_poly)>1:
-                            poly += new_poly[1:]#combine elements of polygons
-                    elif new_poly[len(new_poly)-1] == poly[0]:
-                        #last element in new polygon equals first in another
-                        if len(poly)>1:
-                            poly = new_poly + poly[1:]#combine elements, new first
-                    else:
+                success = process_polygons(new_poly, polys)
+                if not success:
+                    invert = new_poly[:]#copy, don't mess up original
+                    invert.reverse() #try re-ordering, but maintain couplets
+                    success = process_polygons(invert, polys)
+                    if not success:
                         polys.append(new_poly)
+                            
             else:
                 polys.append(new_poly)
+ 
             
         dc = wx.ClientDC(frm)
-        print polys
+        print 'polygons',polys
         for poly in polys:
             dc.DrawPolygon(array(poly)*(100,100))
 
