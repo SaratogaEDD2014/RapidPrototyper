@@ -1,0 +1,72 @@
+from numpy import *
+from wx import *
+
+tri1 = [(0,0),(1,0)]
+tri2 = [(1,0),(0,1)]
+tri3 = [(0,1),(0,0)]
+
+
+app = App()
+frm = Frame(None, size=(400,400))
+frm.Show(True)
+
+def draw(event):
+    couplets = [tri1, tri2, tri3]
+    runs = [[]]
+    runs[0].append(couplets[0])  #Initialize the first polygon with the first line
+
+    if len(couplets) > 0:
+        for couplet in couplets[1:]:
+            attached = False
+            for run in runs:
+                i=0
+                while not attached and i<len(run):
+                    if run[i][1] == couplet[0]:
+                        if len(run) <= i+1:
+                            #Is the next point in the run
+                            run.append(couplet)
+                            attached = True
+                        else:
+                            #Two possibilities:
+                            #1. Same segment again, happens a lot, do not repeat segment,
+                            #    leave opportunity for shared border polygons by not
+                            #    setting as attached
+                            #2. Different segmenet comes after, signifying definite
+                            #    side-sharing, so again leave attached False
+                            #Both cases show opportunity for another poly, so leave unnattached
+                            #so that a new run may be generated
+                            pass
+                    i+=1
+            if not attached:
+                runs.append([couplet]) #Create new
+        print runs
+        polys = []
+        for run in runs:
+            new_poly = []
+            new_poly.append(run[0][0])
+            for couplet in run:
+                new_poly.append(couplet[1])
+            print 'new poly', new_poly
+            if len(polys) > 0:
+                for poly in polys:
+                    if new_poly[0] == poly[len(poly)-1]:
+                        #first element in new polygon is last in another
+                        if len(new_poly)>1:
+                            poly += new_poly[1:]#combine elements of polygons
+                    elif new_poly[len(new_poly)-1] == poly[0]:
+                        #last element in new polygon equals first in another
+                        if len(poly)>1:
+                            poly = new_poly + poly[1:]#combine elements, new first
+                    else:
+                        polys.append(new_poly)
+            else:
+                polys.append(new_poly)
+            
+        dc = wx.ClientDC(frm)
+        print polys
+        for poly in polys:
+            dc.DrawPolygon(array(poly)*(100,100))
+
+frm.draw = draw
+frm.Bind(wx.EVT_PAINT, frm.draw)
+app.MainLoop()
