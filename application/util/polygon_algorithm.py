@@ -78,16 +78,37 @@ def draw(event):
                     success = process_polygons(invert, polys)
                     if not success:
                         polys.append(new_poly)
-                            
+
             else:
                 polys.append(new_poly)
- 
-            
+
+
         dc = wx.ClientDC(frm)
         print 'polygons',polys
         for poly in polys:
             dc.DrawPolygon(array(poly)*(100,100))
 
+        background = []
+        foreground = []
+        for tester in polys:
+            if len(background)>0:
+                in_front = False
+                for other in background:
+                    if tester != other:
+                        is_in_left  = tester.min(axis=0) > other.min(axis=0)
+                        is_in_right  = tester.max(axis=0) > other.max(axis=0)
+                        is_inside = is_in_left[0] and is_in_left[1] and is_in_right[0] and is_in_right[1]
+                        if is_inside:
+                            in_front = True
+            else:
+                background.append(tester)
+
+        for poly in foreground:
+            dc.DrawPolygon(array(poly)*(100,100))
+        for poly in background:
+            dc.DrawPolygon(array(poly)*(100,100))
+
 frm.draw = draw
 frm.Bind(wx.EVT_PAINT, frm.draw)
 app.MainLoop()
+
