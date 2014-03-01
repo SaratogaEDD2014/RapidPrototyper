@@ -26,6 +26,9 @@ import numpy
 import GUI.util.stl_to_bitmap as parser
 import GUI.settings as settings
 
+#FOR TESTING: app hasn't started so path in stl_to_bitmap is invalid
+parser.BITMAP_DIR = 'C:/Users/Robert Krulcik/Documents/GitHub\RapidPrototyper/GUI/generation_buffer/'
+
 def test1(process_function, test_designation):
     #define test conditions and headers
     header_row = 1
@@ -116,6 +119,31 @@ def test2(process_function, test_designation):
     end_seconds = as_alpha(4) + str(data_row-1)
     wks.update_cell(data_row, 2, "=SUM("+start_seconds+":"+end_seconds+")/SUM("+start_layer+":"+end_layer+")")
 
+def profile_only(process_function):
+    import cProfile
+    #define test conditions and headers
+    header_row = 12
+    data_row = header_row + 1
+    test_path = 'C:/Users/Robert Krulcik/Documents/GitHub/EfficiencyTesting/'
+    name = 'test_two_'
+    thickness  = [.2, .4, .6, .8, 1., 1.2, 1.4]
+    hub_thickness = thickness[:]
+    base_names = [(name+str(i)+'.stl') for i in range(len(thickness))]
+
+    #Fill in data
+    for i in range(len(base_names)):
+        try:
+            name = 'parser.process_file("'+ test_path + str(base_names[i]) +'")'
+            print name
+            cProfile.run(name)
+        except Exception, e:
+            print e
+            process_time = 'Error: Could not time, program failed.'
+        total_thickness = (thickness[i] + hub_thickness[i])
+        num_layers = round(total_thickness/settings.LAYER_DEPTH)
+        print "Total thickness: ", total_thickness
+        print "Number of layers: ", num_layers
+
 def as_alpha(index):
     index -= 1 #No 0 in spreadsheet, when they want A they give '1' but A is at index 0
     alpha = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','Q','R','S','T','U','V','W','X','Y','Z']
@@ -133,6 +161,7 @@ def as_alpha(index):
 revision = 'C'
 if __name__ == '__main__':
     app = wx.App()
-    test1(parser.process_file, 'Test'+revision)
-    test2(parser.process_file, 'Test'+revision)
+    #test1(parser.process_file, 'Test'+revision)
+    #test2(parser.process_file, 'Test'+revision)
+    profile_only(parser.process_file)
     app.MainLoop()
