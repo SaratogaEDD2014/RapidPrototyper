@@ -1,8 +1,9 @@
 import wx
-import application.settings as settings
+import sys
+import application.settings
 from application.bubble_menu import *
 from application.util.calc_dialog import *
-from application.util.app_util import draw_centered_text, draw_text_left, dim_color
+from application.util.app_util import draw_centered_text, draw_text_left
 
 class TouchSpin(wx.Window):
     def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, precision=2, name="NoName"):  #TODO: add style/formatting flags for constructor
@@ -87,7 +88,7 @@ class LabeledSpin(wx.Panel):
         super(LabeledSpin, self).__init__(parent, id, pos=pos)
         if self.GetParent():
             self.SetBackgroundColour(self.GetParent().GetBackgroundColour())
-        self.SetBackgroundColour(settings.defaultBackground)
+        self.SetBackgroundColour(settings.defaultAccent)
         self.text=wx.StaticText(self, -1, name)
         self.control=TouchSpin(self, -1, value=value, limits=(min,max))
         sizer=wx.BoxSizer(wx.HORIZONTAL)
@@ -110,7 +111,7 @@ class DynamicDataDisplay(wx.Window):
         self.Bind(wx.EVT_PAINT, self.on_paint)
     def on_paint(self, event):
         event.Skip(True)
-        dc = wx.PaintDC(self)
+        dc = wx.PaintDC(self) #On OSX a wxPaintDC does not work here. I am still trying to figure out why
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
         draw_centered_text(self, str(self.value), 1.0, dc=dc, color=settings.defaultForeground)
@@ -124,7 +125,7 @@ class DynamicDataDisplay(wx.Window):
 class DimensionEditor(wx.Window):
     def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, precision=2, name="NoName", text_color=settings.defaultBackground):
         super(DimensionEditor, self).__init__(parent, id, pos, size)
-        self.BackgroundColour = settings.defaultForeground
+        self.BackgroundColour = self.GetParent().GetBackgroundColour()
         self._value=value
         self._range=limits
         self._precision=precision
@@ -147,7 +148,10 @@ class DimensionEditor(wx.Window):
 
     def on_paint(self, event):
         event.Skip(True)
-        dc = wx.ClientDC(self.label)  #On OSX a wxPaintDC does not work here. I am still trying to figure out why
+        if sys.platform.count('win')>0:
+            dc = wx.PaintDC(self.label)
+        else:
+            dc = wx.ClientDC(self.label)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
         draw_text_left(self, self.name, .25, dc=dc, color=self._text_color)
@@ -216,7 +220,10 @@ class DimensionComboBox(wx.Window):
 
     def on_paint(self, event):
         event.Skip(True)
-        dc = wx.ClientDC(self.label) #On OSX a wxPaintDC does not work here. I am still trying to figure out why
+        if sys.platform.count('win')>0:
+            dc = wx.PaintDC(self.label)
+        else:
+            dc = wx.ClientDC(self.label)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
         draw_text_left(self, self.name, .25, dc=dc, color=self._text_color)
