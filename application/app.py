@@ -15,7 +15,6 @@ import main_menu
 import proto_toolbar
 from nested_visual import *
 
-
 class ProtoFrame(window):
     def __init__(self, parent, id, title):
         #super(ProtoFrame, self).__init__(parent, id, title, size=wx.Size(800, 480))
@@ -43,7 +42,7 @@ class ProtoFrame(window):
         splash.wait(1.5)
         self.win.Show(True)
         if settings.icon_view==False:
-            self.win.Maximize()
+            pass#self.win.Maximize()
         splash.say_bye()
 
     def on_paint(self, event):

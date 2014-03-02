@@ -6,6 +6,14 @@ PATH = ''   #to be set in app.py
 IMAGE_PATH = ''#to Be set in app.py
 main_window=None
 display_part=True
+debug = True
+if debug:
+    import os
+    import sys
+    PATH = os.path.dirname(os.path.realpath(sys.argv[0]))+'/'
+    sys.path.append(PATH[:PATH.rfind("application")])
+    PATH = PATH[:PATH.rfind("application")+12]
+    IMAGE_PATH = PATH + 'images/'
 
 #Matt's part
 cfg= wx.Config('config')
@@ -71,7 +79,7 @@ BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
 icon_view = True
 temp_app = wx.App()
 app_x, app_y = 0,0
-app_w, app_h = wx.GetDisplaySize()
+app_w, app_h = 800,600#wx.GetDisplaySize()
 default_touchscreen = True
 if default_touchscreen:
     for i in range(0, wx.Display.GetCount()):

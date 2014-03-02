@@ -128,7 +128,10 @@ class BubbleButton(wx.PyControl):
         self.name=name
         #Region is the area that is "clickable"
         #It consists of the PNG minus the transparent areas
-        self.region = wx.RegionFromBitmapColour(self.normal, wx.Colour(0, 0, 0, 0))
+        if self.normal != None:
+            self.region = wx.RegionFromBitmapColour(self.normal, wx.Colour(0, 0, 0, 0))
+        else:
+            self.region = wx.Region(0,0,self.GetSize()[0],self.GetSize()[1])
         self._clicked = False
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         #events

@@ -8,8 +8,7 @@ from application.util.app_util import dim_color
 class CalcDialog(wx.Dialog):
     def __init__(self, parent, title):
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        super(CalcDialog, self).__init__(parent, -1, title, style=style, size=(350,350))
-        self.SetBackgroundColour(settings.defaultForeground)
+        super(CalcDialog, self).__init__(parent, -1, title, style=style, pos=(settings.app_w/4, settings.app_h/4), size=(settings.app_w/2,settings.app_h/2))
         self.formula = False
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.display = wx.TextCtrl(self, -1, '',  style=wx.TE_RIGHT)
@@ -17,29 +16,29 @@ class CalcDialog(wx.Dialog):
 
         ids={"1":51, "2":52, "3":53, "4":54, "5":55, "6":56, "7":57, "8":58, "9":59, "0":60, "Clr":61, "Del":62, "=":63, "Done":wx.OK, "/":64, "*":65, "-":66, ".":67, "+":68, '(':69, ')':70}
 
-        inside_color = dim_color(settings.defaultAccent, -30)
-        outside_color = dim_color(settings.defaultAccent, 20)
+        #inside_color = dim_color(settings.defaultAccent, -30)
+        #outside_color = dim_color(settings.defaultAccent, 20)
         gs = wx.GridSizer(5, 4, 4, 4)
-        gs.AddMany([(DynamicButtonRect(self, id=ids['Clr'], name='Clr', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['Del'], name='Del', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['('], name='(', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids[')'], name=')', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['7'], name='7', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['8'], name='8', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['9'], name='9', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['/'], name='/', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['4'], name='4', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['5'], name='5', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['6'], name='6', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['*'], name='*', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['1'], name='1', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['2'], name='2', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['3'], name='3', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['-'], name='-', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['0'], name='0', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['.'], name='.', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['Done'], name='Done', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND),
-                        (DynamicButtonRect(self, id=ids['+'], name='+', inner_color=inside_color, outer_color=outside_color), 0, wx.EXPAND) ])
+        gs.AddMany([(wx.Button(self, id=ids['Clr'], label='Clr'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['Del'], label='Del'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['('], label='('), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids[')'], label=')'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['7'], label='7'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['8'], label='8'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['9'], label='9'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['/'], label='/'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['4'], label='4'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['5'], label='5'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['6'], label='6'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['*'], label='*'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['1'], label='1'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['2'], label='2'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['3'], label='3'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['-'], label='-'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['0'], label='0'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['.'], label='.'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['Done'], label='Done'), 0, wx.EXPAND),
+                        (wx.Button(self, id=ids['+'], label='+'), 0, wx.EXPAND) ])
 
         sizer.Add(gs, 1, wx.EXPAND)
 

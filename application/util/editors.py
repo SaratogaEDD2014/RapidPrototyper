@@ -1,5 +1,5 @@
 import wx
-import application.settings
+import application.settings as settings
 from application.bubble_menu import *
 from application.util.calc_dialog import *
 from application.util.app_util import draw_centered_text, draw_text_left, dim_color
@@ -9,7 +9,6 @@ class TouchSpin(wx.Window):
         super(TouchSpin, self).__init__(parent, id, pos, size)
         if self.GetParent() != None:
             self.SetBackgroundColour(self.GetParent().GetBackgroundColour())
-
         self._value=value
         self._range=limits
         self._precision=precision
@@ -88,7 +87,7 @@ class LabeledSpin(wx.Panel):
         super(LabeledSpin, self).__init__(parent, id, pos=pos)
         if self.GetParent():
             self.SetBackgroundColour(self.GetParent().GetBackgroundColour())
-        self.SetBackgroundColour(settings.defaultAccent)
+        self.SetBackgroundColour(settings.defaultBackground)
         self.text=wx.StaticText(self, -1, name)
         self.control=TouchSpin(self, -1, value=value, limits=(min,max))
         sizer=wx.BoxSizer(wx.HORIZONTAL)
@@ -125,7 +124,7 @@ class DynamicDataDisplay(wx.Window):
 class DimensionEditor(wx.Window):
     def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, precision=2, name="NoName", text_color=settings.defaultBackground):
         super(DimensionEditor, self).__init__(parent, id, pos, size)
-        self.BackgroundColour = self.GetParent().GetBackgroundColour()
+        self.BackgroundColour = settings.defaultForeground
         self._value=value
         self._range=limits
         self._precision=precision
