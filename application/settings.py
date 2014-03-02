@@ -1,5 +1,5 @@
 import wx
-
+temp_app = wx.App()
 #Resources Information:
 NAME = 'Charlie'
 PATH = ''   #to be set in app.py
@@ -74,10 +74,11 @@ LAYER_DEPTH=.012 #IN INCHES
 BUILD_PIXELS = (1080, 960)
 BUILD_AREA = (9.0, 6.5, 8)
 BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
+BUILD_BACKGROUND = wx.Brush(wx.Colour(0,0,0))
+BUILD_FILL = wx.Brush(wx.Colour(0,255,0), wx.CROSSDIAG_HATCH)
 
 #UI------------------------------------------------------------------------
 icon_view = True
-temp_app = wx.App()
 app_x, app_y = 0,0
 app_w, app_h = 800,600#wx.GetDisplaySize()
 default_touchscreen = True
@@ -90,7 +91,6 @@ if default_touchscreen:
             app_w, app_h = 1024, 600
 toolbar_h = 40
 toolbar_w = app_w
-temp_app.Destroy()
 
 schemes = {"BLUE":1, "GREEN":2, 'PINK':3, 'RED':4}
 invert_color = False
@@ -220,3 +220,5 @@ def get_layer_depth():
     return cfg.ReadFloat('layerDepth')
 
 get_property_color("default_background")
+
+temp_app.Destroy()

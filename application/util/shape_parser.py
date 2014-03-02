@@ -1,21 +1,9 @@
-from numpy import *
 import wx
+from numpy import *
+from application.settings import BUILD_FILL, BUILD_BACKGROUND
 
-tri1 = [(0,0),(1,0)]
-tri2 = [(1,0),(0,1)]
-tri3 = [(0,1),(0,0)]
-
-rect1 = [(1,1),(1,2)]
-rect2 = [(3,1),(3,2)]
-rect3 = [(1,1),(3,1)]
-rect4 = [(3,2),(1,2)]
-
-app = wx.App()
-frm = wx.Frame(None, size=(1000,800))
-frm.Show(True)
-
-IN_BRUSH = wx.Brush(wx.Colour(0,0,0))
-OUT_BRUSH = wx.Brush(wx.Colour(255,0,0))
+OUT_BRUSH = BUILD_FILL
+IN_BRUSH = BUILD_BACKGROUND
 
 class Polygon(object):
     def __init__(self, vertices=[]):
@@ -100,8 +88,7 @@ def process_segments(segments, runs):
     for seg in segments[1:]:
         success = combine_couplet(seg, runs)
         if not success:
-            invert = seg[:]#copy, don't mess up original
-            invert.reverse() #try re-ordering, but maintain segements
+            invert = (seg[1], seg[0])
             success = combine_couplet(invert, runs)
             if not success:
                 runs.append([seg])#Create new
@@ -136,7 +123,6 @@ def form_shapes(runs):
         new_poly = ConcentricPoly([run[0][0]])
         for couplet in run:
             new_poly.vertices.append(couplet[1])
-        print 'new poly', new_poly.vertices
         if len(polys) > 0:
             success = combine_polygons(new_poly, polys)
             if not success:
@@ -189,50 +175,12 @@ def draw_concentrics(dc, cpolys):
     for i in new_polys:
         draw_concentric(dc, i)
 
-##def draw(event):
-##    couplets = [tri1,tri3] + [tri2, rect1]
-##    couplets += [rect3, rect2, rect4]
-##    runs = [[]]
-##    runs[0].append(couplets[0])  #Initialize the first polygon with the first line
-##
-##    if len(couplets) > 0:
-##        couplets = process_segments(couplets,runs)
-##        print runs
-##        polys = form_shapes(runs)
-##        concentracize(polys)
-##        dc = wx.ClientDC(frm)
-##        print 'polygons',polys
-##        for poly in polys:
-##            dc.DrawPolygon(array(poly.vertices)*(100,100))
-
-def main(event):
-    dc = wx.PaintDC(frm)
-    import math
-    def gen_points(sides, factor, offset=(0,0)):
-        points = []
-        for m in arange(0, 2*math.pi, (2*math.pi)/sides):
-            points.append((math.cos(m), math.sin(m)))
-        return (array(points)*factor)+offset
-
-    outer = ConcentricPoly(array(gen_points(4,400, (300, 300))))
-    inner = ConcentricPoly(array(gen_points(4,380, (300, 300))))
-    left1 = ConcentricPoly(array(gen_points(6,150, (200, 300))))
-    left2 = ConcentricPoly(array(gen_points(7,100, (200, 300))))
-    left3 = ConcentricPoly(array(gen_points(3,50,  (200, 300))))
-    right1= ConcentricPoly(array(gen_points(4,75,  (500, 300))))
-    right2= ConcentricPoly(array(gen_points(9,25, (500, 300))))
-
-    off_out = ConcentricPoly(array(gen_points(4,400, (600, 600))))
-    off_in = ConcentricPoly(array(gen_points(4,380, (600, 600))))
-
-    polys2 = [outer, left1, left3, right1, left2, inner, right2, off_out, off_in]
-
-    concentracize(polys2)
-    draw_concentrics(dc, polys2)
-
-
-
-frm.draw = main#draw
-frm.Bind(wx.EVT_PAINT, frm.draw)
-app.MainLoop()
-
+def segments_to_polygons(couplets):
+    """Given a list of segments, organize them into polygons."""
+    if len(couplets) > 0:
+        runs = [[]]
+        runs[0].append(couplets[0])  #Initialize the first polygon with the first line
+        couplets = process_segments(couplets,runs)
+        polys = form_shapes(runs)
+        return polys
+    return []

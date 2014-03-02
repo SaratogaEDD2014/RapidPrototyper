@@ -40,11 +40,11 @@ class Facet:
                 for point in line.calc_xy(z):
                     level.append((int(point[0]*wPPI), int(point[1]*hPPI)))
             if len(level)>1:
-                if len(level)==6:
+                if len(level)>=6:
                     #All three segments are on in the plane
-                    layer.DrawPolygon(level)
+                    layer.add_polygon(level)
                 else:
-                    layer.DrawLines(level)
+                    layer.add_segment(level)
 
 #read text stl match keywords to grab the points to build the model
 def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=settings.BUILD_PIXELS[1]/(2*hPPI), dialog=None):

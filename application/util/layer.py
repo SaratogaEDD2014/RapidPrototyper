@@ -1,7 +1,9 @@
-from numpy import *
-from app_util import normalize, fequal
 import wx
 import application.settings as settings
+app = wx.App()
+from numpy import *
+from app_util import normalize, fequal
+from shape_parser import *
 
 class Layer(wx.MemoryDC):
     def __init__(self, z_level, directory, filename, pixel_w=100, pixel_h=100):
@@ -10,10 +12,25 @@ class Layer(wx.MemoryDC):
         self.z = z_level
         self.name = directory + filename + zcode + '.bmp'
         self.bmp = wx.EmptyBitmap(pixel_w, pixel_h)
+        self.SelectObject(self.bmp)
+        self.flat_polys = []
+        self.segments = []
+    def add_segment(self, segment):
+        if segment not in self.segments:
+            self.segments.append(segment)
+    def add_segments(self, segments_list):
+        for seg in segments_list:
+            add_segment(seg)
+    def add_polygon(self, poly):
+        self.flat_polys.append(poly)
+    def save(self):
+        polygons = segments_to_polygons(self.segments)
+        concentracize(polygons)
+        draw_concentrics(self, polygons)
         self.SetBrush(wx.Brush(wx.Colour(45,45,255)))
         self.SetPen(wx.Pen(wx.Colour(255,255,255)))
-        self.SelectObject(self.bmp)
-    def save(self):
+        for flat in self.flat_polys:
+            self.DrawPolygon(flat)
         self.bmp.SaveFile(self.name, wx.BITMAP_TYPE_BMP)
     def demo_draw(self):
         self.DrawRectangle(0,0,50,50)
@@ -103,7 +120,7 @@ class LayerManager:
 def main():
     directory = settings.PATH + 'generation_buffer/'
     name = 'stuff'
-    app = wx.App()
+
     #layer = Layer(.00123, directory, name)
     tests = [[(635, 417), (538, 461), (538, 461), (537, 457), (537, 457), (635, 417)],
             [(668, 420), (538, 461), (538, 461), (538, 466), (538, 466), (668, 420)],
