@@ -9,9 +9,8 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 import wx
-import wx.lib.newevent
-import CharlieUtil
-import DrawableObjects
+import util.drag
+import util.drawable_objects
 
 
 class drawing_area(wx.Panel):
@@ -23,7 +22,7 @@ class drawing_area(wx.Panel):
 		self.canvas.Show()
 		self.Refresh()
 
-		self.toolBar = tool_menu(self)
+		self.tool_bar = tool_menu(self)
 		self.Refresh()
 
 		self.SetBackgroundColour((255,255,255))
@@ -88,17 +87,17 @@ class tool_menu(wx.Panel):
 		self.Show(True)
 		self.parent = parent
 
-		selectButton = menu_item(self, 1, 'select', (2,15))
-		lineButton = menu_item(self, 2, 'line', (2, 65))
-		boxButton = menu_item(self, 3, 'box', (2, 115))
-		arcButton = menu_item(self, 4, 'arc', (2, 165))
-		delButton = menu_item(self, 5, 'delete', (2, 215))
+		select_button = menu_item(self, 1, 'select', (2,15))
+		line_button = menu_item(self, 2, 'line', (2, 65))
+		box_button = menu_item(self, 3, 'box', (2, 115))
+		arc_button = menu_item(self, 4, 'arc', (2, 165))
+		del_button = menu_item(self, 5, 'delete', (2, 215))
 
-		selectButton.Bind(wx.EVT_BUTTON, self.select_button)
-		lineButton.Bind(wx.EVT_BUTTON, self.line_button)
-		boxButton.Bind(wx.EVT_BUTTON, self.box_button)
-		arcButton.Bind(wx.EVT_BUTTON, self.arc_button)
-		delButton.Bind(wx.EVT_BUTTON, self.del_button)
+		select_button.Bind(wx.EVT_BUTTON, self.select_button)
+		line_button.Bind(wx.EVT_BUTTON, self.line_button)
+		box_button.Bind(wx.EVT_BUTTON, self.box_button)
+		arc_button.Bind(wx.EVT_BUTTON, self.arc_button)
+		del_button.Bind(wx.EVT_BUTTON, self.del_button)
 
 	def select_button(self, e):
 		# Is this 'proper' code?

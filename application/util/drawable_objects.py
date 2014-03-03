@@ -50,11 +50,11 @@ class point:
 class line:
 	parent = None
 	def __init__(self, start, end):
-		self.startPoint = start
-		self.endPoint = end
+		self.start_point = start
+		self.end_point = end
 
-		self.startPoint.set_parent(self)
-		self.endPoint.set_parent(self)
+		self.start_point.set_parent(self)
+		self.end_point.set_parent(self)
 
 	def set_parent(self, parent):
 		self.parent = parent
@@ -64,10 +64,10 @@ class line:
 		dc.SetPen(wx.BLACK_PEN)
 		dc.SetBrush(wx.BLACK_BRUSH)
 
-		canvas = self.startPoint.draw()
-		canvas = self.endPoint.draw()
+		canvas = self.start_point.draw()
+		canvas = self.end_point.draw()
 
-		dc.DrawLine(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y)
+		dc.DrawLine(self.start_point.x, self.start_point.y, self.end_point.x, self.end_point.y)
 
 		dc.SelectObject(wx.NullBitmap)
 
