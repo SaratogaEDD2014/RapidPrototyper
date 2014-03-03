@@ -41,6 +41,14 @@ class point:
 
 		return canvas
 
+	def get_parent(self):
+		temp = self.parent
+
+		while temp != None:
+			temp = temp.get_parent()
+
+		return temp
+
 	#Given a coordinate set, returns true of false if the click was within a radius, used for click detection.
 	def check_if_selected(self, clickX, clickY):
 		radius = 5 # move this into config files?
@@ -58,6 +66,14 @@ class line:
 
 	def set_parent(self, parent):
 		self.parent = parent
+
+	def get_parent(self):
+		temp = self.parent
+
+		while temp != None:
+			temp = temp.get_parent()
+
+		return temp
 
 	def draw(self, canvas):
 		dc = wx.MemoryDC(canvas)
@@ -151,6 +167,9 @@ class rect:
 
 		return canvas
 
+	def get_parent(self):
+		return None #Will need to be changed if compound figures are ever needed.
+
 #class rect_shadow:
 	# TODO: IMPLMENT
 
@@ -170,6 +189,9 @@ class arc:
 		dc.SetBrush(wx.BLACK_BRUSH)
 
 		dc.DrawArc(self.start.x, self.start.y, self.end.x, self.end.y, self.mid.x, self.mid.y)
+
+	def get_parent(self):
+		return None
 
 #class arc_shadow:
 	#TODO: IMPLEMENT

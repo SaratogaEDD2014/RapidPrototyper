@@ -1,5 +1,5 @@
 import wx
-import draw_pane
+import drawing_pane
 
 def main():
 	app = wx.App()
@@ -8,7 +8,7 @@ def main():
 	mainframe.SetDimensions(0,0,600,600)
 	mainframe.Show(True)
 
-	draw_pane = draw_pane.drawing_area(mainframe,-1,(0,0),mainframe.GetSize())
+	draw_pane = drawing_pane.drawing_area(mainframe,-1,(0,0),mainframe.GetSize())
 
 	draw_pane.Show(True)
 

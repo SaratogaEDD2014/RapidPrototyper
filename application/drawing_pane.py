@@ -9,7 +9,7 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 import wx
-import util.drag
+import util.draggable
 import util.drawable_objects
 
 
@@ -38,15 +38,14 @@ class drawing_area(wx.Panel):
 
 	#Drawing tips
 	def update_tip(self, tip):
-		tips = {'select':self.select, 'line':self.create_line, 'box':self.create_box, 'arc':self.create_arc, 'delete':self.delete()}
+		tips = {'select':self.select, 'line':self.create_line, 'box':self.create_box, 'arc':self.create_arc, 'delete':self.delete}
 
 		self.current_action = tips[tip]
 
 	def select(self,e):
 		print 'selecting'
 		for i in self.objects:
-			if i.checkTouch(e.GetPositionTuple()):
-				i.touch()
+
 
 	def create_line(self,e):
 		l = DrawableObjects.line_shadow(self.canvas, self.finish_create)
