@@ -1,5 +1,5 @@
 import wx
-import DrawPane
+import draw_pane
 
 def main():
 	app = wx.App()
@@ -8,9 +8,9 @@ def main():
 	mainframe.SetDimensions(0,0,600,600)
 	mainframe.Show(True)
 
-	drawPane = DrawPane.drawing_area(mainframe,-1,(0,0),mainframe.GetSize())
+	draw_pane = draw_pane.drawing_area(mainframe,-1,(0,0),mainframe.GetSize())
 
-	drawPane.Show(True)
+	draw_pane.Show(True)
 
 	app.MainLoop()
 

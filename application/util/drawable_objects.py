@@ -15,7 +15,7 @@ import wx
 ### Shadow figures have been ommited, as drawing code may change ###
 
 #Returns the distance between two points
-def getDistance(p1, p2):
+def get_distance(p1, p2):
 	return math.sqrt( (math.pow(p1.x - p2.x, 2) + math.pow(p1.y - p2.y, 2) ) )
 
 #Basic geometry object, used throughout the code
@@ -42,7 +42,7 @@ class point:
 		return canvas
 
 	#Given a coordinate set, returns true of false if the click was within a radius, used for click detection.
-	def checkIfSelected(self, clickX, clickY):
+	def check_if_selected(self, clickX, clickY):
 		radius = 5 # move this into config files?
 
 		return (getDistance(self, point((clickX, clickY))) < radius )
