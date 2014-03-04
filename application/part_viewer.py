@@ -221,3 +221,47 @@ def stl_to_faces(fileinfo, frm=None): # specify file
     newobject.color = color.orange
     newobject.material = materials.wood
     break"""
+
+import wx
+
+app = wx.App()
+frm = wx.Frame(None)
+frm.Show()
+
+class ControlPanel(wx.Panel):
+    def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize):
+        super(ControlPanel, self).__init__(parent, id, pos, size)
+
+        w,h = self.GetSize()
+        self.v_sizer = wx.GridSizer(0,1)
+        self.v_sizer.AddSpacer((w,h/32))
+
+        top_sizer = wx.GridSizer(1,0)
+        top_sizer.AddSpacer(w/20)
+        self.pbutt = wx.Button(self, label='Print')
+        top_sizer.Add(self.pbutt, flag = wx.EXPAND)
+        top_sizer.AddSpacer(w/20)
+        self.cbutt = wx.Button(self, label='Cancel')
+        top_sizer.Add(self.cbutt, flag = wx.EXPAND)
+        top_sizer.AddSpacer(w/20)
+        self.v_sizer.Add(top_sizer, flag=wx.EXPAND)
+
+        self.offset_title = wx.StaticText(self, label='Offsets:')
+        self.v_sizer.Add(self.offset_title, flag=wx.EXPAND)
+        self.v_sizer.AddSpacer((10,h/32))
+        mid_sizer = wx.GridSizer(0,2,h/64,0)
+        offx_tit = wx.StaticText(self, label='Offset X')
+        offx_box = wx.ComboBox(self, -1, '10')
+        mid_sizer.Add(offx_tit, flag=wx.EXPAND)
+        mid_sizer.Add(offx_box, flag=wx.EXPAND)
+        offy_tit = wx.StaticText(self, label='Offset Y')
+        offy_box = wx.ComboBox(self, -1, '10')
+        mid_sizer.Add(offy_tit, flag=wx.EXPAND)
+        mid_sizer.Add(offy_box, flag=wx.EXPAND)
+        self.v_sizer.Add(mid_sizer)
+
+        self.SetSizer(self.v_sizer)
+
+pan = ControlPanel(frm, size=(400,400))
+
+app.MainLoop()
