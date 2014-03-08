@@ -246,7 +246,7 @@ class MenuButton(BubbleButton):
 
 class DynamicButton(BubbleButton):
     def __init__(self, parent, name="", inner_color=settings.button_inside, outer_color=settings.button_outside, text_color=settings.button_text, outline=settings.button_outline, target=None, id=-1):
-        super(DynamicButton, self).__init__(parent, None, None, name, id=id)
+        super(DynamicButton, self).__init__(parent, None, (100,100), name, id=id)
         self.target=target
         self.inner_color = inner_color
         self.outer_color = outer_color

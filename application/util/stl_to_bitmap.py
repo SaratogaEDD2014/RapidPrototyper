@@ -47,7 +47,7 @@ class Facet:
                     layer.add_segment(level)
 
 #read text stl match keywords to grab the points to build the model
-def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=settings.BUILD_PIXELS[1]/(2*hPPI), dialog=None):
+def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=settings.BUILD_PIXELS[1]/(2*hPPI), offsetz=0,dialog=None):
     #clear bmp storage directory
     if dialog!=None: dialog.Update(10, 'Deleting Files...')
     if not os.path.exists(BITMAP_DIR):
@@ -62,6 +62,7 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
     f = open(filename,'r')
     basic_name = filename[filename.rfind('/'):]
     name = basic_name.replace('.stl', '')
+    print name
     layer_manager = LayerManager(settings.LAYER_DEPTH, BITMAP_DIR, name, settings.BUILD_PIXELS[0], settings.BUILD_PIXELS[1])
     facets = []
     triplet = []
@@ -72,7 +73,7 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
             if words[0] =='vertex':
                 #Get the points of the vertex:
                 #Normalize the Z component to a valid step layer, so we don't miss horizontal lines or facets
-                point = (eval(words[1]) + offsetx, eval(words[2]) + offsety, normalize(eval(words[3]), STEP))
+                point = (eval(words[1])*settings.BUILD_SCALE + offsetx, eval(words[2])*settings.BUILD_SCALE + offsety, normalize(eval(words[3])*settings.BUILD_SCALE + offsetz, STEP))
                 #print point
                 triplet.append(point)
                 if len(triplet) == 3:
@@ -80,11 +81,24 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
                     facets.append(Facet(p1,p2,p3))
                     triplet = []
     if dialog!=None: dialog.Update(78, 'Slicing '+str(len(facets))+' facets...')
-    for facet in facets:
-        facet.add_to_bmps(layer_manager)
-    if dialog!=None: dialog.Update(88, 'Saving bitmaps...')
-    for layer in layer_manager.layers:
+    z1 = min([facet.min_z() for facet in facets])
+    z2 = max([facet.max_z() for facet in facets])
+    for z in arange(z1,z2,STEP):
+        layer = layer_manager.get_layer(z)
+        for facet in facets:
+            level = []
+            for line in (facet.a, facet.b, facet.c):
+                for point in line.calc_xy(z):
+                    level.append((int(point[0]*wPPI), int(point[1]*hPPI)))
+            if len(level)>1:
+                if len(level)>=6:
+                    #All three segments are on in the plane
+                    layer.add_polygon(level)
+                else:
+                    layer.add_segment(level)
         layer.save()
+        layer.close()
+    if dialog!=None: dialog.Update(88, 'Saving bitmaps...')
     if dialog!=None: dialog.Update(100, 'Slicing complete, ready to print.')
     f.close()
     return len(facets)

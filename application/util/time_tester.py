@@ -23,10 +23,10 @@ import wx
 import time
 import gspread
 import numpy
-import application.util.stl_to_bitmap as parser
+import application.util.stl as parser
 import application.settings as settings
 
-#FOR TESTING: app hasn't started so path in stl_to_bitmap is invalid
+#FOR TESTING: app hasn't started so path in stl.py is invalid
 parser.BITMAP_DIR = 'C:/Users/Robert Krulcik/Documents/GitHub\RapidPrototyper/GUI/generation_buffer/'
 
 def test1(process_function, test_designation):

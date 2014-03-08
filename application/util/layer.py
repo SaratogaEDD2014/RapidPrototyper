@@ -32,6 +32,9 @@ class Layer(wx.MemoryDC):
         for flat in self.flat_polys:
             self.DrawPolygon(flat)
         self.bmp.SaveFile(self.name, wx.BITMAP_TYPE_BMP)
+    def clear(self):
+        self.segments = []
+        self.flat_polys = []
     def demo_draw(self):
         self.DrawRectangle(0,0,50,50)
         self.SetPen(wx.Pen(wx.Colour(0,0,255), 3))
@@ -41,6 +44,7 @@ class Layer(wx.MemoryDC):
     def get_z(self):
         return self.z
     def close(self):
+        self.clear()
         self.SelectObject(wx.NullBitmap)
 
 class LayerManager:

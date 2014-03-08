@@ -1,8 +1,7 @@
-import application.settings as settings
 import wx
 from application.bubble_menu import DynamicButtonRect
 from application.util.app_util import color_to_ones
-from application.util.stl_to_bitmap import process_file
+from application.util.stl import stl_to_faces, process_file
 from nested_visual import *
 from numpy import array
 from visual.filedialog import get_file

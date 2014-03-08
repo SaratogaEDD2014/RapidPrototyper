@@ -70,17 +70,18 @@ def addRecentFile(filename):
 
 
 #Print Operations----------------------------------------------------------
-LAYER_DEPTH=.012 #IN INCHES
+LAYER_DEPTH= .012 #IN INCHES
 BUILD_PIXELS = (1080, 960)
 BUILD_AREA = (9.0, 6.5, 8)
 BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
 BUILD_BACKGROUND = wx.Brush(wx.Colour(0,0,0))
 BUILD_FILL = wx.Brush(wx.Colour(0,255,0), wx.CROSSDIAG_HATCH)
+BUILD_SCALE = 1/20.
 
 #UI------------------------------------------------------------------------
 icon_view = True
 app_x, app_y = 0,0
-app_w, app_h = 800,600#wx.GetDisplaySize()
+app_w, app_h = wx.GetDisplaySize()
 default_touchscreen = True
 if default_touchscreen:
     for i in range(0, wx.Display.GetCount()):
