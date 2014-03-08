@@ -6,9 +6,9 @@ from application.bubble_menu import DynamicButtonRect
 from application.util.app_util import dim_color
 
 class CalcDialog(wx.Dialog):
-    def __init__(self, parent, title):
+    def __init__(self, parent, title, size=(settings.app_w/2,settings.app_h/2)):
         style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        super(CalcDialog, self).__init__(parent, -1, title, style=style, pos=(settings.app_w/4, settings.app_h/4), size=(settings.app_w/2,settings.app_h/2))
+        super(CalcDialog, self).__init__(parent, -1, title, style=style, pos=(settings.app_w/4, settings.app_h/4), size=size)
         self.formula = False
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.display = wx.TextCtrl(self, -1, '',  style=wx.TE_RIGHT)
@@ -208,8 +208,8 @@ class CalcDialog(wx.Dialog):
         return self.display.GetValue()
 
 def calc_value(parent=None, title='Edit Dimension:'):
-    dialog = CalcDialog(parent, title)
-    dialog.Center()
+    dialog = CalcDialog(parent, title, size=(settings.app_w/2, settings.app_h/2))
+    dialog.CenterOnScreen()
     dialog.ShowModal()
     val = dialog.GetValue()
     dialog.Destroy()
