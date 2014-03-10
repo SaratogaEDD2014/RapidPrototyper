@@ -1,7 +1,8 @@
 import application.settings as settings
 import wx
 from application.bubble_menu import DynamicButtonRect
-from application.util.app_util import color_to_ones, TitleBreak
+from application.position_control import ControlPanel
+from application.util.app_util import color_to_ones
 from application.util.editors import *
 from application.util.stl import stl_to_faces, process_file
 from nested_visual import *
@@ -104,69 +105,3 @@ class STLViewer(wx.Panel):
         self.destroy_model()
         settings.main_v_window.panel.SetSize((1,1))  #Makes display invisible, invoking the private _destroy removes whole window, not just display
         settings.goto_prev_page()
-
-class ControlPanel(wx.Panel):
-    def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize):
-        super(ControlPanel, self).__init__(parent, id, pos, size)
-
-        w,h = self.GetSize()
-        self.v_sizer = wx.GridSizer(0,1)
-
-        top_sizer = wx.GridSizer(1,0)
-        self.pbutt = wx.Button(self, label='Print')
-        top_sizer.Add(self.pbutt, flag = wx.EXPAND)
-        top_sizer.AddSpacer(w/20)
-        self.cbutt = wx.Button(self, label='Cancel')
-        top_sizer.Add(self.cbutt, flag = wx.EXPAND)
-        self.v_sizer.Add(top_sizer, flag=wx.EXPAND)
-
-        scale_sizer = wx.GridSizer(0,1,h/32,0)
-        offset_title = TitleBreak(self, size=((2*w)/3, h), label='Scale:')
-        scale_sizer.Add(offset_title, flag=wx.EXPAND)
-        bl,bw,bh = settings.BUILD_AREA
-        self.scale_x = DimensionEditor(self, value=settings.SCALE_X, limits=(-bl,bl),
-                                        precision=3, name="X Scale",
-                                        text_color=settings.defaultForeground)
-        self.scale_y = DimensionEditor(self, value=settings.SCALE_Y, limits=(-bw,bw),
-                                        precision=3, name="Y Scale",
-                                        text_color=settings.defaultForeground)
-        self.scale_z = DimensionEditor(self, value=settings.SCALE_Z, limits=(-bh,bh),
-                                        precision=3, name="Z Scale",
-                                        text_color=settings.defaultForeground)
-        scale_sizer.Add(self.scale_x, flag=wx.EXPAND)
-        scale_sizer.Add(self.scale_y, flag=wx.EXPAND)
-        scale_sizer.Add(self.scale_z, flag=wx.EXPAND)
-        self.v_sizer.Add(scale_sizer, flag=wx.EXPAND)
-
-
-        bottom_sizer = wx.GridSizer(0,1,h/32,0)
-        offset_title = TitleBreak(self, size=((2*w)/3, h), label='Offsets:')
-        bottom_sizer.Add(offset_title, flag=wx.EXPAND)
-        bl,bw,bh = settings.BUILD_AREA
-        self.off_x = DimensionEditor(self, value=0.0, limits=(-bl,bl),
-                                        precision=3, name="X Offset",
-                                        text_color=settings.defaultForeground)
-        self.off_y = DimensionEditor(self, value=0.0, limits=(-bw,bw),
-                                        precision=3, name="Y Offset",
-                                        text_color=settings.defaultForeground)
-        self.off_z = DimensionEditor(self, value=0.0, limits=(-bh,bh),
-                                        precision=3, name="Z Offset",
-                                        text_color=settings.defaultForeground)
-        bottom_sizer.Add(self.off_x, flag=wx.EXPAND)
-        bottom_sizer.Add(self.off_y, flag=wx.EXPAND)
-        bottom_sizer.Add(self.off_z, flag=wx.EXPAND)
-        self.v_sizer.Add(bottom_sizer, flag=wx.EXPAND)
-
-        self.SetSizer(self.v_sizer)
-        self.SendSizeEvent()
-
-if __name__ == "__main__":
-    import wx
-
-    app = wx.App()
-    frm = wx.Frame(None)
-    frm.Show()
-
-    pan = ControlPanel(frm)
-
-    app.MainLoop()
