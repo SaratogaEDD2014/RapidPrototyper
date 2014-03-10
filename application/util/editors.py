@@ -104,29 +104,46 @@ class LabeledSpin(wx.Panel):
         self.control.SetValue(val)
 
 class DynamicDataDisplay(wx.Window):
-    def __init__(self, parent, value, pos=wx.DefaultPosition, size=wx.DefaultSize):
-        super(DynamicDataDisplay, self).__init__(parent, pos=pos, size=size)
-        self.SetBackgroundColour(settings.defaultBackground)
+    def __init__(self, parent, value, pos=wx.DefaultPosition, size=wx.DefaultSize, foreground=settings.defaultForeground, background=settings.defaultBackground):
+        super(DynamicDataDisplay, self).__init__(parent, pos=pos, size=size, style=wx.SUNKEN_BORDER)
+        self.SetBackgroundColour(background)
+        self.foreground = foreground
+        self._value = value
         self.value = value
         self.Bind(wx.EVT_PAINT, self.on_paint)
+
+    def post(self):
+        event = wx.CommandEvent(wx.EVT_COMBOBOX.typeId, self.GetId())
+        event.SetEventObject(self)
+        wx.PostEvent(self, event)
+
     def on_paint(self, event):
         event.Skip(True)
-        dc = wx.PaintDC(self) #On OSX a wxPaintDC does not work here. I am still trying to figure out why
+        if sys.platform.count('win')>0:
+            dc = wx.PaintDC(self)
+        else:
+            dc = wx.ClientDC(self)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
-        draw_centered_text(self, str(self.value), 1.0, dc=dc, color=settings.defaultForeground)
+        draw_centered_text(self, str(self._value), 1.4, dc=dc, color=self.foreground)
 
+    #Get and Set with syntax conventions like wx for compatibility in a list of objects
+    #Property for more standard python usage
     def SetValue(self, num):
-        self.value = num
+        self._value = num
         self.Refresh()
     def GetValue(self):
-        return self.value
+        return self._value
+    value = property(GetValue, SetValue)
 
 class DimensionEditor(wx.Window):
-    def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, precision=2, name="NoName", text_color=settings.defaultBackground):
+    def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, precision=2, name="NoName", text_color=settings.defaultBackground, background_color=None):
         super(DimensionEditor, self).__init__(parent, id, pos, size)
-        self.BackgroundColour = self.GetParent().GetBackgroundColour()
-        self._value=value
+        if background_color == None:
+            self.SetBackgroundColour(self.GetParent().GetBackgroundColour())
+        else:
+            self.SetBackgroundColour(background_color)
+        self._value=value  #Will be set again with property to ensure data is updated
         self._range=limits
         self._precision=precision
         self.increment=increment
@@ -140,11 +157,17 @@ class DimensionEditor(wx.Window):
         outside_color = dim_color(settings.defaultAccent, 20)
         self.button = DynamicButtonRect(self, "Edit", inside_color, settings.defaultAccent, outline = settings.defaultAccent)
         self.button.SetSize((w/4, h))
-        self.data = DynamicDataDisplay(self, value, size=(w/4,h))
+        self.data = DynamicDataDisplay(self, value, size=(w/4,h), background=text_color, foreground=self.GetBackgroundColour())
+        self.value = value #also updates self.data
 
         self.Bind(wx.EVT_BUTTON, self.on_click)
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_PAINT, self.on_paint)
+
+    def post(self):
+        event = wx.CommandEvent(wx.EVT_COMBOBOX.typeId, self.GetId())
+        event.SetEventObject(self)
+        wx.PostEvent(self, event)
 
     def on_paint(self, event):
         event.Skip(True)
@@ -173,6 +196,7 @@ class DimensionEditor(wx.Window):
     def SetValue(self, val):
         self._value = val
         self.data.SetValue(round(float(self._value),self._precision))
+        self.post()
     def GetValue(self):
         return round(float(self._value),self._precision)
     value=property(GetValue, SetValue)
@@ -218,6 +242,11 @@ class DimensionComboBox(wx.Window):
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_PAINT, self.on_paint)
 
+    def post(self):
+        event = wx.CommandEvent(wx.EVT_COMBOBOX.typeId, self.GetId())
+        event.SetEventObject(self)
+        wx.PostEvent(self, event)
+
     def on_paint(self, event):
         event.Skip(True)
         if sys.platform.count('win')>0:
@@ -237,6 +266,7 @@ class DimensionComboBox(wx.Window):
 
     def SetValue(self, val):
         self.box.SetValue(val)
+        self.post()
     def GetValue(self):
         return self.box.GetValue()
     value=property(GetValue, SetValue)
@@ -256,9 +286,9 @@ def main():
     panel = wx.Panel(frm)
     sizer=wx.GridSizer(3,1)
     touchspin = DimensionEditor(panel, name="hey")
-    lblspin = DimensionEditor(panel, name="two")
+    lblspin = DimensionEditor(panel, name="two", text_color=settings.defaultForeground)
     dynamic = DimensionEditor(panel)
-    sizer.Add(touchspin)
+    sizer.Add(touchspin, flag=wx.EXPAND)
     sizer.Add(lblspin, flag=wx.EXPAND)
     sizer.Add(dynamic, flag=wx.EXPAND)
     panel.SetSizer(sizer)

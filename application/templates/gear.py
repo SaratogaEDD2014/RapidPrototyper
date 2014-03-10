@@ -317,7 +317,7 @@ class GearTemplate(wx.Panel):
         w,h = self.GetSize()
         edit_panel = wx.Panel(self)
         edit_panel.SetBackgroundColour(self.GetBackgroundColour())
-        edit_sizer = wx.GridSizer(0,1, h/40)
+        edit_sizer = wx.GridSizer(0,1, h/60)
         buff1 = wx.Panel(edit_panel)
         buff2 = wx.Panel(edit_panel)
         edit_sizer.Add(buff1)
