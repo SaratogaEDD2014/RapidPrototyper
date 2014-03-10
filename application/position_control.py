@@ -99,9 +99,9 @@ class RotateEditor(wx.Dialog):
         self.refresh_values()
     def refresh_values(self):
         self.vals = []
-        self.vals.append(self.scale_x.GetValue())
-        self.vals.append(self.scale_y.GetValue())
-        self.vals.append(self.scale_z.GetValue())
+        self.vals.append(self.rot_x.GetValue())
+        self.vals.append(self.rot_y.GetValue())
+        self.vals.append(self.rot_z.GetValue())
     def get_values(self):
         self.refresh_values()
         return self.vals
