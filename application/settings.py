@@ -68,15 +68,30 @@ def addRecentFile(filename):
         recentFiles=recentFiles[0:6]
 
 
-
 #Print Operations----------------------------------------------------------
+unit_factors = {'mm':25.40,
+                    'cm':2.54,
+                    'in':1.00,
+                    'ft':1/12.,
+                    'm':.0254}
+OFFSET_X = 0.0
+OFFSET_Y = 0.0
+OFFSET_Z = 0.0
+SCALE_X = 1.0
+SCALE_Y = 1.0
+SCALE_Z = 1.0
+UNITS = 'in'
 LAYER_DEPTH= .012 #IN INCHES
 BUILD_PIXELS = (1080, 960)
 BUILD_AREA = (9.0, 6.5, 8)
 BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
 BUILD_BACKGROUND = wx.Brush(wx.Colour(0,0,0))
 BUILD_FILL = wx.Brush(wx.Colour(0,255,0), wx.CROSSDIAG_HATCH)
-BUILD_SCALE = 1/20.
+x_factor = lambda: 1*unit_factors[UNITS]*SCALE_X
+y_factor = lambda: 1*unit_factors[UNITS]*SCALE_Y
+z_factor = lambda: 1*unit_factors[UNITS]*SCALE_Z
+
+
 
 #UI------------------------------------------------------------------------
 icon_view = True

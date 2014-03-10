@@ -48,7 +48,7 @@ class Facet:
                     layer.add_segment(level)
 
 #read text stl match keywords to grab the points to build the model
-def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=settings.BUILD_PIXELS[1]/(2*hPPI), offsetz=0,dialog=None):
+def process_file(filename, offsetx=settings.OFFSET_X, offsety=settings.OFFSET_Y, offsetz=settings.OFFSET_Z,dialog=None):
     #clear bmp storage directory
     if dialog!=None: dialog.Update(10, 'Deleting Files...')
     if not os.path.exists(BITMAP_DIR):
@@ -63,7 +63,6 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
     f = open(filename,'r')
     basic_name = filename[filename.rfind('/'):]
     name = basic_name.replace('.stl', '')
-    print name
     layer_manager = LayerManager(settings.LAYER_DEPTH, BITMAP_DIR, name, settings.BUILD_PIXELS[0], settings.BUILD_PIXELS[1])
     facets = []
     triplet = []
@@ -74,8 +73,7 @@ def process_file(filename, offsetx=settings.BUILD_PIXELS[0]/(2*wPPI), offsety=se
             if words[0] =='vertex':
                 #Get the points of the vertex:
                 #Normalize the Z component to a valid step layer, so we don't miss horizontal lines or facets
-                point = (eval(words[1])*settings.BUILD_SCALE + offsetx, eval(words[2])*settings.BUILD_SCALE + offsety, normalize(eval(words[3])*settings.BUILD_SCALE + offsetz, STEP))
-                #print point
+                point = (eval(words[1])*settings.x_factor() + offsetx, eval(words[2])*settings.y_factor() + offsety, normalize(eval(words[3])*settings.z_factor() + offsetz, STEP))
                 triplet.append(point)
                 if len(triplet) == 3:
                     p1,p2,p3 = triplet
@@ -162,9 +160,9 @@ def stl_to_faces(fileinfo, frm=None): # specify file
             if n % 200000 == 0:
                 print ("%d" % (100*n/L))+"%",
             triNor[i] = fromstring(text[n:n+12], float32)     #Normal Vector
-            triPos[i] = fromstring(text[n+12:n+24], float32)*settings.BUILD_SCALE
-            triPos[i+1] = fromstring(text[n+24:n+36], float32)*settings.BUILD_SCALE
-            triPos[i+2] = fromstring(text[n+36:n+48], float32)*settings.BUILD_SCALE
+            triPos[i] = fromstring(text[n+12:n+24], float32)*settings.x_factor()
+            triPos[i+1] = fromstring(text[n+24:n+36], float32)*settings.y_factor()
+            triPos[i+2] = fromstring(text[n+36:n+48], float32)*settings.z_factor()
             colors = fromstring(text[n+48:n+50], uint16)
             if colors != 0:
                 print '%x' % colors
@@ -190,7 +188,7 @@ def stl_to_faces(fileinfo, frm=None): # specify file
                     triNor.append( [ float(FileLine[2]), float(FileLine[3]), float(FileLine[4]) ]  )
             elif FileLine[0] == 'vertex':
                 #These lines define points
-                triPos.append( [ float(FileLine[1])*settings.BUILD_SCALE, float(FileLine[2])*settings.BUILD_SCALE, float(FileLine[3])*settings.BUILD_SCALE ]  )
+                triPos.append( [ float(FileLine[1])*settings.x_factor(), float(FileLine[2])*settings.y_factor(), float(FileLine[3])*settings.z_factor() ]  )
         triPos = array(triPos)
         triNor = array(triNor)
 

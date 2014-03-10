@@ -1,6 +1,8 @@
+import application.settings as settings
 import wx
 from application.bubble_menu import DynamicButtonRect
-from application.util.app_util import color_to_ones
+from application.util.app_util import color_to_ones, TitleBreak
+from application.util.editors import *
 from application.util.stl import stl_to_faces, process_file
 from nested_visual import *
 from numpy import array
@@ -9,19 +11,39 @@ from visual.filedialog import get_file
 class STLViewer(wx.Panel):
     def __init__(self, parent, stl_file="", pos=(0,80), size=(settings.app_w,settings.app_h)):
         super(STLViewer, self).__init__(parent, pos=pos, size=size)
-        self.file = stl_file
-        self.title = wx.StaticText(self, label="Printer View Screen", pos=(settings.app_w*3/4, 30))
-        self.title.SetForegroundColour(wx.Colour(255,255,255))
-        self.printb = DynamicButtonRect(self, "Print")
-        self.printb.SetSize((settings.app_w/4, settings.app_h/7))
-        self.printb.SetPosition((int(settings.app_w*.7), 10))
-        self.cancelb = DynamicButtonRect(self, "Cancel")
-        self.cancelb.SetSize((settings.app_w/4, settings.app_h/7))
-        self.cancelb.SetPosition((int(settings.app_w*.7), settings.app_h/5))
-        self.Bind(wx.EVT_BUTTON, self.on_print, self.printb)
-        self.Bind(wx.EVT_BUTTON, self.on_cancel, self.cancelb)
-        self.viewer = None
         self.Show(False)
+        self.file = stl_file
+        self.display = None
+        self.part_frame = None
+        self.model = None #Holds faces object for part
+        self.controls = ControlPanel(self, pos=((size[0]*2)/3, 0), size=(size[0]/3, size[1]-settings.toolbar_h))
+
+        self.Bind(wx.EVT_BUTTON, self.on_print, self.controls.pbutt)
+        self.Bind(wx.EVT_BUTTON, self.on_cancel, self.controls.cbutt)
+
+        self.Bind(wx.EVT_COMBOBOX, self.scale, self.controls.scale_x)
+        self.Bind(wx.EVT_COMBOBOX, self.scale, self.controls.scale_y)
+        self.Bind(wx.EVT_COMBOBOX, self.scale, self.controls.scale_z)
+        self.Bind(wx.EVT_COMBOBOX, self.offset, self.controls.off_x)
+        self.Bind(wx.EVT_COMBOBOX, self.offset, self.controls.off_y)
+        self.Bind(wx.EVT_COMBOBOX, self.offset, self.controls.off_z)
+
+        self.viewer = None
+        self.SendSizeEvent()
+
+    def scale(self, event):
+        settings.SCALE_X = self.controls.scale_x.GetValue()
+        settings.SCALE_Y = self.controls.scale_y.GetValue()
+        settings.SCALE_Z = self.controls.scale_z.GetValue()
+        self.update_model()
+
+
+    def offset(self, event):
+        settings.OFFSET_X = self.controls.off_x.GetValue()
+        settings.OFFSET_Y = self.controls.off_y.GetValue()
+        settings.OFFSET_Z = self.controls.off_z.GetValue()
+        if self.part_frame != None:
+            self.part_frame.pos = (settings.OFFSET_X, settings.OFFSET_Y, settings.OFFSET_Z)
 
     def Show(self, visible):
         super(STLViewer, self).Show(visible)
@@ -50,8 +72,7 @@ class STLViewer(wx.Panel):
                 settings.display_part = False
                 #self.display.autocenter =True
                 if self.file != "":
-                    self.model = stl_to_faces(file(self.file), self.part_frame)
-                    self.model.smooth()
+                    self.update_model()
 ##                    self.label = label(pos=self.model.pos, text=self.file,
 ##                        xoffset=1, line=0, yoffset=100, space=100,)
                     n = self.file
@@ -63,169 +84,26 @@ class STLViewer(wx.Panel):
 
         else:
             settings.display_part=True
+    def destroy_model(self):
+        if self.model != None:
+            self.model.visible = False
+            del self.model
+            self.model = None
 
+    def update_model(self):
+        if self.display != None:
+            if self.model != None:
+                self.destroy_model()
+            self.model = stl_to_faces(file(self.file), self.part_frame)
+            self.model.smooth()
     def on_print(self, event):
         self.dialog = wx.ProgressDialog("Processing "+self.file[self.file.rfind('/'):]+":", "Process is 10% complete.", 100, self)
-        process_file(self.file, dialog = self.dialog)
+        process_file(self.file, offsetx=settings.OFFSET_X, offsety=settings.OFFSET_Y, offsetz=settings.OFFSET_Z, dialog = self.dialog)
         self.dialog.Destroy()
     def on_cancel(self, event):
+        self.destroy_model()
         settings.main_v_window.panel.SetSize((1,1))  #Makes display invisible, invoking the private _destroy removes whole window, not just display
         settings.goto_prev_page()
-
-
-def stl_to_faces(fileinfo, frm=None): # specify file
-    # Accept a file name or a file descriptor; make sure mode is 'rb' (read binary)
-    if isinstance(fileinfo, str):
-        fd = open(fileinfo, mode='rb')
-    elif isinstance(fileinfo, file):
-        if fileinfo.mode != 'rb':
-            filename = fileinfo.name
-            fileinfo.close()
-            fd = open(filename, mode='rb')
-        else:
-            fd = fileinfo
-    else:
-        raise TypeError, "Specify a file"
-    text = fd.read()
-    if chr(0) in text: # if binary file
-        text = text[84:]
-        L = len(text)
-        N = 2*(L//25) # 25/2 floats per point: 4*3 float32's + 1 uint16
-        triNor = zeros((N,3), dtype=float32)
-        triPos = zeros((N,3), dtype=float32)
-        n = i = 0
-        while n < L:
-            if n % 200000 == 0:
-                print ("%d" % (100*n/L))+"%",
-            triNor[i] = fromstring(text[n:n+12], float32)
-            triPos[i] = fromstring(text[n+12:n+24], float32)
-            triPos[i+1] = fromstring(text[n+24:n+36], float32)
-            triPos[i+2] = fromstring(text[n+36:n+48], float32)
-            colors = fromstring(text[n+48:n+50], uint16)
-            if colors != 0:
-                print '%x' % colors
-            if triNor[i].any():
-                triNor[i] = triNor[i+1] = triNor[i+2] = norm(vector(triNor[i]))
-            else:
-                triNor[i] = triNor[i+1] = triNor[i+2] = \
-                    norm(cross(triPos[i+1]-triPos[i],triPos[i+2]-triPos[i]))
-            n += 50
-            i += 3
-    else:
-        fd.seek(0)
-        fList = fd.readlines()
-        triPos = []
-        triNor = []
-
-        # Decompose list into vertex positions and normals
-        for line in fList:
-            FileLine = line.split( )
-            if FileLine[0] == 'facet':
-                for n in range(3):
-                    triNor.append( [ float(FileLine[2]), float(FileLine[3]), float(FileLine[4]) ]  )
-            elif FileLine[0] == 'vertex':
-                triPos.append( [ float(FileLine[1]), float(FileLine[2]), float(FileLine[3]) ]  )
-
-        triPos = array(triPos)
-        triNor = array(triNor)
-
-    # Compose faces in default frame
-    if frm == None:
-        f = frame()
-    else:
-        f = frm
-    return faces(frame=f, pos=triPos, normal=triNor)
-
-
-
-
-
-"""
-    #From Visual Example:---------------------------------------------------------------------------------
-    def stl_to_faces(fileinfo): # specify file
-    # Accept a file name or a file descriptor; make sure mode is 'rb' (read binary)
-    if isinstance(fileinfo, str):
-    fd = open(fileinfo, mode='rb')
-    elif isinstance(fileinfo, file):
-    if fileinfo.mode != 'rb':
-    filename = fileinfo.name
-    fileinfo.close()
-    fd = open(filename, mode='rb')
-    else:
-    fd = fileinfo
-    else:
-    raise TypeError, "Specify a file"
-    text = fd.read()
-    if chr(0) in text: # if binary file
-    text = text[84:]
-    L = len(text)
-    N = 2*(L//25) # 25/2 floats per point: 4*3 float32's + 1 uint16
-    triNor = zeros((N,3), dtype=float32)
-    triPos = zeros((N,3), dtype=float32)
-    n = i = 0
-    while n < L:
-    if n % 200000 == 0:
-    print ("%d" % (100*n/L))+"%",
-    triNor[i] = fromstring(text[n:n+12], float32)
-    triPos[i] = fromstring(text[n+12:n+24], float32)
-    triPos[i+1] = fromstring(text[n+24:n+36], float32)
-    triPos[i+2] = fromstring(text[n+36:n+48], float32)
-    colors = fromstring(text[n+48:n+50], uint16)
-    if colors != 0:
-    print '%x' % colors
-    if triNor[i].any():
-    triNor[i] = triNor[i+1] = triNor[i+2] = norm(vector(triNor[i]))
-    else:
-    triNor[i] = triNor[i+1] = triNor[i+2] = \
-    norm(cross(triPos[i+1]-triPos[i],triPos[i+2]-triPos[i]))
-    n += 50
-    i += 3
-    else:
-    fd.seek(0)
-    fList = fd.readlines()
-    triPos = []
-    triNor = []
-
-    # Decompose list into vertex positions and normals
-    for line in fList:
-    FileLine = line.split( )
-    if FileLine[0] == 'facet':
-    for n in range(3):
-    triNor.append( [ float(FileLine[2]), float(FileLine[3]), float(FileLine[4]) ]  )
-    elif FileLine[0] == 'vertex':
-    triPos.append( [ float(FileLine[1]), float(FileLine[2]), float(FileLine[3]) ]  )
-
-    triPos = array(triPos)
-    triNor = array(triNor)
-
-    # Compose faces in default frame
-    f = frame()
-    return faces(frame=f, pos=triPos, normal=triNor)
-
-    if __name__ == '__main__':
-    #print "Choose an stl file to display. Rotate!"
-    # Open .stl file
-    while True:
-    fd = get_file()
-    if not fd: continue
-
-    scene.width = scene.height = 800
-    scene.autocenter = True
-    newobject = stl_to_faces(fd)
-    newobject.smooth() # average normals at a vertex
-
-    # Examples of modifying the returned object:
-    ##        newobject.frame.pos = (-1,-1,-0.5)
-    ##        newobject.frame.axis = (0,1,0)
-    newobject.color = color.orange
-    newobject.material = materials.wood
-    break"""
-
-import wx
-
-app = wx.App()
-frm = wx.Frame(None)
-frm.Show()
 
 class ControlPanel(wx.Panel):
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize):
@@ -233,34 +111,62 @@ class ControlPanel(wx.Panel):
 
         w,h = self.GetSize()
         self.v_sizer = wx.GridSizer(0,1)
-        self.v_sizer.AddSpacer((w,h/32))
 
         top_sizer = wx.GridSizer(1,0)
-        top_sizer.AddSpacer(w/20)
         self.pbutt = wx.Button(self, label='Print')
         top_sizer.Add(self.pbutt, flag = wx.EXPAND)
         top_sizer.AddSpacer(w/20)
         self.cbutt = wx.Button(self, label='Cancel')
         top_sizer.Add(self.cbutt, flag = wx.EXPAND)
-        top_sizer.AddSpacer(w/20)
         self.v_sizer.Add(top_sizer, flag=wx.EXPAND)
 
-        self.offset_title = wx.StaticText(self, label='Offsets:')
-        self.v_sizer.Add(self.offset_title, flag=wx.EXPAND)
-        self.v_sizer.AddSpacer((10,h/32))
-        mid_sizer = wx.GridSizer(0,2,h/64,0)
-        offx_tit = wx.StaticText(self, label='Offset X')
-        offx_box = wx.ComboBox(self, -1, '10')
-        mid_sizer.Add(offx_tit, flag=wx.EXPAND)
-        mid_sizer.Add(offx_box, flag=wx.EXPAND)
-        offy_tit = wx.StaticText(self, label='Offset Y')
-        offy_box = wx.ComboBox(self, -1, '10')
-        mid_sizer.Add(offy_tit, flag=wx.EXPAND)
-        mid_sizer.Add(offy_box, flag=wx.EXPAND)
-        self.v_sizer.Add(mid_sizer)
+        scale_sizer = wx.GridSizer(0,1,h/32,0)
+        offset_title = TitleBreak(self, size=((2*w)/3, h), label='Scale:')
+        scale_sizer.Add(offset_title, flag=wx.EXPAND)
+        bl,bw,bh = settings.BUILD_AREA
+        self.scale_x = DimensionEditor(self, value=settings.SCALE_X, limits=(-bl,bl),
+                                        precision=3, name="X Scale",
+                                        text_color=settings.defaultForeground)
+        self.scale_y = DimensionEditor(self, value=settings.SCALE_Y, limits=(-bw,bw),
+                                        precision=3, name="Y Scale",
+                                        text_color=settings.defaultForeground)
+        self.scale_z = DimensionEditor(self, value=settings.SCALE_Z, limits=(-bh,bh),
+                                        precision=3, name="Z Scale",
+                                        text_color=settings.defaultForeground)
+        scale_sizer.Add(self.scale_x, flag=wx.EXPAND)
+        scale_sizer.Add(self.scale_y, flag=wx.EXPAND)
+        scale_sizer.Add(self.scale_z, flag=wx.EXPAND)
+        self.v_sizer.Add(scale_sizer, flag=wx.EXPAND)
+
+
+        bottom_sizer = wx.GridSizer(0,1,h/32,0)
+        offset_title = TitleBreak(self, size=((2*w)/3, h), label='Offsets:')
+        bottom_sizer.Add(offset_title, flag=wx.EXPAND)
+        bl,bw,bh = settings.BUILD_AREA
+        self.off_x = DimensionEditor(self, value=0.0, limits=(-bl,bl),
+                                        precision=3, name="X Offset",
+                                        text_color=settings.defaultForeground)
+        self.off_y = DimensionEditor(self, value=0.0, limits=(-bw,bw),
+                                        precision=3, name="Y Offset",
+                                        text_color=settings.defaultForeground)
+        self.off_z = DimensionEditor(self, value=0.0, limits=(-bh,bh),
+                                        precision=3, name="Z Offset",
+                                        text_color=settings.defaultForeground)
+        bottom_sizer.Add(self.off_x, flag=wx.EXPAND)
+        bottom_sizer.Add(self.off_y, flag=wx.EXPAND)
+        bottom_sizer.Add(self.off_z, flag=wx.EXPAND)
+        self.v_sizer.Add(bottom_sizer, flag=wx.EXPAND)
 
         self.SetSizer(self.v_sizer)
+        self.SendSizeEvent()
 
-pan = ControlPanel(frm, size=(400,400))
+if __name__ == "__main__":
+    import wx
 
-app.MainLoop()
+    app = wx.App()
+    frm = wx.Frame(None)
+    frm.Show()
+
+    pan = ControlPanel(frm)
+
+    app.MainLoop()
