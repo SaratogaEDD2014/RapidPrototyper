@@ -16,7 +16,7 @@ import wx
 
 #Returns the distance between two points
 def get_distance(p1, p2):
-	return math.sqrt( (math.pow(p1.x - p2.x, 2) + math.pow(p1.y - p2.y, 2) ) )
+	return math.sqrt( (math.pow(p1.x - p2[0], 2) + math.pow(p1.y - p2[1], 2) ) )
 
 #Basic geometry object, used throughout the code
 class point:
@@ -50,24 +50,19 @@ class point:
 		return temp
 
 	#Given a coordinate set, returns true of false if the click was within a radius, used for click detection.
-	def check_if_selected(self, clickX, clickY):
+	def check_if_selected(self, click_loc):
 		radius = 5 # move this into config files?
 
-		return (getDistance(self, point((clickX, clickY))) < radius )
+		return (get_distance(self, click_loc) < radius )
 
-class line:
-	parent = None
-	def __init__(self, start, end):
-		self.start_point = start
-		self.end_point = end
-
-		self.start_point.set_parent(self)
-		self.end_point.set_parent(self)
+class figure:
+	points = []
+	parent = []
 
 	def set_parent(self, parent):
 		self.parent = parent
 
-	def get_parent(self):
+   	def get_parent(self):
 		temp = self.parent
 
 		while temp != None:
@@ -75,13 +70,28 @@ class line:
 
 		return temp
 
+	def get_points(self):
+		return self.points
+
+class line(figure):
+	parent = None
+	def __init__(self, start, end):
+		self.start_point = start
+		self.end_point = end
+
+		self.points = [start, end]
+
+		self.start_point.set_parent(line( (5,5,), point(6,6)))
+		self.end_point.set_parent(self)
+
+
 	def draw(self, canvas):
 		dc = wx.MemoryDC(canvas)
 		dc.SetPen(wx.BLACK_PEN)
 		dc.SetBrush(wx.BLACK_BRUSH)
 
-		canvas = self.start_point.draw()
-		canvas = self.end_point.draw()
+		canvas = self.start_point.draw(canvas)
+		canvas = self.end_point.draw(canvas)
 
 		dc.DrawLine(self.start_point.x, self.start_point.y, self.end_point.x, self.end_point.y)
 
@@ -106,6 +116,7 @@ class line_shadow():
 
 		self.canvas.Bind(wx.EVT_MOTION, self.on_move)
 		self.canvas.Bind(wx.EVT_LEFT_UP, self.finalize)
+
 
 	def on_move(self, event):
 		self.canvas.Refresh()
@@ -136,7 +147,7 @@ class line_shadow():
 
 		self.ret.__call__(new_line)
 
-class rect:
+class rect(figure):
 	def __init__(start, end):
 		#Takes the start and end points (points as given by mouse) and generates lines and points
 		#height = start.y - end.y //Not needed anymore?
@@ -148,6 +159,8 @@ class rect:
 		p2 = point(end.x, start.y)
 		p3 = point(end.x, end.y)
 		p4 = point(start.x, end.y)
+
+		self.points = [p1, p2, p3, p4]
 
 		self.lines.append(line(p1, p2))
    		self.lines.append(line(p2, p3))
@@ -163,17 +176,14 @@ class rect:
 		dc.SetBrush(wx.BLACK_BRUSH)
 
 		for i in self.lines:
-			canvas = i.draw()
+			canvas = i.draw(canvas)
 
 		return canvas
-
-	def get_parent(self):
-		return None #Will need to be changed if compound figures are ever needed.
 
 #class rect_shadow:
 	# TODO: IMPLMENT
 
-class arc:
+class arc(figure):
 	def _init_(start, end, mid):
 		self.start = start
 		self.end = end
@@ -183,15 +193,14 @@ class arc:
 		self.end.set_parent(self)
 		self.mid.set_parent(self)
 
+		self.points = [start, end, mid]
+
 	def draw(self, canvas):
 		dc = wx.MemoryDC(canvas)
 		dc.SetPen(wx.BLACK_PEN)
 		dc.SetBrush(wx.BLACK_BRUSH)
 
 		dc.DrawArc(self.start.x, self.start.y, self.end.x, self.end.y, self.mid.x, self.mid.y)
-
-	def get_parent(self):
-		return None
 
 #class arc_shadow:
 	#TODO: IMPLEMENT

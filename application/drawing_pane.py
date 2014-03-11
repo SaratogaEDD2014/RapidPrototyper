@@ -45,17 +45,27 @@ class drawing_area(wx.Panel):
 	def select(self,e):
 		print 'selecting'
 		for i in self.objects:
+			for j in i.get_points():
+				if j.check_if_selected(e.GetPositionTuple()):
+					print 'k'
 
 
 	def create_line(self,e):
-		l = DrawableObjects.line_shadow(self.canvas, self.finish_create)
+		l = util.drawable_objects.line_shadow(self.canvas, self.finish_create)
 
 	def create_box(self,e):
 		pass
 	def create_arc(self,e):
 		pass
 	def delete(self, e):
-		pass
+		for i in self.objects:
+			for j in i.get_points():
+				if j.check_if_selected(e.GetPositionTuple()):
+					parent = j.get_parent()
+					#self.objects.remove(parent)
+					print j
+					print parent
+					self.redraw()
 
 	def on_click(self, e):
 		self.current_action.__call__(e)
@@ -67,8 +77,6 @@ class drawing_area(wx.Panel):
 
 	def redraw(self):
 		bitmap = self.canvas.GetBitmap()
-		print bitmap.GetSize()
-		print str(len(self.objects))
 
 		for i in self.objects:
 			bitmap = i.draw(bitmap)
@@ -76,7 +84,7 @@ class drawing_area(wx.Panel):
 		self.canvas.SetBitmap(bitmap)
 		self.canvas.Refresh()
 	#	self.dc.DrawBitmap(bitmap, 0,0)
-		print 'debug: redraw called, finished.'
+	#	print 'debug: redraw called, finished.'
 
 
 class tool_menu(wx.Panel):
