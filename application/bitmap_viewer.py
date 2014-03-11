@@ -1,5 +1,6 @@
 import wx
 import os
+import application.settings as settings
 
 class BitmapViewer(wx.Panel):
     def __init__(self, parent, bitmaps=[], id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize, offsetx=0, offsety=0):
@@ -12,15 +13,12 @@ class BitmapViewer(wx.Panel):
     def on_paint(self, event):
         event.Skip(True)
         dc = wx.PaintDC(self)
-        if self.current_i >0 and self.current_i<len(self.bmps):
-            print 'draw'
-            dc.DrawBitmap(self.bmps[self.current_i], self.offx,self.offy)
+        show_slide(self.current_i)
     def bitmaps_from_dir(self, directory):
         if os.path.exists(directory):
             for the_file in os.listdir(directory):
-                if the_file.count('.bmp') != 0:
-                    file_path = os.path.join(directory, the_file)
-                    self.bmps.append(wx.Bitmap(file_path))
+                file_path = os.path.join(directory, the_file)
+                self.bmps.append(wx.Bitmap(file_path))
     def begin(self):
         self.current_i = 0
         self.Refresh()
@@ -31,29 +29,46 @@ class BitmapViewer(wx.Panel):
     def show_slide(self, slide_number):
         self.set_current_slide(slide_number)
         dc = wx.ClientDC(self)
+        dc.Clear()
         if self.current_i >0 and self.current_i<len(self.bmps):
-            print 'draw'
-            dc.DrawBitmap(self.bmps[self.current_i], self.offx,self.offy)
+            w,h = self.GetSize()
+            to_draw = scale_bitmap(self.bmps[self.current_i],w,h)
+            dc.DrawBitmap(to_draw, self.offx,self.offy)
     def show_next(self):
         self.show_slide(self.current_i+1)
     def slideshow(self, delay=1):
         self.begin()
         for i in range(len(self.bmps)):
             self.show_next()
-            wx.Sleep(delay)
+            wx.Sleep(1)
 
-app = wx.App()
-frm = wx.Frame(None, size=(800,800))
-frm.Show(True)
+def scale_bitmap(bitmap, width, height):
+    image = wx.ImageFromBitmap(bitmap)
+    image = image.Scale(width, height, wx.IMAGE_QUALITY_HIGH)
+    return wx.BitmapFromImage(image)
 
-def showoff(event):
-    pan = BitmapViewer(frm, size=(800,800), offsety=30)
-    pan.SetBackgroundColour(wx.Colour(200,200,255))
-    pan.bitmaps_from_dir('C:/Users/krulciks14/Documents/GitHub/RapidPrototyper/application/generation_buffer')
-    pan.slideshow(.5)
+def prepare():
+    """from app"""
+    import os
+    import sys
+    PATH=os.path.dirname(os.path.realpath(sys.argv[0]))+'/'
+    sys.path.append(PATH[:PATH.rfind("application")])
+
+    settings.PATH = PATH
+    settings.IMAGE_PATH = PATH + 'images/'
 
 
 def main():
+    app = wx.App()
+    frm = wx.Frame(None, size=(800,800))
+    frm.Show(True)
+    prepare()
+    def showoff(event):
+        pan = BitmapViewer(frm, size=(800,800), offsety=30)
+        pan.SetBackgroundColour(wx.Colour(200,200,255))
+        pan.bitmaps_from_dir(settings.PATH+'generation_buffer')
+        pan.slideshow(.1)
+
     butt = wx.Button(frm, label='start')
     frm.Bind(wx.EVT_BUTTON, showoff)
 
