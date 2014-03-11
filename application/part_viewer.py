@@ -1,7 +1,7 @@
 import application.settings as settings
 import wx
 from application.bubble_menu import DynamicButtonRect
-from application.position_control import ControlPanel
+from application.position_control import *
 from application.util.app_util import color_to_ones
 from application.util.editors import *
 from application.util.stl import stl_to_faces, process_file
@@ -22,9 +22,8 @@ class STLViewer(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.on_print, self.controls.pbutt)
         self.Bind(wx.EVT_BUTTON, self.on_cancel, self.controls.cbutt)
 
-        self.Bind(wx.EVT_COMBOBOX, self.scale, self.controls.scale_x)
-        self.Bind(wx.EVT_COMBOBOX, self.scale, self.controls.scale_y)
-        self.Bind(wx.EVT_COMBOBOX, self.scale, self.controls.scale_z)
+        self.Bind(wx.EVT_BUTTON, self.scale, self.controls.scale_butt)
+        self.Bind(wx.EVT_BUTTON, self.rotate, self.controls.rot_butt)
         self.Bind(wx.EVT_COMBOBOX, self.offset, self.controls.off_x)
         self.Bind(wx.EVT_COMBOBOX, self.offset, self.controls.off_y)
         self.Bind(wx.EVT_COMBOBOX, self.offset, self.controls.off_z)
@@ -33,11 +32,18 @@ class STLViewer(wx.Panel):
         self.SendSizeEvent()
 
     def scale(self, event):
-        settings.SCALE_X = self.controls.scale_x.GetValue()
-        settings.SCALE_Y = self.controls.scale_y.GetValue()
-        settings.SCALE_Z = self.controls.scale_z.GetValue()
+        scales = edit_scale()
+        settings.SCALE_X = scales[0]
+        settings.SCALE_Y = scales[1]
+        settings.SCALE_Z = scales[2]
         self.update_model()
 
+    def rotate(self, event):
+        rotation = edit_rotation()
+        about_x = rotation[0]
+        about_y = rotation[1]
+        about_z = rotation[2]
+        self.update_model()
 
     def offset(self, event):
         settings.OFFSET_X = self.controls.off_x.GetValue()
