@@ -515,17 +515,29 @@ class display(cvisual.display_kernel):
 
         if self.standard: c.SetFocus()
 
-        c.Bind(_wx.EVT_LEFT_DOWN, self._OnLeftMouseDown)
-        c.Bind(_wx.EVT_LEFT_UP, self._OnLeftMouseUp)
+##        #Original Binding pattern
+##        c.Bind(_wx.EVT_LEFT_DOWN, self._OnLeftMouseDown)
+##        c.Bind(_wx.EVT_LEFT_UP, self._OnLeftMouseUp)
+##        c.Bind(_wx.EVT_MIDDLE_DOWN, self._OnMiddleMouseDown)
+##        c.Bind(_wx.EVT_MIDDLE_UP, self._OnMiddleMouseUp)
+##        c.Bind(_wx.EVT_RIGHT_DOWN, self._OnRightMouseDown)
+##        c.Bind(_wx.EVT_RIGHT_UP, self._OnRightMouseUp)
+##        c.Bind(_wx.EVT_MOTION, self._OnMouseMotion)
+##        c.Bind(_wx.EVT_LEFT_DCLICK, self._OnLeftDClick)
+##        c.Bind(_wx.EVT_RIGHT_DCLICK, self._OnRightDClick)
+##        c.Bind(_wx.EVT_MIDDLE_DCLICK, self._OnMiddleDClick)
+##        c.Bind(_wx.EVT_MOUSE_CAPTURE_LOST, self._OnCaptureLost)
+        #New Binding Patter
         c.Bind(_wx.EVT_MIDDLE_DOWN, self._OnMiddleMouseDown)
         c.Bind(_wx.EVT_MIDDLE_UP, self._OnMiddleMouseUp)
-        c.Bind(_wx.EVT_RIGHT_DOWN, self._OnRightMouseDown)
-        c.Bind(_wx.EVT_RIGHT_UP, self._OnRightMouseUp)
+        c.Bind(_wx.EVT_LEFT_DOWN, self._OnRightMouseDown)
+        c.Bind(_wx.EVT_LEFT_UP, self._OnRightMouseUp)
         c.Bind(_wx.EVT_MOTION, self._OnMouseMotion)
         c.Bind(_wx.EVT_LEFT_DCLICK, self._OnLeftDClick)
         c.Bind(_wx.EVT_RIGHT_DCLICK, self._OnRightDClick)
         c.Bind(_wx.EVT_MIDDLE_DCLICK, self._OnMiddleDClick)
         c.Bind(_wx.EVT_MOUSE_CAPTURE_LOST, self._OnCaptureLost)
+
 
         #c.Bind(_wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
 
@@ -644,6 +656,15 @@ class display(cvisual.display_kernel):
 
     def _OnCaptureLost(self, evt):
         pass
+
+    def start_user_zoom(self):
+        """Mimicks the user beginning to press middle mouse button down.
+            Bad practice? Maybe. But it has minimal interference with original code"""
+        self._OnMiddleMouseDown(_wx.MouseEvent(_wx.MOUSE_BTN_MIDDLE))
+    def end_user_zoom(self):
+        """Mimicks the user lifting middle mouse button up.
+            Bad practice? Maybe. But it has minimal interference with original code"""
+        self._OnMiddleMouseUp(_wx.MouseEvent(_wx.MOUSE_BTN_MIDDLE))
 
 # Mouse state, including ctrl/alt etc. http://wxpython.org/docs/api/wx.MouseState-class.html
 # On Mac:
