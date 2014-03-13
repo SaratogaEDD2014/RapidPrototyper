@@ -10,10 +10,10 @@ class ControlPanel(wx.Panel):
         v_sizer = wx.GridSizer(0,1, h/64)
 
         top_sizer = wx.GridSizer(1,0)
-        self.pbutt = wx.Button(self, label='Print')
+        self.pbutt = DynamicButtonRect(self, 'Print')
         top_sizer.Add(self.pbutt, flag = wx.EXPAND)
         top_sizer.AddSpacer(w/20)
-        self.cbutt = wx.Button(self, label='Cancel')
+        self.cbutt = DynamicButtonRect(self, 'Cancel')
         top_sizer.Add(self.cbutt, flag = wx.EXPAND)
         v_sizer.Add(top_sizer, flag=wx.EXPAND)
 
@@ -39,7 +39,8 @@ class ControlPanel(wx.Panel):
         self.rot_butt = DynamicButtonRect(self, "Rotate")
         self.scale_butt = DynamicButtonRect(self, "Scale")
         trans_sizer.Add(self.rot_butt, flag=wx.EXPAND)
-        trans_sizer.Add(self.scale_butt, flag=wx.EXPAND)
+        trans_sizer.AddSpacer(10)
+        trans_sizer.Add(self.scale_butt, flag=wx.EXPAND, border=15)
         v_sizer.Add(trans_sizer, flag=wx.EXPAND)
 
         self.SetSizer(v_sizer)
@@ -80,6 +81,7 @@ class RotateEditor(wx.Dialog):
 
         self.SetSizer(rot_size)
         self.SendSizeEvent()
+        self.CenterOnScreen()
 
     def on_cancel(self, event):
         self.Close()
@@ -134,6 +136,7 @@ class ScaleEditor(wx.Dialog):
 
         self.SetSizer(scale_size)
         self.SendSizeEvent()
+        self.CenterOnScreen()
 
     def on_cancel(self, event):
         self.Close()

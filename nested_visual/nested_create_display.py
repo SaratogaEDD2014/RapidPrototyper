@@ -657,14 +657,14 @@ class display(cvisual.display_kernel):
     def _OnCaptureLost(self, evt):
         pass
 
-    def start_user_zoom(self):
-        """Mimicks the user beginning to press middle mouse button down.
-            Bad practice? Maybe. But it has minimal interference with original code"""
-        self._OnMiddleMouseDown(_wx.MouseEvent(_wx.MOUSE_BTN_MIDDLE))
-    def end_user_zoom(self):
-        """Mimicks the user lifting middle mouse button up.
-            Bad practice? Maybe. But it has minimal interference with original code"""
-        self._OnMiddleMouseUp(_wx.MouseEvent(_wx.MOUSE_BTN_MIDDLE))
+##    def start_user_zoom(self):
+##        """Mimicks the user beginning to press middle mouse button down.
+##            Bad practice? Maybe. But it has minimal interference with original code"""
+##        self._OnMiddleMouseDown(_wx.MouseEvent(_wx.MOUSE_BTN_MIDDLE))
+##    def end_user_zoom(self):
+##        """Mimicks the user lifting middle mouse button up.
+##            Bad practice? Maybe. But it has minimal interference with original code"""
+##        self._OnMiddleMouseUp(_wx.MouseEvent(_wx.MOUSE_BTN_MIDDLE))
 
 # Mouse state, including ctrl/alt etc. http://wxpython.org/docs/api/wx.MouseState-class.html
 # On Mac:

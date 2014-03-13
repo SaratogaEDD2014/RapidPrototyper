@@ -41,8 +41,12 @@ class STLViewer(wx.Panel):
     def rotate(self, event):
         rotation = edit_rotation()
         about_x = rotation[0]
+        self.part_frame.axis = self.part_frame.axis.rotate(about_x*2.*pi/360., (1,0,0))
         about_y = rotation[1]
+        self.part_frame.axis = self.part_frame.axis.rotate(about_y*2.*pi/360., (0,1,0))
         about_z = rotation[2]
+        self.part_frame.axis = self.part_frame.axis.rotate(about_z*2.*pi/360., (0,0,1))
+        print self.part_frame.axis
         self.update_model()
 
     def offset(self, event):
@@ -103,6 +107,7 @@ class STLViewer(wx.Panel):
                 self.destroy_model()
             self.model = stl_to_faces(file(self.file), self.part_frame)
             self.model.smooth()
+            self.display.autocenter = True
     def on_print(self, event):
         self.dialog = wx.ProgressDialog("Processing "+self.file[self.file.rfind('/'):]+":", "Process is 10% complete.", 100, self)
         process_file(self.file, offsetx=settings.OFFSET_X, offsety=settings.OFFSET_Y, offsetz=settings.OFFSET_Z, dialog = self.dialog)
