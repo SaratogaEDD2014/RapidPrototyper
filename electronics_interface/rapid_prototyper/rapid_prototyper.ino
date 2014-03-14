@@ -8,6 +8,9 @@
 
 #define DIR_PIN 2
 #define STEP_PIN 3
+#define MICRO_STEP 8
+
+int rot_per_layer = 2;
 
 void setup() {
     Serial.begin(SERIAL_RATE);
@@ -42,7 +45,7 @@ void loop() {
             Serial.println(analogRead(readData())); break;
         case 5 :
             //make motor step
-            stepOne(); break;
+            moveLayer(); break;
         case 6:
             //make motor rotate a given number of steps
             steps = int(readData());
@@ -51,8 +54,9 @@ void loop() {
             Serial.println(steps);
             break;
         case 7:
-            //make motor rotate a given number of steps in the opposite direction
-            rotate(-1*(readData()), 0.75); break;
+            //set rotations per inch
+            rot_per_layer = readData();
+            break;
         case 99:
             //just dummy to cancel the current read, needed to prevent lock 
             //when the PC side dropped the "w" that we sent
@@ -73,6 +77,12 @@ char readData() {
 void stepOne(){
   Serial.println('s');
   rotate(100, .5);
+}
+
+void moveLayer(){
+  Serial.println('layer');
+  int steps = rot_per_layer*MICRO_STEP;
+  rotate(steps, .1);
 }
 
 void rotate(int steps, float speed){

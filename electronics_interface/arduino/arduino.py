@@ -60,7 +60,7 @@ class Arduino(object):
     def sendData(self, data):
         self.__sendData(data)
     def getData(self):
-        self.__getData()
+        return self.__getData()
 
     def __sendData(self, serial_data):
         while(self.__getData()[0] != "w"):

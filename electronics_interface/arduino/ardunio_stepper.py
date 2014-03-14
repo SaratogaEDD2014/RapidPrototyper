@@ -16,9 +16,15 @@ class ArduinoStepMotor(Arduino):
         else:
             print('invalid agruement for units, units must be set to "in" or "mm"')
             self.pitch = 50.8
-    def step_one(self):
+    def move_layer(self):
+        """Tells Arduino to move one layer."""
         self.sendData('5')
         print self.getData()
+
+    def set_steps_per_layer(self, steps):
+        """Sets the number of steps the Arduino moves for each layer."""
+        self.sendData('7')
+        self.sendData(steps)
 
     def relMove(self, distance):
         distance = int(round(distance))
@@ -53,6 +59,12 @@ class ArduinoStepMotor(Arduino):
 
 sKotty = ArduinoStepMotor('COM5')
 sKotty.output([2,3])
-for i in range(100):
-    sKotty.relMove(-100)
-#sKotty.close()
+
+
+sKotty.set_steps_per_layer(10)
+for i in range(20):
+    sKotty.move_layer()
+
+
+time.sleep(.1)
+sKotty.close()
