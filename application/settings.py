@@ -14,6 +14,7 @@ if debug:
     sys.path.append(PATH[:PATH.rfind("application")])
     PATH = PATH[:PATH.rfind("application")+12]
     IMAGE_PATH = PATH + 'images/'
+    USER_PATH = PATH
 
 #Matt's part
 cfg= wx.Config('config')
@@ -55,7 +56,6 @@ def set_view(view):
     pass
 
 #Recent and example files
-userFilePath=PATH
 recentFiles=[PATH+"examples/teapot.stl",
              PATH+"examples/magnolia.stl",
              PATH+"examples/sphere.stl",

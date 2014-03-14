@@ -7,6 +7,7 @@ sys.path.append(PATH[:PATH.rfind("application")])
 import application.settings as settings
 settings.PATH = PATH
 settings.IMAGE_PATH = PATH + 'images/'
+settings.USER_PATH = PATH +'examples/'
 
 #Now that things are setup:
 import wx
