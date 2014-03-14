@@ -155,14 +155,14 @@ class ScaleEditor(wx.Dialog):
         return self.vals
 
 def edit_scale():
-    s = ScaleEditor(None, size=(800,600))
+    s = ScaleEditor(None, size=((settings.app_w*3)/4,(settings.app_h*3)/4))
     s.ShowModal()
     vals = s.get_values()
     s.Destroy()
     return vals
 
 def edit_rotation():
-    s = RotateEditor(None, size=(800,600))
+    s = RotateEditor(None, size=((settings.app_w*3)/4,(settings.app_h*3)/4))
     s.ShowModal()
     vals = s.get_values()
     s.Destroy()
