@@ -7,6 +7,8 @@ class Projector(wx.Frame):
     #I apologize for the sloppy methods, the inheritance would be screwy for a Frame to extend a Panel type
     def __init__(self, parent, id=-1, title='Projector', pos=(settings.projx, settings.projy), size=(settings.projw, settings.projh)):
         super(Projector, self).__init__(parent, id, title, pos, size, style=wx.NO_BORDER)
+        self.SetPosition((settings.projx, settings.projy))
+        self.SetSize((settings.projw, settings.projh))
         self.slides = BMPViewer(self, -1, size=self.GetSize())
     def print_layer_bitmap(self, bmp):
         self.slides.print_layer_bitmap(bmp)
@@ -49,7 +51,8 @@ class BMPViewer(wx.Panel):
     def show_current(self):
         self.print_layer_bitmap(self.bmps[self.index])
     def increment_index(self):
-        self.index += 1
+        self.index = min(self.index+1, len(self.bmps)-1)
+
 
 def test():
     import time

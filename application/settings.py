@@ -141,7 +141,6 @@ toolbar_top = None
 schemes = {"BLUE":1, "GREEN":2, 'PINK':3, 'RED':4}
 invert_color = False
 def update_scheme():
-    print 'updating'
     global defaultForeground, secondForeground, defaultBackground, secondBackground
     global defaultAccent, secondAccent, button_inside, button_outside, button_outline
     global button_text, button_text, toolbar_bottom, toolbar_top

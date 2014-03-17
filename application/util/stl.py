@@ -2,7 +2,7 @@ from app_util import normalize, normalize_list, fequal
 from geometry_3D import *
 from layer import *
 from numpy import *
-from visual import *
+#from visual import *
 import application.settings as settings
 import os
 import wx
@@ -104,7 +104,7 @@ def process_file(filename, offsetx=settings.OFFSET_X, offsety=settings.OFFSET_Y,
 
 def main():
     app = wx.App()
-    process_file(settings.PATH+'examples/bottle.stl')
+    process_file(settings.PATH+'examples/temp_file.stl')
     app.Destroy()
 
 def test():
