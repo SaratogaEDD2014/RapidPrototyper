@@ -21,13 +21,13 @@ class ControlPanel(wx.Panel):
         offset_title = TitleBreak(self, size=((2*w)/3, h), label='Offsets:')
         v_sizer.Add(offset_title, flag=wx.EXPAND)
         bl,bw,bh = settings.BUILD_AREA
-        self.off_x = DimensionEditor(self, value=0.0, limits=(-bl,bl),
+        self.off_x = LabeledEditor(self, value=0.0, limits=(-bl,bl),
                                         precision=3, name="X Offset",
                                         text_color=settings.defaultForeground)
-        self.off_y = DimensionEditor(self, value=0.0, limits=(-bw,bw),
+        self.off_y = LabeledEditor(self, value=0.0, limits=(-bw,bw),
                                         precision=3, name="Y Offset",
                                         text_color=settings.defaultForeground)
-        self.off_z = DimensionEditor(self, value=0.0, limits=(-bh,bh),
+        self.off_z = LabeledEditor(self, value=0.0, limits=(-bh,bh),
                                         precision=3, name="Z Offset",
                                         text_color=settings.defaultForeground)
         v_sizer.Add(self.off_x, flag=wx.EXPAND)
@@ -55,13 +55,13 @@ class RotateEditor(wx.Dialog):
         rot_size = wx.GridSizer(0,1, h/12, w/12)
         rot_title = TitleBreak(self, size=((2*w)/3, h), label='Rotation:')
         rot_size.Add(rot_title, flag=wx.EXPAND)
-        self.rot_x = DimensionEditor(self, value=0.0, limits=(-360,360),
+        self.rot_x = LabeledEditor(self, value=0.0, limits=(-360,360),
                                         precision=3, name="X Rotation",
                                         text_color=settings.defaultForeground)
-        self.rot_y = DimensionEditor(self, value=0.0, limits=(-360, 360),
+        self.rot_y = LabeledEditor(self, value=0.0, limits=(-360, 360),
                                         precision=3, name="Y Rotation",
                                         text_color=settings.defaultForeground)
-        self.rot_z = DimensionEditor(self, value=0.0, limits=(-360,360),
+        self.rot_z = LabeledEditor(self, value=0.0, limits=(-360,360),
                                         precision=3, name="Z Rotation",
                                         text_color=settings.defaultForeground)
         rot_size.Add(self.rot_x, flag=wx.EXPAND)
@@ -110,13 +110,13 @@ class ScaleEditor(wx.Dialog):
         scale_title = TitleBreak(self, size=((2*w)/3, h), label='Scale:')
         scale_size.Add(scale_title, flag=wx.EXPAND)
         bl,bw,bh = settings.BUILD_AREA
-        self.scale_x = DimensionEditor(self, value=settings.SCALE_X, limits=(-bl,bl),
+        self.scale_x = LabeledEditor(self, value=settings.SCALE_X, limits=(-bl,bl),
                                         precision=3, name="X Scale",
                                         text_color=settings.defaultForeground)
-        self.scale_y = DimensionEditor(self, value=settings.SCALE_Y, limits=(-bw,bw),
+        self.scale_y = LabeledEditor(self, value=settings.SCALE_Y, limits=(-bw,bw),
                                         precision=3, name="Y Scale",
                                         text_color=settings.defaultForeground)
-        self.scale_z = DimensionEditor(self, value=settings.SCALE_Z, limits=(-bh,bh),
+        self.scale_z = LabeledEditor(self, value=settings.SCALE_Z, limits=(-bh,bh),
                                         precision=3, name="Z Scale",
                                         text_color=settings.defaultForeground)
         scale_size.Add(self.scale_x, flag=wx.EXPAND)

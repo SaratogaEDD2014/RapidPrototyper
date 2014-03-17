@@ -326,19 +326,19 @@ class GearTemplate(wx.Panel):
         gear_title = app_util.TitleBreak(edit_panel, label="Gear Dimensions", color=settings.defaultBackground)
         edit_sizer.Add(gear_title, flag=wx.EXPAND)
         #number of teeth
-        self.gearDim["Number of Teeth"]=editors.DimensionEditor(edit_panel, limits=(0,100), increment=1,name="Number of Teeth")
+        self.gearDim["Number of Teeth"]=editors.LabeledEditor(edit_panel, limits=(0,100), increment=1,name="Number of Teeth")
         self.gearDim["Number of Teeth"].SetPrecision(0)
         #pitchDiameter
-        self.gearDim["Pitch Diameter"]=editors.DimensionEditor(edit_panel,limits=(0,10),increment=0.05, name="Pitch Diameter")
+        self.gearDim["Pitch Diameter"]=editors.LabeledEditor(edit_panel,limits=(0,10),increment=0.05, name="Pitch Diameter")
         self.gearDim["Pitch Diameter"].SetPrecision(3)
         #Thickness
-        self.gearDim["Thickness"]=editors.DimensionEditor(edit_panel,limits=(0,10),increment=0.05,name="Thickness")
+        self.gearDim["Thickness"]=editors.LabeledEditor(edit_panel,limits=(0,10),increment=0.05,name="Thickness")
         self.gearDim["Thickness"].SetPrecision(3)
         #Bore Diameter
-        self.gearDim["Bore Diameter"]=editors.DimensionEditor(edit_panel,limits=(0,10),increment=0.05,name="Bore Diameter")
+        self.gearDim["Bore Diameter"]=editors.LabeledEditor(edit_panel,limits=(0,10),increment=0.05,name="Bore Diameter")
         self.gearDim["Bore Diameter"].SetPrecision(3)
         #tooth shape
-        self.gearDim["Tooth Shape"] = editors.DimensionComboBox(edit_panel, value=shapes[0], choices=shapes, name="Tooth Shape")
+        self.gearDim["Tooth Shape"] = editors.DynamicComboBox(edit_panel, value=shapes[0], choices=shapes, name="Tooth Shape")
         for dim in self.gearDim:
             edit_sizer.Add(self.gearDim[dim], flag=wx.EXPAND)
 
@@ -348,10 +348,10 @@ class GearTemplate(wx.Panel):
         hub_title = app_util.TitleBreak(edit_panel, label="Hub Dimensions", color=settings.defaultBackground)
         edit_sizer.Add(hub_title, flag=wx.EXPAND)
         #Thickness
-        self.hubDim["Thickness"]=editors.DimensionEditor(edit_panel,limits=(0,10),increment=0.05,name="Thickness")
+        self.hubDim["Thickness"]=editors.LabeledEditor(edit_panel,limits=(0,10),increment=0.05,name="Thickness")
         self.hubDim["Thickness"].SetPrecision(3)
         #Bore Diameter
-        self.hubDim["Hub Diameter"]=editors.DimensionEditor(edit_panel,limits=(0,10),increment=0.05, name="Hub Diameter")
+        self.hubDim["Hub Diameter"]=editors.LabeledEditor(edit_panel,limits=(0,10),increment=0.05, name="Hub Diameter")
         self.hubDim["Hub Diameter"].SetPrecision(3)
         for dim in self.hubDim:
             edit_sizer.Add(self.hubDim[dim], flag=wx.EXPAND)

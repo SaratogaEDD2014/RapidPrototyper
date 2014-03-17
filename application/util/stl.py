@@ -82,7 +82,7 @@ def process_file(filename, offsetx=settings.OFFSET_X, offsety=settings.OFFSET_Y,
     if dialog!=None: dialog.Update(78, 'Slicing '+str(len(facets))+' facets...')
     z1 = min([facet.min_z() for facet in facets])
     z2 = max([facet.max_z() for facet in facets])
-    for z in arange(z1,z2,STEP):
+    for z in arange(z1,z2+STEP,STEP):
         layer = layer_manager.get_layer(z)
         for facet in facets:
             level = []

@@ -136,9 +136,9 @@ class DynamicDataDisplay(wx.Window):
         return self._value
     value = property(GetValue, SetValue)
 
-class DimensionEditor(wx.Window):
+class LabeledEditor(wx.Window):
     def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, precision=2, name="NoName", text_color=settings.defaultBackground, background_color=None):
-        super(DimensionEditor, self).__init__(parent, id, pos, size)
+        super(LabeledEditor, self).__init__(parent, id, pos, size)
         if background_color == None:
             self.SetBackgroundColour(self.GetParent().GetBackgroundColour())
         else:
@@ -177,7 +177,7 @@ class DimensionEditor(wx.Window):
             dc = wx.ClientDC(self.label)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
-        draw_text_left(self, self.name, .25, dc=dc, color=self._text_color)
+        draw_text_left(self.label, self.name, .65, dc=dc, color=self._text_color)
 
     def on_size(self, event):
         event.Skip(True)
@@ -225,9 +225,9 @@ class DimensionEditor(wx.Window):
         return self._range
     range=property(getRange, setRange)
 
-class DimensionComboBox(wx.Window):
+class DynamicComboBox(wx.Window):
     def __init__(self, parent, value, choices, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize, name="NoName", text_color=settings.defaultBackground):
-        super(DimensionComboBox, self).__init__(parent, id, pos, size)
+        super(DynamicComboBox, self).__init__(parent, id, pos, size)
         self.BackgroundColour = self.GetParent().GetBackgroundColour()
         self._name=name
         self._text_color = text_color
@@ -241,8 +241,9 @@ class DimensionComboBox(wx.Window):
 
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.Bind(wx.EVT_PAINT, self.on_paint)
+        self.Bind(wx.EVT_COMBOBOX_CLOSEUP, self.post)
 
-    def post(self):
+    def post(self, child_event):
         event = wx.CommandEvent(wx.EVT_COMBOBOX.typeId, self.GetId())
         event.SetEventObject(self)
         wx.PostEvent(self, event)
@@ -255,7 +256,7 @@ class DimensionComboBox(wx.Window):
             dc = wx.ClientDC(self.label)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
-        draw_text_left(self, self.name, .25, dc=dc, color=self._text_color)
+        draw_text_left(self.label, self.name, .65, dc=dc, color=self._text_color)
 
     def on_size(self, event):
         event.Skip(True)
@@ -265,8 +266,8 @@ class DimensionComboBox(wx.Window):
         self.box.SetPosition(((3*w)/4, 0))
 
     def SetValue(self, val):
-        self.box.SetValue(val)
-        self.post()
+        self.box.SetValue(str(val))
+        self.post(wx.CommandEvent())
     def GetValue(self):
         return self.box.GetValue()
     value=property(GetValue, SetValue)
@@ -277,26 +278,100 @@ class DimensionComboBox(wx.Window):
         return self._name
     name=property(GetName, SetName)
 
+class CheckBox(wx.Window):
+    def __init__(self, parent, id=-1, initial_value=False, pos=(0,0), size=(10,10), background=settings.defaultBackground, check_color=settings.defaultAccent):
+        super(CheckBox, self).__init__(parent, id, pos, size)
+        self.SetBackgroundColour(background)
+        self.back = background
+        self._check_col = check_color
+        self.value = initial_value
+        self.Bind(wx.EVT_LEFT_DOWN, self.on_click)
+        self.Bind(wx.EVT_PAINT, self.on_paint)
+    def on_paint(self, event):
+        event.Skip()
+        w,h = self.GetSize()
+        dc = wx.PaintDC(self)
+        dc.SetBrush(wx.Brush(self.back))
+        dc.SetPen(wx.Pen(dim_color(self.back), width=w/10))
+        dc.DrawRectangle(0,0,w,h)
+        if self.value:
+            dc.SetPen(wx.Pen(self._check_col, width=w/6))
+            points = [(0, h/2), (w/3, h), (w,0)]
+            dc.DrawLines(points)
+    def post(self):
+        event = wx.CommandEvent(wx.EVT_CHECKBOX.typeId, self.GetId())
+        event.SetEventObject(self)
+        wx.PostEvent(self, event)
+    def on_click(self, event):
+        self.value = not self.value
+    def set_value(self, val):
+        self._value = val
+        self.Refresh()
+        self.post()
+    def get_value(self):
+        return self._value
+    value = property(get_value, set_value)
+
+
+
+class LabeledCheckbox(wx.Window):
+    def __init__(self, parent, id=-1, initial_value=False, pos=(0,0), size=(settings.app_w/2, settings.app_h/8), name="NoName", text_color=settings.defaultForeground, background_color=settings.defaultBackground):
+        super(LabeledCheckbox, self).__init__(parent, id, pos, size)
+        self.SetBackgroundColour(background_color)
+        w,h = self.GetSize()
+        self.name=name
+        self._text_color = text_color
+        self.label = wx.Window(self) #will eventually hold title
+        self.label.SetBackgroundColour(self.GetBackgroundColour())
+        self.check_box = CheckBox(self, -1, size=(w/6,h))
+        self.value = initial_value
+
+        self.Bind(wx.EVT_PAINT, self.on_paint)
+        self.Bind(wx.EVT_CHECKBOX, self.on_click, self.check_box)
+        self.Bind(wx.EVT_SIZE, self.on_size)
+        self.Refresh()
+    def on_size(self, event):
+        event.Skip()
+        w,h = self.GetSize()
+        self.label.SetSize((w/2, h))
+        chk_dim = min(w/6,h)
+        self.check_box.SetSize((chk_dim, chk_dim))
+        self.check_box.SetPosition(((w*5)/6, 0))
+        self.Refresh()
+    def on_paint(self, event):
+        event.Skip()
+        dc = wx.PaintDC(self.label)
+        draw_text_left(self.label, self.name, .65, dc=dc, color=self._text_color)
+        print 'draw'
+    def on_click(self, event):
+        self.post()
+    def post(self):
+        event = wx.CommandEvent(wx.EVT_COMBOBOX.typeId, self.GetId())
+        event.SetEventObject(self)
+        wx.PostEvent(self, event)
+    def set_value(self, val):
+        self._value = val
+        self.check_box.value = val
+        self.post()
+    def get_value(self):
+        self._value = self.check_box.value
+        return self._value
+    value = property(get_value, set_value)
+
+
+
 def main():
     ProtoApp = wx.App()
     frm = wx.Frame(None, -1, 'Gear Display', size=(800,400))
-    panel1 = wx.Panel(frm)
-    panel1.SetBackgroundColour(wx.Colour(0,255,0))
-    mastersizer = wx.GridSizer(1,2)
-    panel = wx.Panel(frm)
-    sizer=wx.GridSizer(3,1)
-    touchspin = DimensionEditor(panel, name="hey")
-    lblspin = DimensionEditor(panel, name="two", text_color=settings.defaultForeground)
-    dynamic = DimensionEditor(panel)
+    sizer=wx.GridSizer(0,1)
+    touchspin = LabeledEditor(frm, name="hey")
+    lblspin = LabeledEditor(frm, name="two", text_color=settings.defaultForeground)
+    dynamic = LabeledEditor(frm)
     sizer.Add(touchspin, flag=wx.EXPAND)
     sizer.Add(lblspin, flag=wx.EXPAND)
     sizer.Add(dynamic, flag=wx.EXPAND)
-    panel.SetSizer(sizer)
-    mastersizer.Add(panel1, flag=wx.EXPAND)
-    mastersizer.Add(panel, flag=wx.EXPAND)
-    frm.SetSizer(mastersizer)
-    #panel = DynamicDataDisplay(frm, 12, pos=(25,25), size=(100,100))
-    #panel.SetBackgroundColour(settings.defaultForeground)
+    sizer.Add(LabeledCheckbox(frm, name="Testertest"), flag=wx.EXPAND)
+    frm.SetSizer(sizer)
     frm.Show(True)
     ProtoApp.MainLoop()
 
