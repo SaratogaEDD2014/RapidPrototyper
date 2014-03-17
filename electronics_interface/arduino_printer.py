@@ -1,5 +1,7 @@
 from arduino.ardunio_stepper import *
 
+
+#These constants are based on our Arduino code, stepper motor, and threaded rod
 STEP_PIN = 3
 DIR_PIN = 2
 STEPS_PER_REV = 400
@@ -15,7 +17,8 @@ class PrinterInterface(object):
         self.layer_depth = depth
         steps_per_in = STEPS_PER_REV*PITCH
         steps_per_layer = int(steps_per_in*depth)
-        self.ardu.set_steps_per_layer(steps_per_layer)
+        print int(steps_per_in*depth), steps_per_in*depth
+        #self.ardu.set_steps_per_layer(steps_per_layer)
 
     def next_layer(self):
         self.ardu.move_layer()
@@ -30,9 +33,10 @@ def main():
 
 
     sKotty.set_steps_per_layer(10)
-    for i in range(20):
+    for i in range(40):
         sKotty.move_layer()
 
 
     time.sleep(.1)
     sKotty.close()
+main()

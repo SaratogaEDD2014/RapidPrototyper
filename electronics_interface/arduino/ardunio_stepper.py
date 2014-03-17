@@ -1,6 +1,11 @@
 from arduino import *
 import time
 
+##General Info:
+##    Step Pin - 3
+##    Dir Pin - 2
+##    Steps per full rotation-400
+
 class ArduinoStepMotor(Arduino):
     def __init__(self, port, baudrate=9600, units = 'mm', limit = 12):
         #115200
@@ -56,15 +61,3 @@ class ArduinoStepMotor(Arduino):
 
     def reset(self): # WARNING: THIS CAN INTERFERE WITH PROTCOLS WHICH PREVENT THE MOTOR FROM MOVING OUT OF RANGE
         self.position = 0
-
-sKotty = ArduinoStepMotor('COM5')
-sKotty.output([2,3])
-
-
-sKotty.set_steps_per_layer(10)
-for i in range(20):
-    sKotty.move_layer()
-
-
-time.sleep(.1)
-sKotty.close()
