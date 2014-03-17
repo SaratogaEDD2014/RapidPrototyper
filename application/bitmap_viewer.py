@@ -1,78 +1,72 @@
 import wx
+import time
 import os
 import application.settings as settings
 
-class BitmapViewer(wx.Panel):
-    def __init__(self, parent, bitmaps=[], id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize, offsetx=0, offsety=0):
-        super(BitmapViewer, self).__init__(parent, id, pos, size)
-        self.bmps = bitmaps
-        self.current_i = -1 #index of bmp being displayed (-1 indicates none displayed)
-        self.offx, self.offy = offsetx, offsety
-        self.Bind(wx.EVT_PAINT, self.on_paint)
-
-    def on_paint(self, event):
-        event.Skip(True)
-        dc = wx.PaintDC(self)
-        show_slide(self.current_i)
-    def bitmaps_from_dir(self, directory):
-        if os.path.exists(directory):
-            for the_file in os.listdir(directory):
-                file_path = os.path.join(directory, the_file)
-                self.bmps.append(wx.Bitmap(file_path))
-    def begin(self):
-        self.current_i = 0
-        self.Refresh()
-    def set_current_slide(self, slide_number):
-        slide_number = max(slide_number, 0) #Make sure is is >= 0
-        slide_number = min(slide_number, len(self.bmps)-1) #Avoid index out of bounds
-        self.current_i = slide_number
-    def show_slide(self, slide_number):
-        self.set_current_slide(slide_number)
-        dc = wx.ClientDC(self)
-        dc.Clear()
-        if self.current_i >0 and self.current_i<len(self.bmps):
-            w,h = self.GetSize()
-            to_draw = scale_bitmap(self.bmps[self.current_i],w,h)
-            dc.DrawBitmap(to_draw, self.offx,self.offy)
-    def show_next(self):
-        self.show_slide(self.current_i+1)
+class Projector(wx.Frame):
+    #I apologize for the sloppy methods, the inheritance would be screwy for a Frame to extend a Panel type
+    def __init__(self, parent, id=-1, title='Projector', pos=(settings.projx, settings.projy), size=(settings.projw, settings.projh)):
+        super(Projector, self).__init__(parent, id, title, pos, size, style=wx.NO_BORDER)
+        self.slides = BMPViewer(self, -1, size=self.GetSize())
+    def print_layer_bitmap(self, bmp):
+        self.slides.print_layer_bitmap(bmp)
+    def bmps_from_dir(self, directory):
+        self.slides.bmps_from_dir(directory)
     def slideshow(self, delay=1):
-        self.begin()
-        for i in range(len(self.bmps)):
-            self.show_next()
-            wx.Sleep(1)
-
-def scale_bitmap(bitmap, width, height):
-    image = wx.ImageFromBitmap(bitmap)
-    image = image.Scale(width, height, wx.IMAGE_QUALITY_HIGH)
-    return wx.BitmapFromImage(image)
-
-def prepare():
-    """from app"""
-    import os
-    import sys
-    PATH=os.path.dirname(os.path.realpath(sys.argv[0]))+'/'
-    sys.path.append(PATH[:PATH.rfind("application")])
-
-    settings.PATH = PATH
-    settings.IMAGE_PATH = PATH + 'images/'
+        self.slides.slideshow(delay)
+    def set_index(self, i):
+        self.slides.set_index(i)
+    def show_index(self, index):
+        self.slides.show_index(index)
+    def show_current(self):
+        self.slides.show_current()
+    def increment_index(self):
+        self.slides.increment_index()
 
 
-def main():
+class BMPViewer(wx.Panel):
+    def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize):
+        super(BMPViewer, self).__init__(parent, id, pos, size)
+        self.SetBackgroundColour(wx.Colour(0,0,0))
+        self.bmps = []
+        self.index = 0
+    def print_layer_bitmap(self, bmp):
+        dc = wx.ClientDC(self)
+        dc.DrawBitmap(bmp, settings.projx, settings.projy)
+    def bmps_from_dir(self, directory):
+        for the_file in os.listdir(directory):
+            file_path = os.path.join(directory, the_file)
+            self.bmps.append(wx.Bitmap(file_path))
+    def slideshow(self, delay=1):
+        for b in self.bmps:
+            self.print_layer_bitmap(b)
+            if delay>0:
+                time.sleep(delay)
+    def set_index(self, i):
+        self.index = i
+    def show_index(self, index):
+        self.print_layer_bitmap(self.bmps[i])
+    def show_current(self):
+        self.print_layer_bitmap(self.bmps[self.index])
+    def increment_index(self):
+        self.index += 1
+
+def test():
+    import time
     app = wx.App()
-    frm = wx.Frame(None, size=(800,800))
-    frm.Show(True)
-    prepare()
-    def showoff(event):
-        pan = BitmapViewer(frm, size=(800,800), offsety=30)
-        pan.SetBackgroundColour(wx.Colour(200,200,255))
-        pan.bitmaps_from_dir(settings.PATH+'generation_buffer')
-        pan.slideshow(.1)
+    p = Projector(None, size=(400,500), pos=(200,0))
+    p.Show()
 
-    butt = wx.Button(frm, label='start')
-    frm.Bind(wx.EVT_BUTTON, showoff)
+    directory = settings.PATH + 'generation_buffer/'
+    p.bmps_from_dir(directory)
+    for i in range(len(p.slides.bmps)):
+        p.show_current()
+        p.increment_index()
+        time.sleep(1)
+    #p.slideshow()
 
     app.MainLoop()
 
 if __name__ == '__main__':
-    main()
+    test()
+    #main()

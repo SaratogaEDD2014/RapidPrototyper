@@ -7,3 +7,7 @@ GUI/.DS_Store
 GUI/generation_buffer/*.bmp
 GUI/examples/temp_file.stl
 GUI/examples/temp_file.stl
+application/generation_buffer/s1.bmp
+application/generation_buffer/s2.bmp
+application/generation_buffer/s3.bmp
+application/generation_buffer/s4.bmp
