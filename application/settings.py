@@ -1,4 +1,5 @@
 import wx
+
 temp_app = wx.App()
 #Resources Information:
 NAME = 'Charlie'
@@ -13,7 +14,7 @@ if debug:
     PATH = os.path.dirname(os.path.realpath(sys.argv[0]))+'/'
     sys.path.append(PATH[:PATH.rfind("application")])
     PATH = PATH[:PATH.rfind("application")+12]
-    IMAGE_PATH = PATH + 'images/'
+    IMAGE_PATH = PATH + 'appearance/'
     USER_PATH = PATH
 
 #Matt's part
@@ -74,149 +75,193 @@ unit_factors = {'mm':25.40,
                     'in':1.00,
                     'ft':1/12.,
                     'm':.0254}
+def set_units(unit_type):
+    if unit_type.__class__ is str and unit_factors.has_key(unit_type):
+        cfg.Write("units", unit_type)
+    elif not cfg.HasEntry("units"):
+        cfg.Write("units", 'in')
+def get_units():
+    return cfg.Read('units', defaultVal='in')
+units = property(get_units, set_units, doc="The type of units the files the user is entering are using.")
+
 OFFSET_X = 0.0
 OFFSET_Y = 0.0
 OFFSET_Z = 0.0
 SCALE_X = 1.0
 SCALE_Y = 1.0
 SCALE_Z = 1.0
-UNITS = 'in'
 LAYER_DEPTH= .012 #IN INCHES
 BUILD_PIXELS = (1080, 960)
 BUILD_AREA = (9.0, 6.5, 8)
 BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
 BUILD_BACKGROUND = wx.Brush(wx.Colour(0,0,0))
 BUILD_FILL = wx.Brush(wx.Colour(0,255,0), wx.CROSSDIAG_HATCH)
-x_factor = lambda: 1*unit_factors[UNITS]*SCALE_X
-y_factor = lambda: 1*unit_factors[UNITS]*SCALE_Y
-z_factor = lambda: 1*unit_factors[UNITS]*SCALE_Z
+x_factor = lambda: unit_factors[get_units()]*SCALE_X
+y_factor = lambda: unit_factors[get_units()]*SCALE_Y
+z_factor = lambda: unit_factors[get_units()]*SCALE_Z
 
 
 
 #UI------------------------------------------------------------------------
-icon_view = True
+icon_view = False
 app_x, app_y = 0,0
 app_w, app_h = wx.GetDisplaySize()
+projw, projh = 1600,900
+projx, projy = 0,0
+touchw, touchh = 1024,600
+if debug:
+    app_w, app_h = 800,600
 default_touchscreen = True
 if default_touchscreen:
     for i in range(0, wx.Display.GetCount()):
         xo,yo,w,h = wx.Display(i).GetGeometry()
-        if h== 600 and w==1024:
+        if h== touchh and w==touchw:
             #Is the default touchscreen
             app_x, app_y = xo, yo
-            app_w, app_h = 1024, 600
+            app_w, app_h = touchw, touchh
+        elif w == projw and h == projh:
+            projx, projy = xo, yo
 toolbar_h = 40
 toolbar_w = app_w
 
+#Colors-initialize to None, allow globals to be set in function
+defaultForeground = None
+secondForeground = None
+defaultBackground = None
+secondBackground = None
+defaultAccent = None
+secondAccent = None
+button_inside = None
+button_outside = None
+button_outline = None
+button_text = None
+toolbar_bottom = None
+toolbar_top = None
+#Schemes
 schemes = {"BLUE":1, "GREEN":2, 'PINK':3, 'RED':4}
 invert_color = False
-scheme = schemes["BLUE"]* (-1 if invert_color else 1)
-#Colors
-if scheme == 1:
-    defaultForeground = wx.Colour(30,75,205)
-    secondForeground = wx.Colour(200,200,200)
-    defaultBackground = wx.Colour(245,245,245)
-    secondBackground = wx.Colour(140,175,200)
-    defaultAccent = wx.Colour(255,125,75)
-    secondAccent = wx.Colour(230,70,50)
-    button_inside = wx.Colour(51, 123, 255)
-    button_outside = wx.Colour(0, 75, 225)
-    button_outline = wx.Colour(255,255,255)
-    button_text = wx.Colour(255,255,255)
-    toolbar_bottom = wx.Colour(177, 177, 177)
-    toolbar_top = wx.Colour(228, 228, 228)
-elif scheme == 2:
-    defaultForeground = wx.Colour(16, 167, 91)
-    secondForeground = wx.Colour(200,200,200)
-    defaultBackground = wx.Colour(245,245,245)
-    secondBackground = wx.Colour(120,200,150)
-    defaultAccent = wx.Colour(16, 42, 167)
-    secondAccent = wx.Colour(205, 127, 50)
-    button_inside = wx.Colour(51, 255, 123)
-    button_outside = wx.Colour(20, 200, 75)
-    button_outline = wx.Colour(255,255,255)
-    button_text = wx.Colour(255,255,255)
-    toolbar_bottom = wx.Colour(177, 177, 177)
-    toolbar_top = wx.Colour(228, 228, 228)
-elif scheme == 3:
-    defaultForeground = wx.Colour(243, 146, 146)
-    secondForeground = wx.Colour(200,200,200)
-    defaultBackground = wx.Colour(245,245,245)
-    secondBackground = wx.Colour(200,175,140)
-    defaultAccent = wx.Colour(250, 175, 250)
-    secondAccent = wx.Colour(50, 128, 205)
-    button_inside = wx.Colour(255, 150, 150)
-    button_outside = wx.Colour(233, 120, 120)
-    button_outline = wx.Colour(255,255,255)
-    button_text = wx.Colour(255,255,255)
-    toolbar_bottom = wx.Colour(177, 177, 177)
-    toolbar_top = wx.Colour(228, 228, 228)
-elif scheme == 4:
-    defaultForeground = wx.Colour(255, 50, 30)
-    secondForeground = wx.Colour(200,200,200)
-    defaultBackground = wx.Colour(245,245,245)
-    secondBackground = wx.Colour(200,100,140)
-    defaultAccent = wx.Colour(45, 45, 220)
-    secondAccent = wx.Colour(16, 167, 91)
-    button_inside = wx.Colour(255, 90, 90)
-    button_outside = wx.Colour(230, 10, 10)
-    button_outline = wx.Colour(255,255,255)
-    button_text = wx.Colour(255,255,255)
-    toolbar_bottom = wx.Colour(177, 177, 177)
-    toolbar_top = wx.Colour(228, 228, 228)
-#Inverted schemes
-if scheme == -1:
-    defaultForeground  = wx.Colour(245,245,245)
-    secondForeground = wx.Colour(140,175,200)
-    defaultBackground = wx.Colour(30,75,205)
-    secondBackground = wx.Colour(200,200,200)
-    defaultAccent = wx.Colour(255,125,75)
-    secondAccent = wx.Colour(230,70,50)
-    button_inside = wx.Colour(255,255,255)
-    button_outside = wx.Colour(220,220,220)
-    button_outline =wx.Colour(245,245,245)
-    button_text = wx.Colour(30,75,205)
-    toolbar_bottom = wx.Colour(177, 177, 177)
-    toolbar_top = wx.Colour(228, 228, 228)
-elif scheme == -2:
-    defaultForeground = wx.Colour(245,245,245)
-    secondForeground = wx.Colour(120,200,150)
-    defaultBackground = wx.Colour(16, 167, 91)
-    secondBackground = wx.Colour(200,200,200)
-    defaultAccent = wx.Colour(16, 42, 167)
-    secondAccent = wx.Colour(205, 127, 50)
-    button_inside = wx.Colour(255,255,255)
-    button_outside = wx.Colour(220,220,220)
-    button_outline = wx.Colour(245,245,245)
-    button_text = wx.Colour(16, 167, 91)
-    toolbar_bottom = wx.Colour(177, 177, 177)
-    toolbar_top = wx.Colour(228, 228, 228)
-elif scheme == -3:
-    defaultForeground = wx.Colour(245,245,245)
-    secondForeground = wx.Colour(200,175,140)
-    defaultBackground = wx.Colour(243, 96, 96)
-    secondBackground = wx.Colour(200,200,200)
-    defaultAccent = wx.Colour(45, 45, 190)
-    secondAccent = wx.Colour(50, 128, 205)
-    button_inside = wx.Colour(255,255,255)
-    button_outside = wx.Colour(220,220,220)
-    button_outline = wx.Colour(245,245,245)
-    button_text = wx.Colour(243, 96, 96)
-    toolbar_bottom = wx.Colour(177, 177, 177)
-    toolbar_top = wx.Colour(228, 228, 228)
-elif scheme == -4:
-    defaultForeground = wx.Colour(245,245,245)
-    secondForeground = wx.Colour(200,100,140)
-    defaultBackground = wx.Colour(255, 50, 30)
-    secondBackground = wx.Colour(200,200,200)
-    defaultAccent = wx.Colour(45, 45, 220)
-    secondAccent = wx.Colour(16, 167, 91)
-    button_inside = wx.Colour(255,255,255)
-    button_outside = wx.Colour(220,220,220)
-    button_outline = wx.Colour(245,245,245)
-    button_text = wx.Colour(255, 50, 30)
-    toolbar_bottom = wx.Colour(177, 177, 177)
-    toolbar_top = wx.Colour(228, 228, 228)
+def update_scheme():
+    print 'updating'
+    global defaultForeground, secondForeground, defaultBackground, secondBackground
+    global defaultAccent, secondAccent, button_inside, button_outside, button_outline
+    global button_text, button_text, toolbar_bottom, toolbar_top
+    scheme = schemes[cfg.Read('color_scheme', "BLUE")]* (-1 if cfg.ReadBool('invert_color', True) else 1)
+    if scheme>0:
+        if scheme == 1:
+            defaultForeground = wx.Colour(30,75,205)
+            secondForeground = wx.Colour(200,200,200)
+            defaultBackground = wx.Colour(245,245,245)
+            secondBackground = wx.Colour(140,175,200)
+            defaultAccent = wx.Colour(255,125,75)
+            secondAccent = wx.Colour(230,70,50)
+            button_inside = wx.Colour(51, 123, 255)
+            button_outside = wx.Colour(0, 75, 225)
+            button_outline = wx.Colour(255,255,255)
+            button_text = wx.Colour(255,255,255)
+            toolbar_bottom = wx.Colour(177, 177, 177)
+            toolbar_top = wx.Colour(228, 228, 228)
+        elif scheme == 2:
+            defaultForeground = wx.Colour(16, 167, 91)
+            secondForeground = wx.Colour(200,200,200)
+            defaultBackground = wx.Colour(245,245,245)
+            secondBackground = wx.Colour(120,200,150)
+            defaultAccent = wx.Colour(16, 42, 167)
+            secondAccent = wx.Colour(205, 127, 50)
+            button_inside = wx.Colour(51, 255, 123)
+            button_outside = wx.Colour(20, 200, 75)
+            button_outline = wx.Colour(255,255,255)
+            button_text = wx.Colour(255,255,255)
+            toolbar_bottom = wx.Colour(177, 177, 177)
+            toolbar_top = wx.Colour(228, 228, 228)
+        elif scheme == 3:
+            defaultForeground = wx.Colour(243, 146, 146)
+            secondForeground = wx.Colour(200,200,200)
+            defaultBackground = wx.Colour(245,245,245)
+            secondBackground = wx.Colour(200,175,140)
+            defaultAccent = wx.Colour(250, 175, 250)
+            secondAccent = wx.Colour(50, 128, 205)
+            button_inside = wx.Colour(255, 150, 150)
+            button_outside = wx.Colour(233, 120, 120)
+            button_outline = wx.Colour(255,255,255)
+            button_text = wx.Colour(255,255,255)
+            toolbar_bottom = wx.Colour(177, 177, 177)
+            toolbar_top = wx.Colour(228, 228, 228)
+        elif scheme == 4:
+            defaultForeground = wx.Colour(255, 50, 30)
+            secondForeground = wx.Colour(200,200,200)
+            defaultBackground = wx.Colour(245,245,245)
+            secondBackground = wx.Colour(200,100,140)
+            defaultAccent = wx.Colour(45, 45, 220)
+            secondAccent = wx.Colour(16, 167, 91)
+            button_inside = wx.Colour(255, 90, 90)
+            button_outside = wx.Colour(230, 10, 10)
+            button_outline = wx.Colour(255,255,255)
+            button_text = wx.Colour(255,255,255)
+            toolbar_bottom = wx.Colour(177, 177, 177)
+            toolbar_top = wx.Colour(228, 228, 228)
+    else:
+        #Inverted schemes
+        if scheme == -1:
+            defaultForeground  = wx.Colour(245,245,245)
+            secondForeground = wx.Colour(140,175,200)
+            defaultBackground = wx.Colour(30,75,205)
+            secondBackground = wx.Colour(200,200,200)
+            defaultAccent = wx.Colour(255,125,75)
+            secondAccent = wx.Colour(230,70,50)
+            button_inside = wx.Colour(255,255,255)
+            button_outside = wx.Colour(220,220,220)
+            button_outline =wx.Colour(245,245,245)
+            button_text = wx.Colour(30,75,205)
+            toolbar_bottom = wx.Colour(177, 177, 177)
+            toolbar_top = wx.Colour(228, 228, 228)
+        elif scheme == -2:
+            defaultForeground = wx.Colour(245,245,245)
+            secondForeground = wx.Colour(120,200,150)
+            defaultBackground = wx.Colour(16, 167, 91)
+            secondBackground = wx.Colour(200,200,200)
+            defaultAccent = wx.Colour(16, 42, 167)
+            secondAccent = wx.Colour(205, 127, 50)
+            button_inside = wx.Colour(255,255,255)
+            button_outside = wx.Colour(220,220,220)
+            button_outline = wx.Colour(245,245,245)
+            button_text = wx.Colour(16, 167, 91)
+            toolbar_bottom = wx.Colour(177, 177, 177)
+            toolbar_top = wx.Colour(228, 228, 228)
+        elif scheme == -3:
+            defaultForeground = wx.Colour(245,245,245)
+            secondForeground = wx.Colour(200,175,140)
+            defaultBackground = wx.Colour(243, 96, 96)
+            secondBackground = wx.Colour(200,200,200)
+            defaultAccent = wx.Colour(45, 45, 190)
+            secondAccent = wx.Colour(50, 128, 205)
+            button_inside = wx.Colour(255,255,255)
+            button_outside = wx.Colour(220,220,220)
+            button_outline = wx.Colour(245,245,245)
+            button_text = wx.Colour(243, 96, 96)
+            toolbar_bottom = wx.Colour(177, 177, 177)
+            toolbar_top = wx.Colour(228, 228, 228)
+        elif scheme == -4:
+            defaultForeground = wx.Colour(245,245,245)
+            secondForeground = wx.Colour(200,100,140)
+            defaultBackground = wx.Colour(255, 50, 30)
+            secondBackground = wx.Colour(200,200,200)
+            defaultAccent = wx.Colour(45, 45, 220)
+            secondAccent = wx.Colour(16, 167, 91)
+            button_inside = wx.Colour(255,255,255)
+            button_outside = wx.Colour(220,220,220)
+            button_outline = wx.Colour(245,245,245)
+            button_text = wx.Colour(255, 50, 30)
+            toolbar_bottom = wx.Colour(177, 177, 177)
+            toolbar_top = wx.Colour(228, 228, 228)
+update_scheme()
+def set_scheme(theme_color, inverted):
+    col = theme_color if schemes.has_key(theme_color) else "BLUE"
+    cfg.Write('color_scheme', col)
+    cfg.WriteBool('invert_color', inverted)
+    update_scheme()
+
+def get_scheme():
+    return cfg.Read('color_scheme', "BLUE")
 
 def set_property_color(key, color):
     cfg.WriteInt(key+'R', color.Red())
@@ -234,7 +279,5 @@ def set_layer_depth(depth):
 
 def get_layer_depth():
     return cfg.ReadFloat('layerDepth')
-
-get_property_color("default_background")
 
 temp_app.Destroy()
