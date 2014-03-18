@@ -47,7 +47,7 @@ class drawing_area(wx.Panel):
 		for i in self.objects:
 			for j in i.get_points():
 				if j.check_if_selected(e.GetPositionTuple()):
-					print 'k'
+					print j.get_parent()
 
 
 	def create_line(self,e):
@@ -62,9 +62,7 @@ class drawing_area(wx.Panel):
 			for j in i.get_points():
 				if j.check_if_selected(e.GetPositionTuple()):
 					parent = j.get_parent()
-					#self.objects.remove(parent)
-					print j
-					print parent
+					self.objects.remove(parent)
 					self.redraw()
 
 	def on_click(self, e):

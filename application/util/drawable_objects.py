@@ -18,8 +18,31 @@ import wx
 def get_distance(p1, p2):
 	return math.sqrt( (math.pow(p1.x - p2[0], 2) + math.pow(p1.y - p2[1], 2) ) )
 
+
+class figure:
+	points = []
+	def __init__(self):
+		self.parent = None
+
+	def set_parent(self, parent):
+		self.parent = parent
+
+   	def get_parent(self):
+		temp = self
+
+		while True:
+			if temp.parent == None:
+				break
+			else:
+				temp = temp.parent
+
+		return temp
+
+	def get_points(self):
+		return self.points
+
 #Basic geometry object, used throughout the code
-class point:
+class point(figure):
 	x = 0
 	y = 0
 
@@ -28,9 +51,6 @@ class point:
 	def __init__(self, coords):
 		self.x = coords[0]
 		self.y = coords[1]
-
-	def set_parent(self, parent):
-		self.parent = parent
 
 	def draw(self, canvas):
 		dc = wx.MemoryDC(canvas)
@@ -41,13 +61,6 @@ class point:
 
 		return canvas
 
-	def get_parent(self):
-		temp = self.parent
-
-		while temp != None:
-			temp = temp.get_parent()
-
-		return temp
 
 	#Given a coordinate set, returns true of false if the click was within a radius, used for click detection.
 	def check_if_selected(self, click_loc):
@@ -55,33 +68,16 @@ class point:
 
 		return (get_distance(self, click_loc) < radius )
 
-class figure:
-	points = []
-	parent = []
-
-	def set_parent(self, parent):
-		self.parent = parent
-
-   	def get_parent(self):
-		temp = self.parent
-
-		while temp != None:
-			temp = temp.get_parent()
-
-		return temp
-
-	def get_points(self):
-		return self.points
-
 class line(figure):
-	parent = None
 	def __init__(self, start, end):
+		figure.__init__(self)
+
 		self.start_point = start
 		self.end_point = end
 
 		self.points = [start, end]
 
-		self.start_point.set_parent(line( (5,5,), point(6,6)))
+		self.start_point.set_parent(self)
 		self.end_point.set_parent(self)
 
 
