@@ -71,7 +71,6 @@ class drawing_area(wx.Panel):
 
 	def finish_create(self, new_obj):
 		self.objects.append(new_obj)
-	#	self.redraw()
 
 	def redraw(self):
 		bitmap = self.canvas.GetBitmap()

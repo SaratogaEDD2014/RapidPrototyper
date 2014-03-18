@@ -176,8 +176,50 @@ class rect(figure):
 
 		return canvas
 
-#class rect_shadow:
-	# TODO: IMPLMENT
+class line_shadow():
+ 	def __init__(self, canvas, ret):
+		self.canvas = canvas
+		self.dc = wx.BufferedDC(wx.ClientDC(self.canvas))
+		self.ret = ret
+
+  		self.sx, self.sy = canvas.ScreenToClient(wx.GetMousePosition())
+
+		self.dc.SetBrush(wx.Brush((0,0,0)))
+		self.dc.SetPen(wx.Pen(wx.Colour(0,0,0), 2, wx.LONG_DASH))
+		self.dc.DrawCircle(self.sx,self.sy,5)
+
+		self.canvas.Bind(wx.EVT_MOTION, self.on_move)
+		self.canvas.Bind(wx.EVT_LEFT_UP, self.finalize)
+
+
+	def on_move(self, event):
+		self.canvas.Refresh()
+		self.dc.Clear()
+		cx, cy = self.canvas.ScreenToClient(wx.GetMousePosition())
+
+		self.dc.SetPen(wx.Pen(wx.Colour(0,0,0)))
+		self.dc.DrawCircle(self.sx,self.sy,5)
+		self.dc.DrawCircle(cx,cy,5)
+
+		self.dc.SetPen(wx.Pen(wx.Colour(0,0,0), 2, wx.LONG_DASH))
+		self.dc.DrawLine(cx,cy,self.sx,self.sy)
+
+	def finalize(self, e):
+		print 'debug: line created  @ Drawable Objects ln 76'
+
+		cx, cy = self.canvas.ScreenToClient(wx.GetMousePosition())
+
+		self.canvas.Unbind(wx.EVT_MOTION)
+		self.canvas.Unbind(wx.EVT_LEFT_UP)
+
+		new_line = line(point( (self.sx,self.sy) ), point( (cx,cy) ))
+
+		#Draw final line into canvas
+		bitmap = self.canvas.GetBitmap()
+		new_line.draw(bitmap)
+		self.canvas.SetBitmap(bitmap)
+
+		self.ret.__call__(new_line)
 
 class arc(figure):
 	def _init_(start, end, mid):
