@@ -8,7 +8,12 @@ from shape_parser import *
 class Layer(wx.MemoryDC):
     def __init__(self, z_level, directory, filename, pixel_w=100, pixel_h=100):
         super(Layer, self).__init__();
-        zcode = str(int(z_level*1000000))
+        #ensure all 'zcodes' have zeroes out to eight places
+        zcode = round(float(z_level), 8)
+        zcode = str(zcode)
+        while zcode.find('.')<6:
+            zcode = '0'+zcode
+        zcode = zcode.replace('.','')
         self.z = z_level
         self.name = directory + filename + zcode + '.bmp'
         self.bmp = wx.EmptyBitmap(pixel_w, pixel_h)

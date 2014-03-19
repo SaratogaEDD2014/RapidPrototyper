@@ -90,8 +90,10 @@ OFFSET_Z = 0.0
 SCALE_X = 1.0
 SCALE_Y = 1.0
 SCALE_Z = 1.0
-LAYER_DEPTH= .012 #IN INCHES
-BUILD_PIXELS = (1080, 960)
+SERIAL_PORT = 'COM5'
+LAYER_DEPTH = .012 #IN INCHES
+LAYER_CURE_TIME = .1
+BUILD_PIXELS = (1280, 800)
 BUILD_AREA = (9.0, 6.5, 8)
 BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
 BUILD_BACKGROUND = wx.Brush(wx.Colour(0,0,0))
@@ -106,10 +108,11 @@ z_factor = lambda: unit_factors[get_units()]*SCALE_Z
 icon_view = False
 app_x, app_y = 0,0
 app_w, app_h = wx.GetDisplaySize()
-projw, projh = 1600,900
+projw, projh = 1280,800
 projx, projy = 0,0
 touchw, touchh = 1024,600
 if debug:
+    projx = 800
     app_w, app_h = 800,600
 default_touchscreen = True
 if default_touchscreen:
