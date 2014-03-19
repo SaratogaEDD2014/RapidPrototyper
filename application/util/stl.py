@@ -201,10 +201,10 @@ def stl_to_faces(fileinfo, frm=None): # specify file
 
 
 class PartFile(object):
-    def __init__(self, filename):
+    def __init__(self, filename, frm=None):
         self.filename = filename
         self.faces = None
-        self.frame = None
+        self.frame = frm
 
     def process_from_faces(self, offsetx=settings.OFFSET_X, offsety=settings.OFFSET_Y, offsetz=settings.OFFSET_Z,dialog=None):
         if self.faces != None:
