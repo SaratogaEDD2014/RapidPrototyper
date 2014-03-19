@@ -43,9 +43,12 @@ class STLViewer(wx.Panel):
         about_x = radians(rotation[0])
         about_y = radians(rotation[1])
         about_z = radians(rotation[2])
-        self.part_frame.axis = vector((0,0,1)).rotate(about_x, (1,0,0))
-        self.part_frame.axis = self.part_frame.axis.rotate(about_y, (0,1,0))
-        self.part_frame.axis = self.part_frame.axis.rotate(about_z, (0,0,1))
+##        self.part_frame.axis = vector((0,0,1)).rotate(about_x, (1,0,0))
+##        self.part_frame.axis = self.part_frame.axis.rotate(about_y, (0,1,0))
+##        self.part_frame.axis = self.part_frame.axis.rotate(about_z, (0,0,1))
+        self.part_frame.rotate(about_x, (1,0,0))
+        self.part_frame.rotate(about_y, (0,1,0))
+        self.part_frame.rotate(about_z, (0,0,1))
         print self.part_frame.axis
         self.update_model()
 
