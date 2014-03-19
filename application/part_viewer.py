@@ -4,7 +4,7 @@ from application.bubble_menu import DynamicButtonRect
 from application.position_control import *
 from application.util.app_util import color_to_ones
 from application.util.editors import *
-from application.util.stl import stl_to_faces, process_file
+from application.util.stl import *
 from nested_visual import *
 from numpy import array
 from visual.filedialog import get_file
@@ -43,9 +43,12 @@ class STLViewer(wx.Panel):
         about_x = radians(rotation[0])
         about_y = radians(rotation[1])
         about_z = radians(rotation[2])
-        self.part_frame.axis = vector((0,0,1)).rotate(about_x, (1,0,0))
-        self.part_frame.axis = self.part_frame.axis.rotate(about_y, (0,1,0))
-        self.part_frame.axis = self.part_frame.axis.rotate(about_z, (0,0,1))
+##        self.part_frame.axis = vector((0,0,1)).rotate(about_x, (1,0,0))
+##        self.part_frame.axis = self.part_frame.axis.rotate(about_y, (0,1,0))
+##        self.part_frame.axis = self.part_frame.axis.rotate(about_z, (0,0,1))
+        self.part_frame.rotate(about_x, (1,0,0))
+        self.part_frame.rotate(about_y, (0,1,0))
+        self.part_frame.rotate(about_z, (0,0,1))
         print self.part_frame.axis
         self.update_model()
 
@@ -84,8 +87,6 @@ class STLViewer(wx.Panel):
                 #self.display.autocenter =True
                 if self.file != "":
                     self.update_model()
-##                    self.label = label(pos=self.model.pos, text=self.file,
-##                        xoffset=1, line=0, yoffset=100, space=100,)
                     n = self.file
                     n = n.replace('\\', '/')
                     n = n[n.rfind('/')+1:]
@@ -97,7 +98,8 @@ class STLViewer(wx.Panel):
             settings.display_part=True
     def destroy_model(self):
         if self.model != None:
-            self.model.visible = False
+            self.model.faces.visible = False
+            del self.model.faces
             del self.model
             self.model = None
 
@@ -105,13 +107,14 @@ class STLViewer(wx.Panel):
         if self.display != None:
             if self.model != None:
                 self.destroy_model()
-            self.model = stl_to_faces(file(self.file), self.part_frame)
-            self.model.smooth()
+            self.model = PartFile(self.file, self.part_frame)
+            self.model.faces.smooth()
             self.display.autocenter = True
     def on_print(self, event):
-        self.dialog = wx.ProgressDialog("Processing "+self.file[self.file.rfind('/'):]+":", "Process is 10% complete.", 100, self)
-        process_file(self.file, offsetx=settings.OFFSET_X, offsety=settings.OFFSET_Y, offsetz=settings.OFFSET_Z, dialog = self.dialog)
-        self.dialog.Destroy()
+        dialog = wx.ProgressDialog("Processing "+self.file[self.file.rfind('/'):]+":", "Process is 10% complete.", 100, self)
+        self.model.process_from_faces(offsetx=settings.OFFSET_X, offsety=settings.OFFSET_Y, offsetz=settings.OFFSET_Z, dialog=dialog)
+        dialog.Destroy()
+        settings.set_view(wx.Panel(settings.main_window))#Print View Screen
     def on_cancel(self, event):
         self.destroy_model()
         settings.main_v_window.panel.SetSize((1,1))  #Makes display invisible, invoking the private _destroy removes whole window, not just display
