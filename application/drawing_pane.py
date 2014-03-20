@@ -54,7 +54,7 @@ class drawing_area(wx.Panel):
 		l = util.drawable_objects.line_shadow(self.canvas, self.finish_create)
 
 	def create_box(self,e):
-		pass
+		b = util.drawable_objects.rect_shadow(self.canvas, self.finish_create)
 	def create_arc(self,e):
 		pass
 	def delete(self, e):

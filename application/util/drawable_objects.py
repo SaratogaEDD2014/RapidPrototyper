@@ -144,17 +144,17 @@ class line_shadow():
 		self.ret.__call__(new_line)
 
 class rect(figure):
-	def __init__(start, end):
+	def __init__(self, start, end):
 		#Takes the start and end points (points as given by mouse) and generates lines and points
 		#height = start.y - end.y //Not needed anymore?
 		#width = start.x - end.x
-
+		self.parent = None
 		self.lines = []
 
-		p1 = point(start.x, start.y)
-		p2 = point(end.x, start.y)
-		p3 = point(end.x, end.y)
-		p4 = point(start.x, end.y)
+		p1 = point((start.x, start.y))
+		p2 = point((end.x, start.y))
+		p3 = point((end.x, end.y))
+		p4 = point((start.x, end.y))
 
 		self.points = [p1, p2, p3, p4]
 
@@ -176,7 +176,7 @@ class rect(figure):
 
 		return canvas
 
-class line_shadow():
+class rect_shadow():
  	def __init__(self, canvas, ret):
 		self.canvas = canvas
 		self.dc = wx.BufferedDC(wx.ClientDC(self.canvas))
@@ -197,29 +197,36 @@ class line_shadow():
 		self.dc.Clear()
 		cx, cy = self.canvas.ScreenToClient(wx.GetMousePosition())
 
-		self.dc.SetPen(wx.Pen(wx.Colour(0,0,0)))
-		self.dc.DrawCircle(self.sx,self.sy,5)
-		self.dc.DrawCircle(cx,cy,5)
+  		self.dc.SetPen(wx.Pen(wx.Colour(0,0,0)))
+		points = [point((self.sx, self.sy)), point((cx, self.sy)), point((cx, cy)), point((self.sx, cy))]
+
+		for i in points:
+			i.draw(self.canvas.GetBitmap())
 
 		self.dc.SetPen(wx.Pen(wx.Colour(0,0,0), 2, wx.LONG_DASH))
-		self.dc.DrawLine(cx,cy,self.sx,self.sy)
+
+		self.dc.DrawLine(points[0].x, points[0].y, points[1].x, points[1].y)
+		self.dc.DrawLine(points[1].x, points[1].y, points[2].x, points[2].y)
+		self.dc.DrawLine(points[2].x, points[2].y, points[3].x, points[3].y)
+		self.dc.DrawLine(points[3].x, points[3].y, points[0].x, points[0].y)
+
 
 	def finalize(self, e):
-		print 'debug: line created  @ Drawable Objects ln 76'
+		print 'debug: RECT created  @ Drawable Objects ln 76'
 
 		cx, cy = self.canvas.ScreenToClient(wx.GetMousePosition())
 
 		self.canvas.Unbind(wx.EVT_MOTION)
 		self.canvas.Unbind(wx.EVT_LEFT_UP)
 
-		new_line = line(point( (self.sx,self.sy) ), point( (cx,cy) ))
+		new_rect = rect(point( (self.sx,self.sy) ), point( (cx,cy) ))
 
-		#Draw final line into canvas
+		#Draw final rect into canvas
 		bitmap = self.canvas.GetBitmap()
-		new_line.draw(bitmap)
+		new_rect.draw(bitmap)
 		self.canvas.SetBitmap(bitmap)
 
-		self.ret.__call__(new_line)
+		self.ret.__call__(new_rect)
 
 class arc(figure):
 	def _init_(start, end, mid):
