@@ -46,9 +46,9 @@ class STLViewer(wx.Panel):
 ##        self.part_frame.axis = vector((0,0,1)).rotate(about_x, (1,0,0))
 ##        self.part_frame.axis = self.part_frame.axis.rotate(about_y, (0,1,0))
 ##        self.part_frame.axis = self.part_frame.axis.rotate(about_z, (0,0,1))
-        self.part_frame.rotate(about_x, (1,0,0))
-        self.part_frame.rotate(about_y, (0,1,0))
-        self.part_frame.rotate(about_z, (0,0,1))
+        self.part_frame.rotate(angle=about_x, axis=(1,0,0))
+        self.part_frame.rotate(angle=about_y, axis=(0,1,0))
+        self.part_frame.rotate(angle=about_z, axis=(0,0,1))
         print self.part_frame.axis
         self.update_model()
 
@@ -107,13 +107,15 @@ class STLViewer(wx.Panel):
         if self.display != None:
             if self.model != None:
                 self.destroy_model()
-            self.model = PartFile(self.file, self.part_frame)
+            self.model = PartFile(str(self.file), self.part_frame)
+            self.model.faces = self.model.generate_faces()
             self.model.faces.smooth()
             self.display.autocenter = True
     def on_print(self, event):
         dialog = wx.ProgressDialog("Processing "+self.file[self.file.rfind('/'):]+":", "Process is 10% complete.", 100, self)
-        self.model.process_from_faces(offsetx=settings.OFFSET_X, offsety=settings.OFFSET_Y, offsetz=settings.OFFSET_Z, dialog=dialog)
+        self.model.process_from_faces(dialog)
         dialog.Destroy()
+        self.destroy_model()
         settings.set_view(wx.Panel(settings.main_window))#Print View Screen
     def on_cancel(self, event):
         self.destroy_model()

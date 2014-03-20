@@ -2,7 +2,7 @@ from app_util import normalize, normalize_list, fequal
 from geometry_3D import *
 from layer import *
 from numpy import *
-#from visual import *
+from nested_visual import *
 import application.settings as settings
 import os
 import wx
@@ -206,7 +206,7 @@ class PartFile(object):
         self.faces = None
         self.frame = frm
 
-    def process_from_faces(self, offsetx=settings.OFFSET_X, offsety=settings.OFFSET_Y, offsetz=settings.OFFSET_Z,dialog=None):
+    def process_from_faces(self, dialog=None):
         if self.faces != None:
             #clear bmp storage directory:
             if dialog!=None: dialog.Update(10, 'Deleting Files...')
@@ -225,14 +225,15 @@ class PartFile(object):
             if dialog!=None: dialog.Update(27, 'Generating Facets...')
 
             #Use faces object to create Facets
-            facets = []
-            triplets = array(self.faces.pos).reshape((-1,3))
             if self.faces == None:
                 self.faces = self.generate_faces()
-            for vertices in triplets:
-                for i in range(len(vertices)):
-                    vertices[i] = self.frame.frame_to_world(vertices[i])
-                facets.append(Facet(vertices[0],vertices[1], vertices[2]))
+            facets = []
+            triplets = array(self.faces.pos).reshape((-1,3))
+            for i in arange(0,len(triplets), 3):
+                triplets[i] = self.frame.frame_to_world(triplets[i])
+                triplets[i+1] = self.frame.frame_to_world(triplets[i+1])
+                triplets[i+2] = self.frame.frame_to_world(triplets[i+2])
+                facets.append(Facet(triplets[i], triplets[i+1], triplets[i+2]))
             if dialog!=None: dialog.Update(78, 'Slicing '+str(len(facets))+' facets...')
             z1 = normalize(min([facet.min_z() for facet in facets]))
             z2 = max([facet.max_z() for facet in facets])
@@ -253,7 +254,6 @@ class PartFile(object):
                 layer.close()
             if dialog!=None: dialog.Update(88, 'Saving bitmaps...')
             if dialog!=None: dialog.Update(100, 'Slicing complete, ready to print.')
-            f.close()
             return len(facets)
 
     def generate_faces(self):
