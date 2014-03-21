@@ -10,49 +10,40 @@ class PrintManager(wx.Panel):
         super(PrintManager, self).__init__(parent, id, position, size)
         self.Show(False)
         self.SetBackgroundColour(settings.defaultBackground)
-        self.top_panel = wx.Panel(self)
-        self.cpu = LabeledCPU(self.top_panel, -1,'Resin Level')
-        self.tempGuage= CPU(self.top_panel,-1, foreground=settings.defaultAccent)
         w,h = self.GetSize()
 
-        top_sizer= wx.GridSizer(1,0)
-        top_sizer.Add(self.cpu, flag=wx.EXPAND)
-        wx.CallAfter(self.OnTimer, None)
-        self.timer = wx.Timer(self, -1)
-        self.timer.Start(1000)
-        self.Bind(wx.EVT_TIMER, self.OnTimer)
-        top_sizer.Add(self.tempGuage, flag=wx.EXPAND)
-        top_sizer.Add(wx.StaticText(self.top_panel,-1,"Bitmap"))
-        self.top_panel.SetSizer(top_sizer)
+        self.cpu = LabeledCPU(self, -1,'Resin Level (mm)', limits=(0,10))
+        self.tempGuage= LabeledCPU(self,-1, 'Ambient Temperature',foreground=settings.defaultAccent, limits=(30,120))
+        self.clock = DynamicDataDisplay(self, '', size=(w/8,h/8), scale=.6)
+        self.gauge = wx.Gauge(self, -1, 10)
+        self.gauge_title = wx.Panel(self)
 
-        self.bottom_panel = wx.Panel(self)
-        self.gauge = wx.Gauge(self.bottom_panel, -1, 10)
-        self.clock = DynamicDataDisplay(self.bottom_panel, '', size=(w/8,h/8), scale=.6) #gizmos.LEDNumberCtrl(self.top_panel, -1, wx.DefaultPosition, (200,100), gizmos.LED_ALIGN_CENTER)
-        self.gauge_title = wx.Panel(self.bottom_panel)
-        bottom_panel_sizer = wx.GridSizer(0,1)
+        top_sizer= wx.GridSizer(1,0)
+        meter_sizer = wx.GridSizer(1,0)
         clock_sizer = wx.GridSizer(1,0)
-        clock_sizer.Add(DynamicDataDisplay(self.bottom_panel, 'Time Remaining', size=(w/8,h/10), scale=.6), flag=wx.EXPAND)
+        clock_sizer.Add(DynamicDataDisplay(self, 'Time Remaining', size=(w/8,h/10), scale=.6), flag=wx.EXPAND)
         clock_sizer.Add(self.clock, flag=wx.EXPAND)
-        clock_sizer.AddSpacer((10,10))
-        clock_sizer.AddSpacer((10,10))
+        meter_sizer.Add(self.cpu, flag=wx.EXPAND)
+        meter_sizer.Add(self.tempGuage, flag=wx.EXPAND)
+        meter_sizer.Add(clock_sizer, flag=wx.EXPAND)
+        top_sizer.Add(meter_sizer, flag=wx.EXPAND)
+        top_sizer.Add(wx.StaticText(self,-1,"Bitmap"), flag=wx.EXPAND)
+
+        bottom_panel_sizer = wx.GridSizer(0,1)
         bottom_panel_sizer.Add(clock_sizer, flag=wx.EXPAND)
         bottom_panel_sizer.Add(wx.Panel(self))
         bottom_panel_sizer.Add(self.gauge_title, flag=wx.EXPAND)
         bottom_panel_sizer.Add(self.gauge, flag=wx.EXPAND)
-        self.bottom_panel.SetSizer(bottom_panel_sizer)
-        #self.bottom_panel.Add(self)
 
-        #self.title = wx.StaticText(self, -1,"PrintManager")
 
-        label_sizer=wx.GridSizer(1,3)
         master_sizer = wx.GridSizer(0, 1)
-        label_sizer.Add(DynamicDataDisplay(self,'Resin Level', size=(w/10,h/10), scale=.4), flag=wx.EXPAND)
-        #label_sizer.AddSpacer(1)
-        label_sizer.Add(DynamicDataDisplay(self,'Temperature', size=(w/10,h/10), scale=.4), flag=wx.EXPAND)
-        master_sizer.Add(label_sizer, flag=wx.EXPAND)
-        master_sizer.Add(self.top_panel, flag=wx.EXPAND)
-        master_sizer.Add(self.bottom_panel, flag=wx.EXPAND)
+        master_sizer.Add(top_sizer, flag=wx.EXPAND)
+        master_sizer.Add(bottom_panel_sizer, flag=wx.EXPAND)
         self.SetSizer(master_sizer)
+        wx.CallAfter(self.OnTimer, None)
+        self.timer = wx.Timer(self, -1)
+        self.timer.Start(1000)
+        self.Bind(wx.EVT_TIMER, self.OnTimer)
 
     def OnTimer(self, event):
         t = time.localtime(time.time())
@@ -73,21 +64,18 @@ class PrintManager(wx.Panel):
 
 #----------------------------------------------------------------------------------
 class LabeledCPU(wx.Panel):
-    def __init__(self, parent, id=-1, label='', background=settings.defaultBackground, foreground=settings.defaultForeground):
+    def __init__(self, parent, id=-1, label='', background=settings.defaultBackground, foreground=settings.defaultForeground, limits=(0,100)):
         wx.Panel.__init__(self, parent, id)
-        self.SetBackgroundColour(wx.Colour(1,200,30))
+        #self.SetBackgroundColour(wx.Colour(1,200,30))
         self.label = DynamicDataDisplay(self, label, scale=.5)
-        self.meter = CPU(self, id, background, foreground)
+        self.meter = CPU(self, id, background, foreground, limits=limits)
         self.Bind(wx.EVT_SIZE, self.on_size)
+        self.SendSizeEvent()
     def on_size(self, event):
-        sizer = wx.FlexGridSizer(0, 1)
         w,h = self.GetSize()
         self.label.SetSize((w, h/4))
-        sizer.Add(self.label, flag=wx.EXPAND)
-        sizer.Add(self.meter, flag=wx.EXPAND)
-        sizer.AddGrowableRow(1)
-        self.SetSizer(sizer)
-
+        self.meter.SetSize((w, (h*3)/4))
+        self.meter.SetPosition((0, h/4))
     def set_value(self, num):
         self.meter.value = num
     def get_value(self):
@@ -97,16 +85,19 @@ class LabeledCPU(wx.Panel):
 
 
 class CPU(wx.Panel):
-    def __init__(self, parent, id, background=settings.defaultBackground, foreground=settings.defaultForeground):
+    NUM_RECTS = 20
+    def __init__(self, parent, id, background=settings.defaultBackground, foreground=settings.defaultForeground, label=True, limits=(0,100)):
         wx.Panel.__init__(self, parent, id, size=(12,12))
         self.parent = parent
         self.back = background
         self.fore = foreground
+        self.label = label
+        self.limits = limits
         self.Bind(wx.EVT_PAINT, self.OnPaint)
         self._value = 0
 
     def set_value(self, num):
-        self._value = num
+        self._value = min(self.limits[1], max(self.limits[0], num)) #ensures num is withing range
         self.Refresh()
     def get_value(self):
         return self._value
@@ -115,24 +106,44 @@ class CPU(wx.Panel):
     def OnPaint(self, event):
         w,h = self.GetSize()
         dc = wx.PaintDC(self)
-        dc.SetDeviceOrigin(w/10, (h*9)/10)
+        dc.SetDeviceOrigin(w/10, (h*9)/10) #Makes lower left corner (0,0)
         dc.SetAxisOrientation(True, True)
 
         dc.SetBrush(wx.Brush(self.back))
         dc.SetPen(wx.Pen(self.back))
-        dc.DrawRectangle(0,0,(w*8)/10, (h*8)/10)
+        dc.SetBackground(wx.Brush(self.back))
+        dc.Clear()
         pos = self.value
-        rect = pos / 5
+        rect = pos / (float(self.limits[1])/CPU.NUM_RECTS)
+
+        rect_h = h/25
+        rect_w = (w*7)/20
+        x_1 = w/20
+        x_2 = (w*11)/20
 
         for i in range(1, 21):
             if i > rect:
                 dc.SetBrush(wx.Brush(dim_color(self.fore, 80)))
-                dc.DrawRectangle(10, i*4, 30, 5)
-                dc.DrawRectangle(41, i*4, 30, 5)
+                if self.label == True:
+                    if i % (CPU.NUM_RECTS/4) == 0:
+                        lim_range = float(self.limits[1]-self.limits[0])
+                        text = str(self.limits[0]+i*(lim_range/CPU.NUM_RECTS))
+                        draw_text_rect(dc, x_2-rect_w*2/3, i*(rect_h-1), rect_w, rect_h,
+                                        text, color=self.fore)
+                else:
+                    dc.DrawRectangle(x_1, i*(rect_h-1), rect_w, rect_h)
+                dc.DrawRectangle(x_2, i*(rect_h-1), rect_w, rect_h)
             else:
                 dc.SetBrush(wx.Brush(self.fore))
-                dc.DrawRectangle(10, i*4, 30, 5)
-                dc.DrawRectangle(41, i*4, 30, 5)
+                if self.label == True:
+                    if i % (CPU.NUM_RECTS/4) == 0:
+                        lim_range = float(self.limits[1]-self.limits[0])
+                        text = str(self.limits[0]+i*(lim_range/CPU.NUM_RECTS))
+                        draw_text_rect(dc, x_2-rect_w*2/3, i*(rect_h-1), rect_w, rect_h,
+                                        text, color=self.fore)
+                else:
+                    dc.DrawRectangle(x_1, i*(rect_h-1), rect_w, rect_h)
+                dc.DrawRectangle(x_2, i*(rect_h-1), rect_w, rect_h)
 
 #-----------------------------------------------------------------------------------
 

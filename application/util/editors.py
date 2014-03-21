@@ -104,12 +104,13 @@ class LabeledSpin(wx.Panel):
         self.control.SetValue(val)
 
 class DynamicDataDisplay(wx.Window):
-    def __init__(self, parent, value, pos=wx.DefaultPosition, size=wx.DefaultSize, foreground=settings.defaultForeground, background=settings.defaultBackground):
-        super(DynamicDataDisplay, self).__init__(parent, pos=pos, size=size, style=wx.SUNKEN_BORDER)
+    def __init__(self, parent, value, pos=wx.DefaultPosition, size=wx.DefaultSize, foreground=settings.defaultForeground, background=settings.defaultBackground, scale=1.4):
+        super(DynamicDataDisplay, self).__init__(parent, pos=pos, size=size)#, style=wx.SUNKEN_BORDER)
         self.SetBackgroundColour(background)
         self.foreground = foreground
         self._value = value
         self.value = value
+        self.scale = scale
         self.Bind(wx.EVT_PAINT, self.on_paint)
 
     def post(self):
@@ -125,7 +126,7 @@ class DynamicDataDisplay(wx.Window):
             dc = wx.ClientDC(self)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
-        draw_centered_text(self, str(self._value), 1.4, dc=dc, color=self.foreground)
+        draw_centered_text(self, str(self._value), self.scale, dc=dc, color=self.foreground)
 
     #Get and Set with syntax conventions like wx for compatibility in a list of objects
     #Property for more standard python usage

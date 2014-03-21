@@ -142,6 +142,18 @@ def draw_text_right(obj, text, scale=1.0, font=None, dc=None, color=settings.but
     tw,th = dc.GetTextExtent(text)
     dc.DrawText(text, w-tw, (h-th)/2)
 
+def draw_text_rect(dc, x, y, w, h, text, scale=1.0, font=None, color=settings.button_text):
+    """Enables DC to draw text in given area"""
+    text_area_width = w
+    text_point_size = int((text_area_width/7.11222063894596))
+    if font == None:
+        #not set as default parameter because wx.Font obj cannot be created before wx.App
+        font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+    font.SetPointSize(text_point_size)
+    dc.SetFont(font)
+    dc.SetTextForeground(color)
+    dc.DrawText(text, x, y)
+
 class TitleBreak(wx.Window):
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=(200,50), label="Title", color=settings.defaultForeground):
         super(TitleBreak, self).__init__(parent, id, pos, size)
