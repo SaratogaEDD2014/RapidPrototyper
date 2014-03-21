@@ -233,6 +233,11 @@ class PartFile(object):
                 triplets[i] = self.frame.frame_to_world(triplets[i])
                 triplets[i+1] = self.frame.frame_to_world(triplets[i+1])
                 triplets[i+2] = self.frame.frame_to_world(triplets[i+2])
+                if fequal(triplets[i][2], triplets[i+1][2], settings.LAYER_DEPTH/2.) and fequal(triplets[i+1][2], triplets[i+2][2], settings.LAYER_DEPTH/2.):
+                    norm = normalize(triplets[i][2], settings.LAYER_DEPTH)
+                    triplets[i][2] = norm
+                    triplets[i+1][2] = norm
+                    triplets[i+2][2] = norm
                 facets.append(Facet(triplets[i], triplets[i+1], triplets[i+2]))
             if dialog!=None: dialog.Update(78, 'Slicing '+str(len(facets))+' facets...')
             z1 = normalize(min([facet.min_z() for facet in facets]))
@@ -245,7 +250,7 @@ class PartFile(object):
                         for point in line.calc_xy(z):
                             level.append((int(point[0]*wPPI), int(point[1]*hPPI)))
                     if len(level)>1:
-                        if len(level)>=6:
+                        if len(level)>=3:
                             #All three segments are on in the plane
                             layer.add_polygon(level)
                         else:

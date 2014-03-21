@@ -2,7 +2,7 @@ from numpy import array
 import wx
 import application.settings as settings
 
-def normalize(num, step=.01234):
+def normalize(num, step=settings.LAYER_DEPTH):
     """Returns value rounded to nearest increment of step."""
     factor = round(num/step)
     num = step*factor
