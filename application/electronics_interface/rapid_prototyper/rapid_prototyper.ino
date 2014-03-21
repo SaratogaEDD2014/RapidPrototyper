@@ -54,7 +54,7 @@ void loop() {
             break;
         case 7:
             //set rotations per inch
-            steps_per_layer = readData();
+            steps_per_layer = (-1)*readData();
             break;
         case 99:
             //just dummy to cancel the current read, needed to prevent lock 
@@ -74,8 +74,8 @@ char readData() {
 
 void moveLayer(){
   int steps = steps_per_layer*MICRO_STEP;
+  rotate(steps, .02);
   Serial.println(steps);
-  rotate(steps, .01);
 }
 
 void rotate(int steps, float speed){

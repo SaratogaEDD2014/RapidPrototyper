@@ -43,13 +43,9 @@ class STLViewer(wx.Panel):
         about_x = radians(rotation[0])
         about_y = radians(rotation[1])
         about_z = radians(rotation[2])
-##        self.part_frame.axis = vector((0,0,1)).rotate(about_x, (1,0,0))
-##        self.part_frame.axis = self.part_frame.axis.rotate(about_y, (0,1,0))
-##        self.part_frame.axis = self.part_frame.axis.rotate(about_z, (0,0,1))
         self.part_frame.rotate(angle=about_x, axis=(1,0,0))
         self.part_frame.rotate(angle=about_y, axis=(0,1,0))
         self.part_frame.rotate(angle=about_z, axis=(0,0,1))
-        print self.part_frame.axis
         self.update_model()
 
     def offset(self, event):
@@ -117,6 +113,7 @@ class STLViewer(wx.Panel):
         dialog.Destroy()
         self.destroy_model()
         settings.set_view(wx.Panel(settings.main_window))#Print View Screen
+
     def on_cancel(self, event):
         self.destroy_model()
         settings.main_v_window.panel.SetSize((1,1))  #Makes display invisible, invoking the private _destroy removes whole window, not just display
