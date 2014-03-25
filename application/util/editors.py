@@ -3,7 +3,7 @@ import sys
 import application.settings
 from application.bubble_menu import *
 from application.util.calc_dialog import *
-from application.util.app_util import draw_centered_text, draw_text_left
+from application.util.app_util import *
 
 class TouchSpin(wx.Window):
     def __init__(self, parent, id=-1, value=0.0, limits=(0,10), increment=1, pos=wx.DefaultPosition, size=wx.DefaultSize, precision=2, name="NoName"):  #TODO: add style/formatting flags for constructor
@@ -104,13 +104,14 @@ class LabeledSpin(wx.Panel):
         self.control.SetValue(val)
 
 class DynamicDataDisplay(wx.Window):
-    def __init__(self, parent, value, pos=wx.DefaultPosition, size=wx.DefaultSize, foreground=settings.defaultForeground, background=settings.defaultBackground, scale=1.4):
+    def __init__(self, parent, value, pos=wx.DefaultPosition, size=wx.DefaultSize, foreground=settings.defaultForeground, background=settings.defaultBackground, scale=1.4, alignment=wx.ALIGN_CENTER):
         super(DynamicDataDisplay, self).__init__(parent, pos=pos, size=size)#, style=wx.SUNKEN_BORDER)
         self.SetBackgroundColour(background)
         self.foreground = foreground
         self._value = value
         self.value = value
         self.scale = scale
+        self.align = alignment
         self.Bind(wx.EVT_PAINT, self.on_paint)
 
     def post(self):
@@ -126,7 +127,12 @@ class DynamicDataDisplay(wx.Window):
             dc = wx.ClientDC(self)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
-        draw_centered_text(self, str(self._value), self.scale, dc=dc, color=self.foreground)
+        if self.align == wx.ALIGN_LEFT:
+            draw_text_left(self, str(self._value), self.scale, dc=dc, color=self.foreground)
+        elif self.align == wx.ALIGN_RIGHT:
+            draw_text_right(self, str(self._value), self.scale, dc=dc, color=self.foreground)
+        else:
+            draw_centered_text(self, str(self._value), self.scale, dc=dc, color=self.foreground)
 
     #Get and Set with syntax conventions like wx for compatibility in a list of objects
     #Property for more standard python usage
