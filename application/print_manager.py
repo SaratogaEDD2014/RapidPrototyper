@@ -1,12 +1,14 @@
 import wx
 import application.settings as settings
 import time
-import wx.gizmos as gizmos
-from util.editors import DynamicDataDisplay
+import random
+from application.bitmap_viewer import *
+from application.print_job_controller import *
 from application.util.app_util import *
+from application.util.editors import DynamicDataDisplay
 
 class PrintManager(wx.Panel):
-    def __init__(self, parent, id=-1, position=wx.DefaultPosition, size=(1450,350)):
+    def __init__(self, parent, id=-1, title="Printing Part", position=wx.DefaultPosition, size=(1450,350)):
         super(PrintManager, self).__init__(parent, id, position, size)
         self.Show(False)
         self.SetBackgroundColour(settings.defaultBackground)
@@ -14,68 +16,76 @@ class PrintManager(wx.Panel):
 
         self.cpu = LabeledCPU(self, -1,'Resin Level (mm)', limits=(0,10))
         self.tempGuage= LabeledCPU(self,-1, 'Ambient Temperature',foreground=settings.defaultAccent, limits=(30,120))
-        self.clock = DynamicDataDisplay(self, '', size=(w/8,h/8), scale=.6)
-        self.gauge = wx.Gauge(self, -1, 10)
-        self.gauge_title = wx.Panel(self)
-
+        self.clock = DynamicDataDisplay(self, '', size=(w/4,h/7), scale=.6)
+        self.bmp_viewer = BMPViewer(self, -1)
+        self.bmp_viewer.bmps_from_dir(settings.PATH + 'generation_buffer/')
+        self.bmp_viewer.clear()
         top_sizer= wx.GridSizer(1,0)
-        meter_sizer = wx.GridSizer(1,0)
-        clock_sizer = wx.GridSizer(1,0)
-        clock_sizer.Add(DynamicDataDisplay(self, 'Time Remaining', size=(w/8,h/10), scale=.6), flag=wx.EXPAND)
-        clock_sizer.Add(self.clock, flag=wx.EXPAND)
+        meter_sizer = wx.FlexGridSizer(2,2)
+        meter_sizer.AddGrowableRow(0)
+        meter_sizer.AddGrowableCol(0)
+        meter_sizer.AddGrowableCol(1)
         meter_sizer.Add(self.cpu, flag=wx.EXPAND)
         meter_sizer.Add(self.tempGuage, flag=wx.EXPAND)
-        meter_sizer.Add(clock_sizer, flag=wx.EXPAND)
+        meter_sizer.Add(DynamicDataDisplay(self, 'Time Remaining:', size=(w/8,h/10), scale=.6, alignment=wx.ALIGN_RIGHT), flag=wx.EXPAND)
+        meter_sizer.Add(self.clock, flag=wx.EXPAND)
         top_sizer.Add(meter_sizer, flag=wx.EXPAND)
-        top_sizer.Add(wx.StaticText(self,-1,"Bitmap"), flag=wx.EXPAND)
+        top_sizer.Add(self.bmp_viewer, flag=wx.EXPAND)
 
+        self.gauge = wx.Gauge(self, -1, 100)
+        self.gauge_title = DynamicDataDisplay(self, 'Progress 0.0%', size=(w,h/8), scale=.175, alignment=wx.ALIGN_LEFT)
         bottom_panel_sizer = wx.GridSizer(0,1)
-        bottom_panel_sizer.Add(clock_sizer, flag=wx.EXPAND)
-        bottom_panel_sizer.Add(wx.Panel(self))
         bottom_panel_sizer.Add(self.gauge_title, flag=wx.EXPAND)
         bottom_panel_sizer.Add(self.gauge, flag=wx.EXPAND)
 
-
-        master_sizer = wx.GridSizer(0, 1)
+        self.title = TitleBreak(self, -1, size=(w/2,h/4), label=title)
+        master_sizer = wx.FlexGridSizer(0, 1)
+        master_sizer.Add(self.title, flag=wx.EXPAND)
+        master_sizer.AddGrowableRow(1)
         master_sizer.Add(top_sizer, flag=wx.EXPAND)
         master_sizer.Add(bottom_panel_sizer, flag=wx.EXPAND)
         self.SetSizer(master_sizer)
+
+        #timer testing
         wx.CallAfter(self.OnTimer, None)
         self.timer = wx.Timer(self, -1)
         self.timer.Start(1000)
         self.Bind(wx.EVT_TIMER, self.OnTimer)
+        self.print_job = PrintJob(self)
+
+    def print_file(self):
+        self.print_job.print_project()
 
     def OnTimer(self, event):
         t = time.localtime(time.time())
         st = time.strftime("%I:%M:%S", t)
         self.clock.SetValue(st)
 
-    #def setTemp()
-
-    def progress(self):
-        if self.cpu.value <=100:
-            self.gauge.SetValue(self.gauge.GetValue()+1)
-            self.gauge.Refresh()
-            self.cpu.value += 10
-            self.tempGuage.value +=10
-            wx.ClientDC(self.gauge_title).Clear()
-            draw_text_left(self.gauge_title, 'Progress: '+str(self.gauge.GetValue()*100./self.gauge.GetRange()-10)+'%', scale=.15, color=settings.defaultForeground)
-            wx.CallLater(1000, self.progress)
+    def progress(self, progress_percent=0, temp=-1, resin=-1):
+        self.gauge.SetValue(progress_percent)
+        self.gauge.Refresh()
+        self.cpu.value = temp
+        self.tempGuage.value = resin
+        self.bmp_viewer.show_next()
+        wx.ClientDC(self.gauge_title).Clear()
+        self.gauge_title.SetValue('Progress: '+str(self.gauge.GetValue()*100./self.gauge.GetRange())+'%')
+        self.SendSizeEvent()
+##        wx.CallLater(1000, self.progress)
 
 #----------------------------------------------------------------------------------
 class LabeledCPU(wx.Panel):
     def __init__(self, parent, id=-1, label='', background=settings.defaultBackground, foreground=settings.defaultForeground, limits=(0,100)):
         wx.Panel.__init__(self, parent, id)
         #self.SetBackgroundColour(wx.Colour(1,200,30))
-        self.label = DynamicDataDisplay(self, label, scale=.5)
+        self.label = DynamicDataDisplay(self, label, scale=.5, foreground=foreground, background=background)
         self.meter = CPU(self, id, background, foreground, limits=limits)
         self.Bind(wx.EVT_SIZE, self.on_size)
         self.SendSizeEvent()
     def on_size(self, event):
         w,h = self.GetSize()
-        self.label.SetSize((w, h/4))
-        self.meter.SetSize((w, (h*3)/4))
-        self.meter.SetPosition((0, h/4))
+        self.label.SetSize((w, h/5))
+        self.meter.SetSize((w, (h*4)/5))
+        self.meter.SetPosition((0, h/5))
     def set_value(self, num):
         self.meter.value = num
     def get_value(self):
@@ -128,22 +138,24 @@ class CPU(wx.Panel):
                     if i % (CPU.NUM_RECTS/4) == 0:
                         lim_range = float(self.limits[1]-self.limits[0])
                         text = str(self.limits[0]+i*(lim_range/CPU.NUM_RECTS))
-                        draw_text_rect(dc, x_2-rect_w*2/3, i*(rect_h-1), rect_w, rect_h,
-                                        text, color=self.fore)
+                        draw_text_rect(dc, x_2-rect_w, i*(rect_h-1), rect_w,
+                                        rect_h, text, color=self.fore)
+                    dc.DrawRectangle(x_2-rect_w/2, i*(rect_h-1), rect_w, rect_h)
                 else:
                     dc.DrawRectangle(x_1, i*(rect_h-1), rect_w, rect_h)
-                dc.DrawRectangle(x_2, i*(rect_h-1), rect_w, rect_h)
+                    dc.DrawRectangle(x_2, i*(rect_h-1), rect_w, rect_h)
             else:
                 dc.SetBrush(wx.Brush(self.fore))
                 if self.label == True:
                     if i % (CPU.NUM_RECTS/4) == 0:
                         lim_range = float(self.limits[1]-self.limits[0])
                         text = str(self.limits[0]+i*(lim_range/CPU.NUM_RECTS))
-                        draw_text_rect(dc, x_2-rect_w*2/3, i*(rect_h-1), rect_w, rect_h,
-                                        text, color=self.fore)
+                        draw_text_rect(dc, x_2-rect_w, i*(rect_h-1), rect_w,
+                                        rect_h, text, color=self.fore)
+                    dc.DrawRectangle(x_2-rect_w/2, i*(rect_h-1), rect_w, rect_h)
                 else:
                     dc.DrawRectangle(x_1, i*(rect_h-1), rect_w, rect_h)
-                dc.DrawRectangle(x_2, i*(rect_h-1), rect_w, rect_h)
+                    dc.DrawRectangle(x_2, i*(rect_h-1), rect_w, rect_h)
 
 #-----------------------------------------------------------------------------------
 
@@ -151,9 +163,13 @@ def main():
         ProtoApp = wx.App()
         frm = wx.Frame(None, -1, 'Print stuff', size=(800,600))
         panel=PrintManager(frm)
-        panel.Show(True)
         frm.Show(True)
-        panel.progress()
+        panel.Show(True)
+        frm.SendSizeEvent()
+        panel.SendSizeEvent()
+##        for i in range(100):
+##            panel.progress(i, random.randint(0,10), random.randint(30,120))
+        panel.print_file()
         ProtoApp.MainLoop()
 
 
