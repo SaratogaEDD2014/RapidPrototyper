@@ -13,13 +13,13 @@ class PrintManager(wx.Panel):
         self.Show(False)
         self.SetBackgroundColour(settings.defaultBackground)
         w,h = self.GetSize()
-
         self.cpu = LabeledCPU(self, -1,'Resin Level (mm)', limits=(0,10))
         self.tempGuage= LabeledCPU(self,-1, 'Ambient Temperature',foreground=settings.defaultAccent, limits=(30,120))
         self.clock = DynamicDataDisplay(self, '', size=(w/4,h/7), scale=.6)
         self.bmp_viewer = BMPViewer(self, -1)
         self.bmp_viewer.bmps_from_dir(settings.PATH + 'generation_buffer/')
         self.bmp_viewer.clear()
+
         top_sizer= wx.GridSizer(1,0)
         meter_sizer = wx.FlexGridSizer(2,2)
         meter_sizer.AddGrowableRow(0)
