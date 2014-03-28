@@ -2,6 +2,7 @@ import application.settings as settings
 import wx
 from application.bubble_menu import DynamicButtonRect
 from application.position_control import *
+from application.print_manager import *
 from application.util.app_util import color_to_ones
 from application.util.editors import *
 from application.util.stl import *
@@ -112,7 +113,10 @@ class STLViewer(wx.Panel):
         self.model.process_from_faces(dialog)
         dialog.Destroy()
         self.destroy_model()
-        settings.set_view(wx.Panel(settings.main_window))#Print View Screen
+        print_screen = PrintManager(self.GetParent(), -1, "Print "+self.file[self.file.rfind('/'):])
+        settings.set_view(print_screen)#Print View Screen
+        print_screen.SendSizeEvent()
+        print_screen.print_file()
 
     def on_cancel(self, event):
         self.destroy_model()

@@ -16,8 +16,7 @@ class PrintManager(wx.Panel):
         self.cpu = LabeledCPU(self, -1,'Resin Level (mm)', limits=(0,10))
         self.tempGuage= LabeledCPU(self,-1, 'Ambient Temperature',foreground=settings.defaultAccent, limits=(30,120))
         self.clock = DynamicDataDisplay(self, '', size=(w/4,h/7), scale=.6)
-        self.bmp_viewer = BMPViewer(self, -1)
-        self.bmp_viewer.bmps_from_dir(settings.PATH + 'generation_buffer/')
+        self.bmp_viewer = BMPViewer(self, -1, size=(w/2,h))
         self.bmp_viewer.clear()
 
         top_sizer= wx.GridSizer(1,0)
@@ -54,6 +53,8 @@ class PrintManager(wx.Panel):
         self.print_job = PrintJob(self)
 
     def print_file(self):
+        self.bmp_viewer.bmps_from_dir(settings.PATH+'generation_buffer/')
+        self.bmp_viewer.index = -1
         self.print_job.print_project()
 
     def OnTimer(self, event):

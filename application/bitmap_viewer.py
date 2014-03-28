@@ -47,6 +47,7 @@ class BMPViewer(wx.Panel):
         for the_file in os.listdir(directory):
             file_path = os.path.join(directory, the_file)
             #print file_path
+            #print 'scale',(self.GetSize()[0],self.GetSize()[1])
             img = wx.Image(file_path, wx.BITMAP_TYPE_ANY)
             img = img.Scale(self.GetSize()[0],self.GetSize()[1])
             self.bmps.append(wx.BitmapFromImage(img))
@@ -85,7 +86,7 @@ def test():
     p.clear()
     for i in range(len(p.slides.bmps)):
         p.show_next()
-        time.sleep(.25)
+        time.sleep(settings.LAYER_CURE_TIME)
     p.clear()
     p.Destroy()
     app.MainLoop()

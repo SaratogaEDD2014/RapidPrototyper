@@ -9,11 +9,11 @@ class PrintJob(object):
         self.proj.Show()
         self.controls = control_panel
         self.step_control = DebugArdu()#PrinterInterface(settings.SERIAL_PORT, settings.LAYER_DEPTH)
+
+    def print_project(self):
         self.proj.bmps_from_dir(settings.PATH + 'generation_buffer/')
         self.num_layers = len(self.proj.slides.bmps)
         self.percent_per_layer = 1./self.num_layers * 100.
-
-    def print_project(self):
         self.step_control.zero()
         self._print_layer(0)
 
@@ -23,7 +23,6 @@ class PrintJob(object):
         if index < self.num_layers:
             self.proj.set_index(index)
             self.proj.show_current()
-            self.proj.clear()
             self.step_control.next_layer()
             current_prog = self.percent_per_layer*(index+1)
             self.controls.progress(current_prog)#, temp, resin_level)
