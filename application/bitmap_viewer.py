@@ -47,7 +47,9 @@ class BMPViewer(wx.Panel):
         for the_file in os.listdir(directory):
             file_path = os.path.join(directory, the_file)
             #print file_path
-            self.bmps.append(wx.Bitmap(file_path))
+            img = wx.Image(file_path, wx.BITMAP_TYPE_ANY)
+            img = img.Scale(self.GetSize()[0],self.GetSize()[1])
+            self.bmps.append(wx.BitmapFromImage(img))
     def slideshow(self, delay=1):
         for b in self.bmps:
             self.print_layer_bitmap(b)
@@ -58,7 +60,10 @@ class BMPViewer(wx.Panel):
     def show_index(self, index):
         self.print_layer_bitmap(self.bmps[i])
     def show_current(self):
-        self.print_layer_bitmap(self.bmps[self.index])
+        if self.index < len(self.bmps) and self.index >= 0:
+            self.print_layer_bitmap(self.bmps[self.index])
+        else:
+            self.clear()
     def increment_index(self):
         self.index = min(self.index+1, len(self.bmps)-1)
     def show_next(self):
