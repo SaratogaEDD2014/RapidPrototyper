@@ -8,6 +8,8 @@
 
 #define DIR_PIN 2
 #define STEP_PIN 3
+#define LOW_LIMIT 6
+#define HIGH_LIMIT 7
 #define MICRO_STEP 1
 
 int steps_per_layer = 2;
@@ -56,6 +58,17 @@ void loop() {
             //set rotations per inch
             steps_per_layer = (-1)*readData();
             break;
+        case 8:
+ 	    //runs the motor until it hits the limit
+            while(digitalRead(LOW_LIMIT)==LOW){
+                rotate(1, .07);
+            }
+ 	        break;
+ 	    case 9:
+ 	        while(digitalRead(HIGH_LIMIT)==LOW){
+ 	            rotate(-1, .07);
+ 	        }
+ 	        break;
         case 99:
             //just dummy to cancel the current read, needed to prevent lock 
             //when the PC side dropped the "w" that we sent
