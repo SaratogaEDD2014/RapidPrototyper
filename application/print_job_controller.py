@@ -8,7 +8,8 @@ class PrintJob(object):
         self.proj = Projector(None, -1, "EDD Projector", (settings.projx, settings.projy), (settings.projw, settings.projh))
         self.proj.Show()
         self.controls = control_panel
-        self.step_control = DebugArdu()#PrinterInterface(settings.SERIAL_PORT, settings.LAYER_DEPTH)
+        self.step_control = DebugArdu()
+        #self.step_control = PrinterInterface(settings.SERIAL_PORT, settings.LAYER_DEPTH)
 
     def print_project(self):
         self.proj.bmps_from_dir(settings.PATH + 'generation_buffer/')
@@ -28,6 +29,8 @@ class PrintJob(object):
             self.controls.progress(current_prog)#, temp, resin_level)
             if index+1 < self.num_layers:
                 wx.FutureCall(settings.LAYER_CURE_TIME*1000, self._print_layer, (index+1))
+            else:
+                self.cleanup()
 
     def cleanup(self):
         self.proj.close()

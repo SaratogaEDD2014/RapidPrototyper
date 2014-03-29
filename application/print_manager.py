@@ -8,15 +8,15 @@ from application.util.app_util import *
 from application.util.editors import DynamicDataDisplay
 
 class PrintManager(wx.Panel):
-    def __init__(self, parent, id=-1, title="Printing Part", position=wx.DefaultPosition, size=(1450,350)):
+    def __init__(self, parent, id=-1, title="Printing Part", position=wx.DefaultPosition, size=(settings.app_w,settings.app_h-settings.toolbar_h)):
         super(PrintManager, self).__init__(parent, id, position, size)
         self.Show(False)
         self.SetBackgroundColour(settings.defaultBackground)
         w,h = self.GetSize()
-        self.cpu = LabeledCPU(self, -1,'Resin Level (mm)', limits=(0,10))
-        self.tempGuage= LabeledCPU(self,-1, 'Ambient Temperature',foreground=settings.defaultAccent, limits=(30,120))
+        self.cpu = LabeledCPU(self, -1,'Resin Level (mm)', limits=(0,10), size=(w/4, h/3))
+        self.tempGuage= LabeledCPU(self,-1, 'Ambient Temperature',foreground=settings.defaultAccent, limits=(30,120), size=(w/4, h/3))
         self.clock = DynamicDataDisplay(self, '', size=(w/4,h/7), scale=.6)
-        self.bmp_viewer = BMPViewer(self, -1, size=(w/2,h))
+        self.bmp_viewer = BMPViewer(self, -1, size=(w/2,h/3))
         self.bmp_viewer.clear()
 
         top_sizer= wx.GridSizer(1,0)
@@ -26,7 +26,7 @@ class PrintManager(wx.Panel):
         meter_sizer.AddGrowableCol(1)
         meter_sizer.Add(self.cpu, flag=wx.EXPAND)
         meter_sizer.Add(self.tempGuage, flag=wx.EXPAND)
-        meter_sizer.Add(DynamicDataDisplay(self, 'Time Remaining:', size=(w/8,h/10), scale=.6, alignment=wx.ALIGN_RIGHT), flag=wx.EXPAND)
+        meter_sizer.Add(DynamicDataDisplay(self, 'Time Remaining:', size=(w/4,h/10), scale=.6, alignment=wx.ALIGN_RIGHT), flag=wx.EXPAND)
         meter_sizer.Add(self.clock, flag=wx.EXPAND)
         top_sizer.Add(meter_sizer, flag=wx.EXPAND)
         top_sizer.Add(self.bmp_viewer, flag=wx.EXPAND)
@@ -37,7 +37,7 @@ class PrintManager(wx.Panel):
         bottom_panel_sizer.Add(self.gauge_title, flag=wx.EXPAND)
         bottom_panel_sizer.Add(self.gauge, flag=wx.EXPAND)
 
-        self.title = TitleBreak(self, -1, size=(w/2,h/4), label=title)
+        self.title = TitleBreak(self, -1, size=(w/2,h/6), label=title)
         master_sizer = wx.FlexGridSizer(0, 1)
         master_sizer.Add(self.title, flag=wx.EXPAND)
         master_sizer.AddGrowableRow(1)
@@ -56,6 +56,7 @@ class PrintManager(wx.Panel):
         self.bmp_viewer.bmps_from_dir(settings.PATH+'generation_buffer/')
         self.bmp_viewer.index = -1
         self.print_job.print_project()
+        #self.print_job.cleanup()
 
     def OnTimer(self, event):
         t = time.localtime(time.time())
@@ -75,8 +76,8 @@ class PrintManager(wx.Panel):
 
 #----------------------------------------------------------------------------------
 class LabeledCPU(wx.Panel):
-    def __init__(self, parent, id=-1, label='', background=settings.defaultBackground, foreground=settings.defaultForeground, limits=(0,100)):
-        wx.Panel.__init__(self, parent, id)
+    def __init__(self, parent, id=-1, label='', background=settings.defaultBackground, foreground=settings.defaultForeground, limits=(0,100), size=(10,10)):
+        wx.Panel.__init__(self, parent, id, size=size)
         #self.SetBackgroundColour(wx.Colour(1,200,30))
         self.label = DynamicDataDisplay(self, label, scale=.5, foreground=foreground, background=background)
         self.meter = CPU(self, id, background, foreground, limits=limits)
@@ -97,8 +98,8 @@ class LabeledCPU(wx.Panel):
 
 class CPU(wx.Panel):
     NUM_RECTS = 20
-    def __init__(self, parent, id, background=settings.defaultBackground, foreground=settings.defaultForeground, label=True, limits=(0,100)):
-        wx.Panel.__init__(self, parent, id, size=(12,12))
+    def __init__(self, parent, id, background=settings.defaultBackground, foreground=settings.defaultForeground, label=True, limits=(0,100), size=(10,10)):
+        wx.Panel.__init__(self, parent, id, size=size)
         self.parent = parent
         self.back = background
         self.fore = foreground
@@ -162,7 +163,7 @@ class CPU(wx.Panel):
 
 def main():
         ProtoApp = wx.App()
-        frm = wx.Frame(None, -1, 'Print stuff', size=(800,600))
+        frm = wx.Frame(None, -1, 'Print stuff', size=(settings.app_w, settings.app_h))
         panel=PrintManager(frm)
         frm.Show(True)
         panel.Show(True)
