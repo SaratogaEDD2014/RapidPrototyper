@@ -30,10 +30,10 @@ class Layer(wx.MemoryDC):
         self.flat_polys.append(poly)
     def save(self):
         polygons = segments_to_polygons(self.segments)
+        self.SetPen(wx.Pen(wx.Colour(255,255,255), 3))
         concentracize(polygons)
         draw_concentrics(self, polygons)
-        self.SetBrush(wx.Brush(wx.Colour(45,45,255)))
-        self.SetPen(wx.Pen(wx.Colour(255,255,255)))
+        self.SetBrush(settings.BUILD_FLAT_BRUSH)
         for flat in self.flat_polys:
             self.DrawPolygon(flat)
         self.bmp.SaveFile(self.name, wx.BITMAP_TYPE_BMP)

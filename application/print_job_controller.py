@@ -22,15 +22,16 @@ class PrintJob(object):
 ##        temp = self.step_control.get_temp()
 ##        resin_level = self.step_control.get_resin()
         if index < self.num_layers:
+            self.proj.clear()
+            self.step_control.next_layer()
             self.proj.set_index(index)
             self.proj.show_current()
-            self.step_control.next_layer()
             current_prog = self.percent_per_layer*(index+1)
             self.controls.progress(current_prog)#, temp, resin_level)
             if index+1 < self.num_layers:
                 wx.FutureCall(settings.LAYER_CURE_TIME*1000, self._print_layer, (index+1))
             else:
-                self.cleanup()
+                wx.FutureCall(settings.LAYER_CURE_TIME*1000, self.cleanup)
 
     def cleanup(self):
         self.proj.close()
@@ -40,6 +41,7 @@ class DebugArdu():
     def zero(self):
         pass
     def next_layer(self):
+        time.sleep(.1)
         pass
     def destroy(self):
         pass

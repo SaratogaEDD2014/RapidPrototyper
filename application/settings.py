@@ -97,11 +97,11 @@ BUILD_PIXELS = (1280, 800)
 BUILD_AREA = (7.75,4.625,8.)#(9.0, 6.5, 8)
 BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
 BUILD_BACKGROUND = wx.Brush(wx.Colour(0,0,0))
-BUILD_FILL = wx.Brush(wx.Colour(0,255,0), wx.CROSSDIAG_HATCH)
+BUILD_FILL = wx.BrushFromBitmap(wx.Bitmap(PATH+'/appearance/brushes/honey_comb_thick.png'))#wx.Brush(wx.Colour(255,255,255), wx.CROSSDIAG_HATCH)
+BUILD_FLAT_BRUSH = wx.Brush(wx.Colour(255,255,255))
 x_factor = lambda: unit_factors[get_units()]*SCALE_X
 y_factor = lambda: unit_factors[get_units()]*SCALE_Y
 z_factor = lambda: unit_factors[get_units()]*SCALE_Z
-
 
 
 #UI------------------------------------------------------------------------
