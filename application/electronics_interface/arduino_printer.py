@@ -24,7 +24,10 @@ class PrinterInterface(object):
 
     def zero(self):
         """Should zero motor"""
-        pass
+        self.ardu.sendData('8')
+    def to_top(self):
+        """Clears Z-Table by moving to top"""
+        self.ardu.sendData('9')
 
     def destroy(self):
         self.ardu.close()
