@@ -3,6 +3,7 @@ import wx
 temp_app = wx.App()
 #Resources Information:
 NAME = 'Charlie'
+USER_NAME = 'Kristi!'
 PATH = ''   #to be set in app.py
 IMAGE_PATH = ''#to Be set in app.py
 main_window=None
