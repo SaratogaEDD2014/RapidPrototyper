@@ -456,6 +456,14 @@ class GearTemplate(wx.Panel):
         self.file.write(stuff+'\n')
 
 
+class Gear(object):
+    def __init__(self, **kwargs):
+        for key in kwargs:
+            self.setattr(key, kwargs[key])
+            print self.getattr(key)
+
+
+
 
 #----------------------------------------------------------------------------------
 def main():
