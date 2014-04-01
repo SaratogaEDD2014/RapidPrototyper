@@ -5,7 +5,7 @@ attachInterrupt(1, encoderPinChangeB, CHANGE);
 encoder = 0;
 
 void encoderPinChangeA() {
- if (digitalRead(encoder_a)==digit?alRead(encoder_b)) {
+ if (digitalRead(encoder_a)==digitalRead(encoder_b)) {
   encoder--;
  }
  else{
