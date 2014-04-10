@@ -1,9 +1,21 @@
 import wx
 from numpy import *
-from application.settings import BUILD_FILL, BUILD_BACKGROUND
+from application.settings import BUILD_FILL, BUILD_BACKGROUND, LAYER_DEPTH
 
 OUT_BRUSH = BUILD_FILL
 IN_BRUSH = BUILD_BACKGROUND
+TOLERANCE = LAYER_DEPTH
+
+def fequal(first, second, tolerance=TOLERANCE):
+    return abs(first-second)<tolerance
+def iter_fequal(first_itr, second_itr, tolerance=TOLERANCE):
+    if len(first_itr) != len(second_itr):
+        return False
+    for i in range(len(first_itr)):
+        if not fequal(first_itr[i], second_itr[i], tolerance):
+            return False
+    return True
+
 
 class Polygon(object):
     def __init__(self, vertices=[]):
@@ -99,7 +111,7 @@ def combine_couplet(couplet, runs):
     for run in runs:
         i=0
         while not attached and i<len(run):
-            if run[i][1] == couplet[0]:
+            if iter_fequal(run[i][1], couplet[0]):
                 if len(run) <= i+1:
                     #Is the next point in the run
                     run.append(couplet)
@@ -133,12 +145,12 @@ def form_shapes(runs):
 
 def combine_polygons(new_poly, polys):
     for poly in polys:
-        if new_poly.vertices[0] == poly.vertices[poly.length()-1]:
+        if iter_fequal(new_poly.vertices[0], poly.vertices[poly.length()-1]):
             #first element in new polygon is last in another
             if new_poly.length()>1:
                 poly.add_vertices(new_poly.vertices[1:])#combine elements of polygons
                 return True
-        elif new_poly.vertices[new_poly.length()-1] == poly.vertices[0]:
+        elif iter_fequal(new_poly.vertices[new_poly.length()-1], poly.vertices[0]):
             #last element in new polygon equals first in another
             if poly.length()>1:
                 poly.set_vertices(new_poly.vertices + poly.vertices[1:])#combine elements, new first
@@ -184,3 +196,24 @@ def segments_to_polygons(couplets):
         polys = form_shapes(runs)
         return polys
     return []
+
+
+app = wx.App()
+frm = wx.Frame(None, size=(600,600))
+frm.Show()
+dc = wx.ClientDC(frm)
+
+draw_concentrics(dc, segments_to_polygons([  [[ 525.        ,  300.        ], [ 519.15111108,  316.06969024]],
+                                             [[ 519.15111108,  316.06969024], [ 504.34120444,  324.62019383]],
+                                             [[ 504.34120444,  324.62019383], [ 487.5       ,  321.65063509]],
+                                             [[ 487.5       ,  321.65063509], [ 476.50768448,  308.55050358]],
+                                             [[ 476.50768448,  308.55050358], [ 476.50768448,  291.44949642]],
+                                             #[[ 476.50768448,  291.44949642], [ 487.5       ,  278.34936491]],
+                                             [[ 487.5       ,  278.34936491], [ 476.50768448,  291.45549642]],
+
+                                             #[[ 487.5       ,  278.34936491], [ 504.34120444,  275.37980617]],
+                                             [[ 504.34120444,  275.37980617], [ 487.5       ,  278.34936491]],
+                                             [[ 504.34120444,  275.37980617], [ 519.15111108,  283.93030976]]
+                                             ]))
+
+app.MainLoop()

@@ -220,7 +220,17 @@ def main(event):
     left2 = ConcentricPoly(array(gen_points(7,100, (200, 300))))
     left3 = ConcentricPoly(array(gen_points(3,50,  (200, 300))))
     right1= ConcentricPoly(array(gen_points(4,75,  (500, 300))))
-    right2= ConcentricPoly(array(gen_points(9,25, (500, 300))))
+    #right2= ConcentricPoly(array(gen_points(9,25, (500, 300))))
+    #print gen_points(9,25, (500,300))
+    right2= ConcentricPoly([[ 525.,          300.        ],
+                             [ 519.15111108,  316.06969024],
+                             [ 504.34120444,  324.62019383],
+                             [ 476.50768448,  308.55050358],
+                             [ 487.5       ,  321.65063509],
+                             [ 476.50768448,  291.44949642],
+                             [ 487.5       ,  278.34936491],
+                             [ 504.34120444,  275.37980617],
+                             [ 519.15111108,  283.93030976]])
 
     off_out = ConcentricPoly(array(gen_points(4,400, (600, 600))))
     off_in = ConcentricPoly(array(gen_points(4,380, (600, 600))))
