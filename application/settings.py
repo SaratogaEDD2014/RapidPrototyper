@@ -1,8 +1,12 @@
 import wx
 
+cfg= wx.Config('config')
+def get_name():
+    return cfg.ReadInt('name', defaultVal=0.0) #To be chnaged to String in future
+
 temp_app = wx.App()
 #Resources Information:
-NAME = 'Charlie'
+NAME = get_name()# will be 'Charlie' in future
 USER_NAME = 'Kristi!'
 PATH = ''   #to be set in app.py
 IMAGE_PATH = ''#to Be set in app.py
@@ -16,10 +20,7 @@ if debug:
     sys.path.append(PATH[:PATH.rfind("application")])
     PATH = PATH[:PATH.rfind("application")+12]
     IMAGE_PATH = PATH + 'appearance/'
-    USER_PATH = PATH
 
-#Matt's part
-cfg= wx.Config('config')
 
 #Runtime information
 prev_page=[]
@@ -85,6 +86,13 @@ def get_units():
     return cfg.Read('units', defaultVal='in')
 units = property(get_units, set_units, doc="The type of units the files the user is entering are using.")
 
+
+def get_layer_depth():
+    return cfg.ReadFloat('layerDepth', defaultVal=.012)
+
+def get_layer_cure_time():
+    return cfg.ReadInt('layerCureTime', defaultVal=2)
+
 OFFSET_X = 0.0
 OFFSET_Y = 0.0
 OFFSET_Z = 0.0
@@ -92,8 +100,8 @@ SCALE_X = 1.0
 SCALE_Y = 1.0
 SCALE_Z = 1.0
 SERIAL_PORT = 'COM5'
-LAYER_DEPTH = .012 #IN INCHES
-LAYER_CURE_TIME = 2.
+LAYER_DEPTH = get_layer_depth() #IN INCHES
+LAYER_CURE_TIME = get_layer_cure_time()
 BUILD_PIXELS = (1280, 800)
 BUILD_AREA = (7.75,4.625,8.)#(9.0, 6.5, 8)
 BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
@@ -106,10 +114,13 @@ z_factor = lambda: unit_factors[get_units()]*SCALE_Z
 
 
 #UI------------------------------------------------------------------------
+def get_resolution():
+    return (cfg.ReadInt('projw'), cfg.ReadInt('projh'))
+
 icon_view = False
 app_x, app_y = 0,0
 app_w, app_h = wx.GetDisplaySize()
-projw, projh = 1280,800
+projw, projh = get_resolution()
 projx, projy = 0,0
 touchw, touchh = 1024,600
 if debug:
@@ -266,6 +277,10 @@ def set_scheme(theme_color, inverted):
 def get_scheme():
     return cfg.Read('color_scheme', "BLUE")
 
+def set_resolution(w = projw, h = projh):
+    cfg.WriteInt('projw',w)
+    cfg.WriteInt('projh',h)
+
 def set_property_color(key, color):
     cfg.WriteInt(key+'R', color.Red())
     cfg.WriteInt(key+'G', color.Green())
@@ -277,10 +292,14 @@ def get_property_color(key, defaults=[0,0,0]):
     blue=cfg.ReadInt(key+'B', defaults[2])
     return wx.Colour(red, green, blue)
 
+def set_layer_cure_time(time):
+    cfg.WriteInt('layerCureTime',time)
+
+def set_name(name):
+    cfg.WriteInt('name', name) #To be changed to String in future
+
 def set_layer_depth(depth):
     cfg.WriteFloat('layerDepth', depth)
 
-def get_layer_depth():
-    return cfg.ReadFloat('layerDepth')
 
 temp_app.Destroy()

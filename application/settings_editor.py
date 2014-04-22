@@ -43,10 +43,14 @@ class SettingsEditor(wx.Panel):
                                 [key for key in settings.schemes],
                                 name="Choose Scheme:", text_color=settings.defaultForeground)
         self.scheme_inverter = LabeledCheckbox(self, name="Inverted Colors", text_color=settings.defaultForeground, size=(self.GetSize()[0], 10))
+        self.print_name= LabeledEditor(self, -1, settings.NAME,
+                                  (0,1), .001, precision=1,name="Printer Name",
+                                  text_color=settings.defaultForeground)
         col1.Add(colors_title, flag=wx.EXPAND)
         col1.Add(self.scheme_picker, flag=wx.EXPAND)
         col1.Add(self.scheme_inverter, flag=wx.EXPAND)
-        col1.AddMany([wx.Panel(self) for i in range(3)])
+        col1.Add(self.print_name, flag=wx.EXPAND)
+        col1.AddMany([wx.Panel(self) for i in range(2)])
         col1.Add(wx.StaticText(self, -1,"***Appearance changes will take effect the next time the application launches."), flag=wx.EXPAND)
 
         #Column 2: the technical operation settings
@@ -54,14 +58,26 @@ class SettingsEditor(wx.Panel):
         self.unit_selector = DynamicComboBox(self, settings.get_units(),
                                 [key for key in settings.unit_factors], name="Units:",
                                 text_color=settings.defaultForeground)
-        self.thickness_editor = LabeledEditor(self, -1, settings.LAYER_DEPTH,
+        self.layer_depth = LabeledEditor(self, -1, settings.LAYER_DEPTH,
                                   (0,1), .001, precision=3,name="Layer Thickness",
                                   text_color=settings.defaultForeground)
+        self.y_resolution = LabeledEditor(self, -1, settings.projh,
+                                  (0,1), .001, precision=1,name="Y Resolution",
+                                  text_color=settings.defaultForeground)
+        self.x_resolution = LabeledEditor(self, -1, settings.projw,
+                                  (0,1), .001, precision=1,name="X Resolution",
+                                  text_color=settings.defaultForeground)
+        self.layer_cure_time = LabeledEditor(self, -1, settings.LAYER_CURE_TIME,
+                                  (0,1), .001, precision=1,name="Layer Cure Time",
+                                  text_color=settings.defaultForeground)
+
         col2.Add(technical_title, flag=wx.EXPAND)
         col2.Add(self.unit_selector, flag=wx.EXPAND)
-        col2.Add(self.thickness_editor, flag=wx.EXPAND)
-        col2.AddMany([wx.Panel(self) for i in range(4)])
-
+        col2.Add(self.layer_depth, flag=wx.EXPAND)
+        col2.Add(self.y_resolution, flag=wx.EXPAND)
+        col2.Add(self.x_resolution, flag=wx.EXPAND)
+        col2.Add(self.layer_cure_time, flag=wx.EXPAND)
+        col2.AddMany([wx.Panel(self) for i in range(1)])
         content_sizer.Add(col1, flag=wx.EXPAND)
         content_sizer.Add(col2, flag=wx.EXPAND)
         master_sizer.AddGrowableCol(0)
@@ -75,10 +91,29 @@ class SettingsEditor(wx.Panel):
         #event handling
         self.Bind(wx.EVT_COMBOBOX, self.edit_scheme, self.scheme_picker)
         self.Bind(wx.EVT_COMBOBOX, self.edit_scheme, self.scheme_inverter)
+        self.Bind(wx.EVT_COMBOBOX, self.edit_resolution, self.y_resolution)
+        self.Bind(wx.EVT_COMBOBOX, self.edit_resolution, self.x_resolution)
+        self.Bind(wx.EVT_COMBOBOX, self.edit_layer_depth, self.layer_depth)
+        self.Bind(wx.EVT_COMBOBOX, self.edit_layer_cure_time, self.layer_cure_time)
+        self.Bind(wx.EVT_COMBOBOX, self.edit_name, self.print_name)
+
+        #self.Bind(wx.EVT_COMBOBOX, self.edit)
 
     def edit_scheme(self, event):
         event.Skip()
         settings.set_scheme(self.scheme_picker.GetValue(), self.scheme_inverter.value)
+    def edit_resolution(self, event):
+        event.Skip()
+        settings.set_resolution(self.x_resolution.GetValue(),self.y_resolution.GetValue())
+    def edit_layer_depth(self, event):
+        event.Skip()
+        settings.set_layer_depth(self.layer_depth.GetValue())
+    def edit_layer_cure_time(self, event):
+        event.Skip()
+        settings.set_layer_cure_time(self.layer_cure_time.GetValue())
+    def edit_name(self, event):
+        event.Skip()
+        settings.set_name(self.print_name.GetValue())
 
 def main():
     app = wx.App()
