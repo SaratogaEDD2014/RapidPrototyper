@@ -120,4 +120,4 @@ class STLViewer(wx.Panel):
     def on_cancel(self, event):
         self.destroy_model()
         settings.main_v_window.panel.SetSize((1,1))  #Makes display invisible, invoking the private _destroy removes whole window, not just display
-        settings.goto_prev_page()
+        settings.goto_prev_page(2)

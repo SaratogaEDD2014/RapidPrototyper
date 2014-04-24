@@ -30,13 +30,16 @@ def add_prev_page(page):
         page.Show(False)
         prev_page.append(page)
 
-def goto_prev_page():
-    if len(prev_page)>=1:
-        temp=prev_page[len(prev_page)-1]
+def goto_prev_page(n=1):
+    if len(prev_page)>=n:
+        temp=prev_page[len(prev_page)-n]
         current=get_current_page()
         current.Show(False)
         del current
         prev_page.remove(temp)
+
+        for i in range(len(prev_page) - (n), len(prev_page) - 1):
+            prev_page.pop(i)
         set_current_page(temp)#Do not "set_view" because that will add to previous pages
 
 def get_prev_page():

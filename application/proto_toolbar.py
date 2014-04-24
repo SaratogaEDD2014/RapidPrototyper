@@ -40,6 +40,5 @@ class ProtoToolbar(wx.Panel):
             #sys.exit()
             #wx.exit()
         if cmd == self.backButton.name:
-            print 'bk'
             settings.goto_prev_page()
 

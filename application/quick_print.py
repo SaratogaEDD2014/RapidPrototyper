@@ -15,12 +15,16 @@ class QuickPrint(wx.Panel):
             try:
                 if self.file == "":
                     self.file_name = select_stl()
-                    part_viewer = STLViewer(settings.main_window, self.file_name)
-                    settings.set_view(part_viewer)
+                    if self.file_name == None:
+                        settings.goto_prev_page()
+                    else:
+                        part_viewer = STLViewer(settings.main_window, self.file_name)
+                        settings.set_view(part_viewer)
             except IOError:
                 dlg = wx.MessageDialog(self, 'Error: Not a valid filename.', 'Error Opening File', wx.OK|wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
+                settings.goto_prev_page()
         else:
             super(QuickPrint, self).Show(visible)
             if self.disp != None:
