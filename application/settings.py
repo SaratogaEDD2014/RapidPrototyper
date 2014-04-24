@@ -36,7 +36,6 @@ def goto_prev_page(n=1):
         current=get_current_page()
         current.Show(False)
         del current
-        prev_page.remove(temp)
 
         for i in range(len(prev_page) - (n), len(prev_page) - 1):
             prev_page.pop(i)
