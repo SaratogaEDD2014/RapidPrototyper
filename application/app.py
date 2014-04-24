@@ -9,6 +9,8 @@ settings.PATH = PATH
 settings.IMAGE_PATH = PATH + 'appearance/'
 settings.USER_PATH = PATH +'examples/'
 
+devmode = True
+
 #Now that things are setup:
 import wx
 import application.splash_screen
@@ -23,7 +25,8 @@ class ProtoFrame(window):
         settings.icon_view = False #temporary until config file is done
         self.win.Show(False)
         splash = application.splash_screen.Splash(settings.NAME)
-        splash.say_hi()
+        if not devmode:
+            splash.say_hi()
         self.win.SetPosition((settings.app_x, settings.app_y))
         self.win.SetSize((settings.app_w, settings.app_h))
         self.win.SetBackgroundColour(settings.defaultBackground)
@@ -38,13 +41,18 @@ class ProtoFrame(window):
         settings.main_window = self.win
         settings.main_v_window = self
         settings.set_view(self.menu)
-        splash.wait(1)
-        splash.say_name()
-        splash.wait(1.5)
+        if not devmode:
+            splash.wait(1)
+            splash.say_name()
+            splash.wait(1.5)
         self.win.Show(True)
         if settings.icon_view==False:
             pass#self.win.Maximize()
-        splash.say_bye()
+        if not devmode:
+            splash.say_bye()
+
+        if devmode:
+            title = title + " --- DEVELOPER MODE"
 
     def on_paint(self, event):
         event.Skip(True)
