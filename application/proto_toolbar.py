@@ -10,7 +10,7 @@ class ProtoToolbar(wx.Panel):
         super(ProtoToolbar, self).__init__(parent, id, position, size)
         #self.Show(False)
         self.imagePath=settings.IMAGE_PATH
-
+        self.parent = parent
         self.backButton =  ToolbarButton(self, wx.Bitmap(self.imagePath+'back.png'), wx.Bitmap(self.imagePath+'back_select.png'), wx.Bitmap(self.imagePath+'back_disable.png'), name="back")
         self.quitButton =  ToolbarButton(self, wx.Bitmap(self.imagePath+'quit.png'), wx.Bitmap(self.imagePath+'quit_select.png'), name="quit")
         self.blank_space = blank_graphics.BlankGradient(self, size=(settings.app_w-self.backButton.GetSize()[0]-self.quitButton.GetSize()[0], self.backButton.GetSize()[1]), col1=settings.toolbar_bottom, col2=settings.toolbar_top)
@@ -34,8 +34,12 @@ class ProtoToolbar(wx.Panel):
     def toolbarEvent(self, event):
         cmd=event.GetEventObject().name
         if cmd == self.quitButton.name:
-            wx.Exit()
-            sys.exit()
+
+            print 'System quitting'
+            self.parent.Destroy()
+            #sys.exit()
+            #wx.exit()
         if cmd == self.backButton.name:
+            print 'bk'
             settings.goto_prev_page()
 
