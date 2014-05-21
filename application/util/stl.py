@@ -255,6 +255,7 @@ class PartFile(object):
                             layer.add_polygon(level)
                         else:
                             layer.add_segment(level)
+                layer.prepare()
                 layer.save()
                 layer.close()
             if dialog!=None: dialog.Update(88, 'Saving bitmaps...')

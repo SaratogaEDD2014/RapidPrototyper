@@ -28,7 +28,7 @@ class Layer(wx.MemoryDC):
             add_segment(seg)
     def add_polygon(self, poly):
         self.flat_polys.append(poly)
-    def save(self):
+    def prepare(self):
         polygons = segments_to_polygons(self.segments)
         self.SetPen(wx.Pen(wx.Colour(255,255,255), 3))
         concentracize(polygons)
@@ -36,6 +36,7 @@ class Layer(wx.MemoryDC):
         self.SetBrush(settings.BUILD_FLAT_BRUSH)
         for flat in self.flat_polys:
             self.DrawPolygon(flat)
+    def save(self):
         self.bmp.SaveFile(self.name, wx.BITMAP_TYPE_BMP)
     def clear(self):
         self.segments = []
