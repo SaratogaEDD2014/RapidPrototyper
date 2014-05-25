@@ -17,6 +17,9 @@ class QuickPrint(wx.Panel):
                     self.file_name = select_stl()
                     part_viewer = STLViewer(settings.main_window, self.file_name)
                     settings.set_view(part_viewer)
+                else:
+                    part_viewer = STLViewer(settings.main_window, self.file)
+                    settings.set_view(part_viewer)
             except IOError:
                 dlg = wx.MessageDialog(self, 'Error: Not a valid filename.', 'Error Opening File', wx.OK|wx.ICON_INFORMATION)
                 dlg.ShowModal()

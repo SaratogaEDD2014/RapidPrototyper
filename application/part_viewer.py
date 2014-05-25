@@ -15,6 +15,10 @@ class STLViewer(wx.Panel):
         super(STLViewer, self).__init__(parent, pos=pos, size=size)
         self.Show(False)
         self.file = stl_file
+        n = self.file
+        n = n.replace('\\', '/')
+        n = n[n.rfind('/')+1:]
+        self.title_name = n
         self.display = None
         self.part_frame = None
         self.model = None #Holds faces object for part
@@ -84,10 +88,7 @@ class STLViewer(wx.Panel):
                 #self.display.autocenter =True
                 if self.file != "":
                     self.update_model()
-                    n = self.file
-                    n = n.replace('\\', '/')
-                    n = n[n.rfind('/')+1:]
-                    self.title = label(text=n, xoffset=0, z=build_h*.75, line=0, pos=(0,0), opacity=0.5)
+                    self.title = label(text=self.title_name, xoffset=0, z=build_h*.75, line=0, pos=(0,0), opacity=0.5)
                     while not settings.display_part:
                         rate(100)
 
@@ -105,15 +106,15 @@ class STLViewer(wx.Panel):
             if self.model != None:
                 self.destroy_model()
             self.model = PartFile(str(self.file), self.part_frame)
-            self.model.faces = self.model.generate_faces()
+            self.model.generate_faces()
             self.model.faces.smooth()
             self.display.autocenter = True
     def on_print(self, event):
-        dialog = wx.ProgressDialog("Processing "+self.file[self.file.rfind('/'):]+":", "Process is 10% complete.", 100, self)
+        dialog = wx.ProgressDialog("Processing "+self.title_name+":", "Process is 10% complete.", 100, self)
         self.model.process_from_faces(dialog)
         dialog.Destroy()
         self.destroy_model()
-        print_screen = PrintManager(self.GetParent(), -1, "Print "+self.file[self.file.rfind('/'):])
+        print_screen = PrintManager(self.GetParent(), -1, "Print "+self.title_name)
         settings.set_view(print_screen)#Print View Screen
         print_screen.SendSizeEvent()
         print_screen.print_file()
