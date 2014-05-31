@@ -1,8 +1,10 @@
 import wx
 
 cfg= wx.Config('config')
+def set_name(n):
+    cfg.Write('name', n)
 def get_name():
-    return cfg.ReadInt('name', defaultVal=0.0) #To be chnaged to String in future
+    return cfg.Read('name', defaultVal="Charlie")
 
 temp_app = wx.App()
 #Resources Information:
@@ -20,6 +22,7 @@ if debug:
     sys.path.append(PATH[:PATH.rfind("application")])
     PATH = PATH[:PATH.rfind("application")+12]
     IMAGE_PATH = PATH + 'appearance/'
+    USER_PATH = PATH +'examples/'
 
 
 #Runtime information
@@ -93,6 +96,22 @@ def get_layer_depth():
 def get_layer_cure_time():
     return cfg.ReadInt('layerCureTime', defaultVal=2)
 
+base_depth = .125 #Height of pad that rests below part
+##_off_x = 0.0
+##def get_off_x():
+##    return _off_x
+##def set_off_x(val):
+##    _off_x = val
+##_off_y = 0.0
+##def get_off_y():
+##    return _off_y
+##def set_off_y(val):
+##    _off_y = val
+##_off_z = 0.0
+##def get_off_z():
+##    return _off_z
+##def set_off_z(val):
+##    _off_z = val
 OFFSET_X = 0.0
 OFFSET_Y = 0.0
 OFFSET_Z = 0.0
@@ -103,9 +122,11 @@ SERIAL_PORT = 'COM5'
 LAYER_DEPTH = get_layer_depth() #IN INCHES
 LAYER_CURE_TIME = get_layer_cure_time()
 BUILD_PIXELS = (1280, 800)
-BUILD_AREA = (7.75,4.625,8.)#(9.0, 6.5, 8)
+BUILD_AREA = (8,6,5.5)#(9.0, 6.5, 8)
 BUILD_PPI = (BUILD_PIXELS[0]/BUILD_AREA[0], BUILD_PIXELS[1]/BUILD_AREA[1])
+BUILD_PEN = wx.Pen(wx.Colour(255,255,255))
 BUILD_BACKGROUND = wx.Brush(wx.Colour(0,0,0))
+BUILD_SUPPORT = wx.BrushFromBitmap(wx.Bitmap(PATH+'/appearance/brushes/AutoSupportMed.png'))
 BUILD_FILL = wx.BrushFromBitmap(wx.Bitmap(PATH+'/appearance/brushes/honey_comb_thick.png'))#wx.Brush(wx.Colour(255,255,255), wx.CROSSDIAG_HATCH)
 BUILD_FLAT_BRUSH = wx.Brush(wx.Colour(255,255,255))
 x_factor = lambda: unit_factors[get_units()]*SCALE_X
@@ -115,7 +136,12 @@ z_factor = lambda: unit_factors[get_units()]*SCALE_Z
 
 #UI------------------------------------------------------------------------
 def get_resolution():
-    return (cfg.ReadInt('projw'), cfg.ReadInt('projh'))
+    return (cfg.ReadInt('projw', defaultVal=1280), cfg.ReadInt('projh', defaultVal=800))
+def set_resolution(w=1280, h=800):
+    cfg.WriteInt('projw', w)
+    cfg.WriteInt('projh', h)
+if debug:
+    set_resolution()
 
 icon_view = False
 app_x, app_y = 0,0

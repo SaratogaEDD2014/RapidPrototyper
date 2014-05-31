@@ -31,7 +31,7 @@ class Splash(wx.Frame):
             font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, 'Trebuchet MS')
             draw_centered_text(self, text, text_area_factor, font, dc)
         elif self._view_mode == Splash.NAME:
-            text = "I'm " + self.name
+            text = "I'm " + str(self.name)
             text_area_factor = .7 #percent of horizontal area available for text
             font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Trebuchet MS')
             draw_centered_text(self, text, text_area_factor, font, dc)
