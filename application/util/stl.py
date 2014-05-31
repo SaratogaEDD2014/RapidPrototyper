@@ -88,9 +88,10 @@ class PartFile(object):
                 facets.append(Facet(triplets[i], triplets[i+1], triplets[i+2]))
             if dialog!=None: dialog.Update(78, 'Slicing '+str(len(facets))+' facets...')
             z1 = normalize(min([facet.min_z() for facet in facets]))
-            z2 = max([facet.max_z() for facet in facets])
+            z2 = normalize(max([facet.max_z() for facet in facets]))
             base_area = wx.Region()
             for z in normalize_list(arange(z2,z1-STEP,-1*STEP)):
+                z = round(z,3)
                 layer = layer_manager.get_layer(z)
                 for facet in facets:
                     level = []

@@ -33,6 +33,17 @@ class Layer(wx.MemoryDC):
         for seg in segments_list:
             add_segment(seg)
     def add_polygon(self, poly):
+        if len(poly)>0:
+            #Eliminate Duplicates
+            i = 1
+            p2 = poly[0]
+            while i<len(poly):
+                p1 = p2
+                p2 = poly[i]
+                if fequal(p1[0], p2[0]) and fequal(p1[1], p2[1]):
+                    poly.pop(i)
+                else:
+                    i+=1
         self.flat_polys.append(poly)
     def prepare(self):
         self.polygons = segments_to_polygons(self.segments)
@@ -48,17 +59,16 @@ class Layer(wx.MemoryDC):
         for flat in self.flat_polys:
             self.solid_region.UnionRegion(wx.RegionFromPoints(flat))
     def draw(self):
-        build_types = [(self.support_region, settings.BUILD_SUPPORT),
-                        (self.fill_region, settings.BUILD_FILL),
-                        (self.solid_region, settings.BUILD_FLAT_BRUSH),
-                        (self.empty_region, settings.BUILD_BACKGROUND)]
-        for area in build_types:
-            self.SetClippingRegionAsRegion(area[0])
-            self.SetBrush(area[1])
-            self.DrawRectangleRect(area[0].Box)
-            self.DestroyClippingRegion()
+        self.draw_region(self.support_region, settings.BUILD_SUPPORT)
+        self.draw_region(self.empty_region, settings.BUILD_BACKGROUND)
         self.SetPen(wx.Pen(wx.Colour(255,255,255), 3))
-        draw_concentrics(self, self.polygons)
+        draw_concentrics(self, self.polygons) #Drawn differently to include outline
+        self.draw_region(self.solid_region, settings.BUILD_FLAT_BRUSH)
+    def draw_region(self, reg, brush):
+        self.SetClippingRegionAsRegion(reg)
+        self.SetBrush(brush)
+        self.DrawRectangleRect(reg.Box)
+        self.DestroyClippingRegion()
     def save(self):
         self.draw()
         self.bmp.SaveFile(self.name, wx.BITMAP_TYPE_BMP)
