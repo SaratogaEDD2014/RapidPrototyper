@@ -8,7 +8,8 @@ from shape_parser import *
 class Layer(wx.MemoryDC):
     def __init__(self, z_level, directory, filename, pixel_w=100, pixel_h=100):
         super(Layer, self).__init__();
-        #ensure all 'zcodes' have zeroes out to eight places
+        #ensure all unique 'zcodes' have zeroes out to eight places
+        #'zcode' is to be used in filename, so won't save over eachother
         zcode = round(float(z_level), 8)
         zcode = str(zcode)
         while zcode.find('.')<6:
@@ -18,8 +19,13 @@ class Layer(wx.MemoryDC):
         self.name = directory + filename + zcode + '.bmp'
         self.bmp = wx.EmptyBitmap(pixel_w, pixel_h)
         self.SelectObject(self.bmp)
-        self.flat_polys = []
-        self.segments = []
+        self.flat_polys = [] #will hold solid polygons, i.e. those that will be completely filled in
+        self.segments = [] #Lest of segments created by facets that intersect with layer
+        self.polygons = [] #Polygons created by combining segments
+        self.solid_region = wx.Region() #Area of positive space (combination of all flat polys in one object)
+        self.fill_region = wx.Region()  #Area of positive space that exists between outline of polys, honeycomb
+        self.empty_region = wx.Region() #Where no material will be laid. Only inside part, outside of part support structure will be made
+        self.support_region = wx.Region() #Area where supports are needed for higher layers
     def add_segment(self, segment):
         if segment not in self.segments:
             self.segments.append(segment)
@@ -29,14 +35,32 @@ class Layer(wx.MemoryDC):
     def add_polygon(self, poly):
         self.flat_polys.append(poly)
     def prepare(self):
-        polygons = segments_to_polygons(self.segments)
-        self.SetPen(wx.Pen(wx.Colour(255,255,255), 3))
-        concentracize(polygons)
-        draw_concentrics(self, polygons)
-        self.SetBrush(settings.BUILD_FLAT_BRUSH)
+        self.polygons = segments_to_polygons(self.segments)
+        self.SetPen(settings.BUILD_PEN)
+        concentracize(self.polygons)
+        self.create_regions()
+    def create_regions(self):
+        for poly in self.polygons:
+            if poly.positive:
+                self.fill_region.UnionRegion(wx.RegionFromPoints(poly.vertices))
+            else:
+                self.empty_region.UnionRegion(wx.RegionFromPoints(poly.vertices))
         for flat in self.flat_polys:
-            self.DrawPolygon(flat)
+            self.solid_region.UnionRegion(wx.RegionFromPoints(flat))
+    def draw(self):
+        build_types = [(self.support_region, settings.BUILD_SUPPORT),
+                        (self.fill_region, settings.BUILD_FILL),
+                        (self.solid_region, settings.BUILD_FLAT_BRUSH),
+                        (self.empty_region, settings.BUILD_BACKGROUND)]
+        for area in build_types:
+            self.SetClippingRegionAsRegion(area[0])
+            self.SetBrush(area[1])
+            self.DrawRectangleRect(area[0].Box)
+            self.DestroyClippingRegion()
+        self.SetPen(wx.Pen(wx.Colour(255,255,255), 3))
+        draw_concentrics(self, self.polygons)
     def save(self):
+        self.draw()
         self.bmp.SaveFile(self.name, wx.BITMAP_TYPE_BMP)
     def clear(self):
         self.segments = []
