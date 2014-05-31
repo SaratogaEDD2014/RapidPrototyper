@@ -107,7 +107,7 @@ class STLViewer(wx.Panel):
                 self.destroy_model()
             self.model = PartFile(str(self.file), self.part_frame)
             self.model.generate_faces()
-            self.model.faces.smooth()
+            #self.model.faces.smooth()
             self.display.autocenter = True
     def on_print(self, event):
         dialog = wx.ProgressDialog("Processing "+self.title_name+":", "Process is 10% complete.", 100, self)

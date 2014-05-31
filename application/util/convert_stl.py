@@ -91,7 +91,7 @@ if __name__ == '__main__':
         scene.width = scene.height = 800
         scene.autocenter = True
         newobject = stl_to_faces(fd)
-        newobject.smooth() # average normals at a vertex
+        #newobject.smooth() # average normals at a vertex
 
         # Examples of modifying the returned object:
 ##        newobject.frame.pos = (-1,-1,-0.5)
