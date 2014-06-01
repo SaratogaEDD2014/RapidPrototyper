@@ -159,6 +159,12 @@ class LayerManager:
         i = self.layers.index(get_layer(z))
         self.layers[i] = layer
 
+    def get_bmps(self):
+        """Returns a list of bitmaps representing the layers."""
+        bmps = []
+        for layer in self.layers:
+            bmps.append(layer.bmp)
+        return bmps
 
 
 def main():

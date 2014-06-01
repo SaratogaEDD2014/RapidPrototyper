@@ -128,6 +128,7 @@ class PartFile(object):
                 layer.close()
             if dialog!=None: dialog.Update(88, 'Saving bitmaps...')
             if dialog!=None: dialog.Update(100, 'Slicing complete, ready to print.')
+            settings.build_bmps = layer_manager.get_bmps()
             return len(facets)
 
     def generate_faces(self):

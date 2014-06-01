@@ -12,7 +12,11 @@ class PrintJob(object):
         #self.step_control = PrinterInterface(settings.SERIAL_PORT, settings.LAYER_DEPTH)
 
     def print_project(self):
-        self.proj.bmps_from_dir(settings.PATH + 'generation_buffer/')
+        bmps = settings.build_bmps
+        if len(bmps)>0:
+            self.proj.slides.bmps = bmps
+        else:
+            self.proj.bmps_from_dir(settings.PATH + 'generation_buffer/')
         self.num_layers = len(self.proj.slides.bmps)
         self.percent_per_layer = 1./self.num_layers * 100.
         self.step_control.zero()

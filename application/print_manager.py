@@ -53,7 +53,11 @@ class PrintManager(wx.Panel):
         self.print_job = PrintJob(self)
 
     def print_file(self):
-        self.bmp_viewer.bmps_from_dir(settings.PATH+'generation_buffer/')
+        bmps = settings.build_bmps
+        if len(bmps) == 0:
+            self.bmp_viewer.bmps_from_dir(settings.PATH+'generation_buffer/')
+        else:
+            self.bmp_viewer.bmps = bmps
         self.bmp_viewer.index = -1
         self.print_job.print_project()
         #self.print_job.cleanup()

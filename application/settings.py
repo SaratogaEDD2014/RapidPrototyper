@@ -2,9 +2,9 @@ import wx
 
 cfg= wx.Config('config')
 def set_name(n):
-    cfg.Write('name', n)
+    cfg.WriteInt('name', n)
 def get_name():
-    return cfg.Read('name', defaultVal="Charlie")
+    return cfg.ReadInt('name', defaultVal=1)
 
 temp_app = wx.App()
 #Resources Information:
@@ -132,6 +132,7 @@ BUILD_FLAT_BRUSH = wx.Brush(wx.Colour(255,255,255))
 x_factor = lambda: unit_factors[get_units()]*SCALE_X
 y_factor = lambda: unit_factors[get_units()]*SCALE_Y
 z_factor = lambda: unit_factors[get_units()]*SCALE_Z
+build_bmps = [] #Will hold the list of build bitmaps, so we won't need to re-create them from directory
 
 
 #UI------------------------------------------------------------------------
