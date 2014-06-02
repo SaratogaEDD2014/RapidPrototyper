@@ -3,6 +3,7 @@ import sys
 import application.settings
 from application.bubble_menu import *
 from application.util.calc_dialog import *
+from application.util.qwerty_dialog import *
 from application.util.app_util import *
 
 class TouchSpin(wx.Window):
@@ -231,6 +232,45 @@ class LabeledEditor(wx.Window):
     def getRange(self):
         return self._range
     range=property(getRange, setRange)
+
+class LabeledTextEditor(LabeledEditor):
+    def __init__(self, parent, id=-1, value="None", pos=wx.DefaultPosition, size=wx.DefaultSize, name="NoName", text_color=settings.defaultBackground, background_color=None):
+        super(LabeledEditor, self).__init__(parent, id, pos, size)
+        if background_color == None:
+            self.SetBackgroundColour(self.GetParent().GetBackgroundColour())
+        else:
+            self.SetBackgroundColour(background_color)
+        self._value=value  #Will be set again with property to ensure data is updated
+        self._name=name
+        self._text_color = text_color
+
+        w,h = self.GetSize()
+        self.label = wx.Window(self, size=(w/2, h))
+        #increase contrast of gradient
+        inside_color = dim_color(settings.defaultAccent, -30)
+        outside_color = dim_color(settings.defaultAccent, 20)
+        self.button = DynamicButtonRect(self, "Edit", inside_color, settings.defaultAccent, outline = settings.defaultAccent)
+        self.button.SetSize((w/4, h))
+        self.data = DynamicDataDisplay(self, value, size=(w/4,h), background=text_color, foreground=self.GetBackgroundColour())
+        self.SetValue(value) #also updates self.data
+
+        self.Bind(wx.EVT_BUTTON, self.on_click)
+        self.Bind(wx.EVT_SIZE, self.on_size)
+        self.Bind(wx.EVT_PAINT, self.on_paint)
+
+    def SetValue(self, val):
+        self._value = val
+        self.data.SetValue(self._value)
+        self.post()
+
+    def GetValue(self):
+        return self._value
+    value=property(GetValue, SetValue)
+
+    def on_click(self, event):
+        source=event.GetEventObject()
+        if self.button is source:
+            self.value = text_value(self, 'Edit '+self.name+':', self.value)
 
 class DynamicComboBox(wx.Window):
     def __init__(self, parent, value, choices, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize, name="NoName", text_color=settings.defaultBackground):

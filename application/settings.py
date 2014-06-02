@@ -10,8 +10,8 @@ def get_user_name():
 
 temp_app = wx.App()
 #Resources Information:
-NAME = get_name()# will be 'Charlie' in future
-USER_NAME = 'Kristi!'
+NAME = get_name()
+USER_NAME = get_user_name()
 PATH = ''   #to be set in app.py
 IMAGE_PATH = ''#to Be set in app.py
 main_window=None
@@ -64,14 +64,14 @@ def set_view(view):
     pass
 
 #Recent and example files
-recentFiles=[PATH+"examples/teapot.stl",
-             PATH+"examples/magnolia.stl",
-             PATH+"examples/sphere.stl",
-             PATH+"examples/cube.stl",
-             PATH+"examples/bottle.stl"]
-def addRecentFile(filename):
+recentFiles=[[PATH+"examples/teapot.stl",None],
+             [PATH+"examples/magnolia.stl",None],
+             [PATH+"examples/sphere.stl",None],
+             [PATH+"examples/cube.stl",None],
+             [PATH+"examples/bottle.stl",None]]
+def addRecentFile(filename, bitmap=None):
     global recentFiles
-    recentFiles.insert(0,filename)
+    recentFiles.insert(0,[filename, bitmap])
     if len(recentFiles)>5:
         recentFiles=recentFiles[0:6]
 
@@ -325,10 +325,12 @@ def set_layer_cure_time(time):
     cfg.WriteInt('layerCureTime',time)
 
 def set_name(name):
-    cfg.WriteInt('name', name) #To be changed to String in future
+    cfg.Write('name', name)
 
 def set_layer_depth(depth):
     cfg.WriteFloat('layerDepth', depth)
 
+def set_user_name(name):
+    cfg.Write('user_name',name)
 
 temp_app.Destroy()

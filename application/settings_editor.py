@@ -6,6 +6,7 @@
 ##        Now:layer thickness
 ##        Later:Fill Style, speed vs. Strength
 
+
 ##|-----------col1---------|-----------col2---------|
 ##|                        |                        |
 ##| -Choose Color Scheme-  |        --Units--       |
@@ -43,14 +44,18 @@ class SettingsEditor(wx.Panel):
                                 [key for key in settings.schemes],
                                 name="Choose Scheme:", text_color=settings.defaultForeground)
         self.scheme_inverter = LabeledCheckbox(self, name="Inverted Colors", text_color=settings.defaultForeground, size=(self.GetSize()[0], 10))
-        self.print_name= LabeledEditor(self, -1, settings.NAME,
-                                  (0,1), .001, precision=1,name="Printer Name",
+        self.print_name = LabeledTextEditor(self, -1, settings.NAME,
+                                  name="Printer Name",
                                   text_color=settings.defaultForeground)
+
+        self.user_name = LabeledTextEditor(self, -1, settings.USER_NAME, name="User Name", text_color=settings.defaultForeground)
+
         col1.Add(colors_title, flag=wx.EXPAND)
         col1.Add(self.scheme_picker, flag=wx.EXPAND)
         col1.Add(self.scheme_inverter, flag=wx.EXPAND)
         col1.Add(self.print_name, flag=wx.EXPAND)
-        col1.AddMany([wx.Panel(self) for i in range(2)])
+        col1.Add(self.user_name, flag=wx.EXPAND)
+        col1.AddMany([wx.Panel(self) for i in range(1)])
         col1.Add(wx.StaticText(self, -1,"***Appearance changes will take effect the next time the application launches."), flag=wx.EXPAND)
 
         #Column 2: the technical operation settings
@@ -96,6 +101,7 @@ class SettingsEditor(wx.Panel):
         self.Bind(wx.EVT_COMBOBOX, self.edit_layer_depth, self.layer_depth)
         self.Bind(wx.EVT_COMBOBOX, self.edit_layer_cure_time, self.layer_cure_time)
         self.Bind(wx.EVT_COMBOBOX, self.edit_name, self.print_name)
+        self.Bind(wx.EVT_COMBOBOX, self.edit_user_name, self.user_name)
 
         #self.Bind(wx.EVT_COMBOBOX, self.edit)
 
@@ -114,7 +120,9 @@ class SettingsEditor(wx.Panel):
     def edit_name(self, event):
         event.Skip()
         settings.set_name(self.print_name.GetValue())
-
+    def edit_user_name(self, event):
+        event.Skip()
+        settings.set_user_name(self.user_name.GetValue())
 def main():
     app = wx.App()
     frm = wx.Frame(None, size=(settings.app_w, settings.app_h))
