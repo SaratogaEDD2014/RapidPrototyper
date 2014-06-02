@@ -4,7 +4,9 @@ cfg= wx.Config('config')
 def set_name(n):
     cfg.WriteInt('name', n)
 def get_name():
-    return cfg.ReadInt('name', defaultVal=1)
+    return cfg.Read('name', defaultVal="Charlie")
+def get_user_name():
+    return cfg.Read('user_name', defaultVal='Cotts')
 
 temp_app = wx.App()
 #Resources Information:
