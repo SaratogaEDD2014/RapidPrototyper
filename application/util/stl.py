@@ -7,7 +7,7 @@ import application.settings as settings
 import os
 import wx
 
-STEP = settings.LAYER_DEPTH
+STEP = settings.get_layer_depth()
 BITMAP_DIR = settings.PATH + 'generation_buffer/'
 wPPI, hPPI = settings.BUILD_PPI
 
@@ -68,7 +68,7 @@ class PartFile(object):
                     print e
             basic_name = self.filename[max(self.filename.rfind('/'), self.filename.rfind('\\')):]
             name = basic_name.replace('.stl', '')
-            layer_manager = LayerManager(settings.LAYER_DEPTH, BITMAP_DIR, name, settings.BUILD_PIXELS[0], settings.BUILD_PIXELS[1])
+            layer_manager = LayerManager(settings.get_layer_depth(), BITMAP_DIR, name, settings.BUILD_PIXELS[0], settings.BUILD_PIXELS[1])
             if dialog!=None: dialog.Update(27, 'Generating Facets...')
 
             #Use faces object to create Facets
@@ -80,8 +80,8 @@ class PartFile(object):
                 triplets[i] = self.frame.frame_to_world(triplets[i])
                 triplets[i+1] = self.frame.frame_to_world(triplets[i+1])
                 triplets[i+2] = self.frame.frame_to_world(triplets[i+2])
-                if fequal(triplets[i][2], triplets[i+1][2], settings.LAYER_DEPTH/2.) and fequal(triplets[i+1][2], triplets[i+2][2], settings.LAYER_DEPTH/2.):
-                    norm = normalize(triplets[i][2], settings.LAYER_DEPTH)
+                if fequal(triplets[i][2], triplets[i+1][2], STEP/2.) and fequal(triplets[i+1][2], triplets[i+2][2], STEP/2.):
+                    norm = normalize(triplets[i][2], STEP)
                     triplets[i][2] = norm
                     triplets[i+1][2] = norm
                     triplets[i+2][2] = norm

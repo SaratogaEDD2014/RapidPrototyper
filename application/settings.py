@@ -1,17 +1,18 @@
 import wx
 
 cfg= wx.Config('config')
-def set_name(n):
-    cfg.WriteInt('name', n)
+temp_app = wx.App()
+
+
+#Resources Information:
 def get_name():
     return cfg.Read('name', defaultVal="Charlie")
 def get_user_name():
     return cfg.Read('user_name', defaultVal='Cotts')
-
-temp_app = wx.App()
-#Resources Information:
-NAME = get_name()
-USER_NAME = get_user_name()
+def set_name(name):
+    cfg.Write('name', name)
+def set_user_name(name):
+    cfg.Write('user_name',name)
 PATH = ''   #to be set in app.py
 IMAGE_PATH = ''#to Be set in app.py
 main_window=None
@@ -89,14 +90,15 @@ def set_units(unit_type):
         cfg.Write("units", 'in')
 def get_units():
     return cfg.Read('units', defaultVal='in')
-units = property(get_units, set_units, doc="The type of units the files the user is entering are using.")
-
 
 def get_layer_depth():
     return cfg.ReadFloat('layerDepth', defaultVal=.012)
-
 def get_layer_cure_time():
     return cfg.ReadInt('layerCureTime', defaultVal=2)
+def set_layer_cure_time(time):
+    cfg.WriteInt('layerCureTime',time)
+def set_layer_depth(depth):
+    cfg.WriteFloat('layerDepth', depth)
 
 base_depth = .125 #Height of pad that rests below part
 ##_off_x = 0.0
@@ -143,6 +145,9 @@ def get_resolution():
 def set_resolution(w=1280, h=800):
     cfg.WriteInt('projw', w)
     cfg.WriteInt('projh', h)
+    global projw, projh
+    projw, projh = w,h
+
 if debug:
     set_resolution()
 
@@ -320,17 +325,5 @@ def get_property_color(key, defaults=[0,0,0]):
     green=cfg.ReadInt(key+'G', defaults[1])
     blue=cfg.ReadInt(key+'B', defaults[2])
     return wx.Colour(red, green, blue)
-
-def set_layer_cure_time(time):
-    cfg.WriteInt('layerCureTime',time)
-
-def set_name(name):
-    cfg.Write('name', name)
-
-def set_layer_depth(depth):
-    cfg.WriteFloat('layerDepth', depth)
-
-def set_user_name(name):
-    cfg.Write('user_name',name)
 
 temp_app.Destroy()

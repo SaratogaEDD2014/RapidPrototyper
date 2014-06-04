@@ -86,7 +86,7 @@ def test():
     p.clear()
     for i in range(len(p.slides.bmps)):
         p.show_next()
-        time.sleep(settings.LAYER_CURE_TIME)
+        time.sleep(settings.get_layer_cure_time())
     p.clear()
     p.Destroy()
     app.MainLoop()

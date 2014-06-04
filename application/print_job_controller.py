@@ -9,7 +9,7 @@ class PrintJob(object):
         self.proj.Show()
         self.controls = control_panel
         self.step_control = DebugArdu()
-        #self.step_control = PrinterInterface(settings.SERIAL_PORT, settings.LAYER_DEPTH)
+        #self.step_control = PrinterInterface(settings.SERIAL_PORT, settings.get_layer_depth())
 
     def print_project(self):
         bmps = settings.build_bmps
@@ -33,9 +33,9 @@ class PrintJob(object):
             current_prog = self.percent_per_layer*(index+1)
             self.controls.progress(current_prog)#, temp, resin_level)
             if index+1 < self.num_layers:
-                wx.FutureCall(settings.LAYER_CURE_TIME*1000, self._print_layer, (index+1))
+                wx.FutureCall(settings.get_layer_cure_time()*1000, self._print_layer, (index+1))
             else:
-                wx.FutureCall(settings.LAYER_CURE_TIME*1000, self.cleanup)
+                wx.FutureCall(settings.get_layer_cure_time()*1000, self.cleanup)
 
     def cleanup(self):
         self.proj.close()

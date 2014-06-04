@@ -108,7 +108,7 @@ def test2(process_function, test_designation):
         wks.update_cell(data_row, 1, base_names[i])
         total_thickness = (thickness[i] + hub_thickness[i])
         wks.update_cell(data_row, 2, total_thickness)
-        num_layers = round(total_thickness/settings.LAYER_DEPTH)
+        num_layers = round(total_thickness/settings.get_layer_depth())
         wks.update_cell(data_row, 3, num_layers)
         wks.update_cell(data_row, 4, process_time)
         data_row += 1

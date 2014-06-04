@@ -44,11 +44,11 @@ class SettingsEditor(wx.Panel):
                                 [key for key in settings.schemes],
                                 name="Choose Scheme:", text_color=settings.defaultForeground)
         self.scheme_inverter = LabeledCheckbox(self, name="Inverted Colors", text_color=settings.defaultForeground, size=(self.GetSize()[0], 10))
-        self.print_name = LabeledTextEditor(self, -1, settings.NAME,
+        self.print_name = LabeledTextEditor(self, -1, settings.get_name(),
                                   name="Printer Name",
                                   text_color=settings.defaultForeground)
 
-        self.user_name = LabeledTextEditor(self, -1, settings.USER_NAME, name="User Name", text_color=settings.defaultForeground)
+        self.user_name = LabeledTextEditor(self, -1, settings.get_user_name(), name="User Name", text_color=settings.defaultForeground)
 
         col1.Add(colors_title, flag=wx.EXPAND)
         col1.Add(self.scheme_picker, flag=wx.EXPAND)
@@ -63,7 +63,7 @@ class SettingsEditor(wx.Panel):
         self.unit_selector = DynamicComboBox(self, settings.get_units(),
                                 [key for key in settings.unit_factors], name="Units:",
                                 text_color=settings.defaultForeground)
-        self.layer_depth = LabeledEditor(self, -1, settings.LAYER_DEPTH,
+        self.layer_depth = LabeledEditor(self, -1, settings.get_layer_depth(),
                                   (0,1), .001, precision=3,name="Layer Thickness",
                                   text_color=settings.defaultForeground)
         self.y_resolution = LabeledEditor(self, -1, settings.projh,
@@ -72,7 +72,7 @@ class SettingsEditor(wx.Panel):
         self.x_resolution = LabeledEditor(self, -1, settings.projw,
                                   (0,1), .001, precision=1,name="X Resolution",
                                   text_color=settings.defaultForeground)
-        self.layer_cure_time = LabeledEditor(self, -1, settings.LAYER_CURE_TIME,
+        self.layer_cure_time = LabeledEditor(self, -1, settings.get_layer_cure_time(),
                                   (0,1), .001, precision=1,name="Layer Cure Time",
                                   text_color=settings.defaultForeground)
 

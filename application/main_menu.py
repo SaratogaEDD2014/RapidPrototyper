@@ -14,7 +14,7 @@ import wx
 
 class MainMenu(DynamicBubbleMenu):
     def __init__(self, parent):
-        super(MainMenu, self).__init__(parent, "Hi, "+settings.USER_NAME)
+        super(MainMenu, self).__init__(parent, "Hi, "+settings.get_user_name())
         self.imagePath=settings.IMAGE_PATH+"Main/"
         self.parent=parent
 

@@ -389,7 +389,6 @@ class LabeledCheckbox(wx.Window):
         event.Skip()
         dc = wx.PaintDC(self.label)
         draw_text_left(self.label, self.name, .65, dc=dc, color=self._text_color)
-        print 'draw'
     def on_click(self, event):
         self.post()
     def post(self):

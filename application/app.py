@@ -22,7 +22,7 @@ class ProtoFrame(window):
         window.__init__(self, width=settings.app_w, height=settings.app_h, x=settings.app_x, y=settings.app_y, title=title)
         settings.icon_view = False #temporary until config file is done
         self.win.Show(False)
-        splash = application.splash_screen.Splash(settings.NAME)
+        splash = application.splash_screen.Splash(settings.get_name())
         splash.say_hi()
         self.win.SetPosition((settings.app_x, settings.app_y))
         self.win.SetSize((settings.app_w, settings.app_h))
