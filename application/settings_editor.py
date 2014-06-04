@@ -38,6 +38,7 @@ class SettingsEditor(wx.Panel):
         col1 = wx.GridSizer(0,1, vgap=self.GetSize()[0]/16)
         col2 = wx.GridSizer(0,1, vgap=self.GetSize()[0]/16)
 
+        #Add Base Depth and Support Depth
         #Column 1: the visual appearance stuff
         colors_title = TitleBreak(self, label="Edit Appearance:")
         self.scheme_picker = DynamicComboBox(self, settings.get_scheme(),

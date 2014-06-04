@@ -7,51 +7,52 @@ class OpenRecent(wx.Panel):
         wx.Panel.__init__(self, parent, id, position, size)
         self.Show(False)
         self.SetBackgroundColour(settings.secondBackground)
-        master_sizer= wx.GridSizer(2,1)
-        top_sizer=wx.GridSizer(1,0)
-        bottom_sizer=wx.GridSizer(1,0)
-        i=0
-        self.top_butt_list=[]
-        self.bottom_butt_list=[]
+        self.master_sizer= wx.GridSizer(2,1)
+        self.top_sizer=wx.GridSizer(1,0)
+        self.bottom_sizer=wx.GridSizer(1,0)
         w,h = self.GetSize()
 
-        ###make a event with sizing next time
-        j=0
+        i=0
         for file_info in settings.recentFiles:
 
             recent = file_info[0]
             icon= file_info[1]
             recent=recent[recent.index('/')+1:]
             recent=recent[recent.index('/')+1:]
-            if len(settings.recentFiles)==2:
-                button=GenBitmapTextButton(self, 1, wx.Bitmap(settings.IMAGE_PATH+'stl_icon_1.png'), recent)
-                button.SetBestSize( (w/1+.1,  h/2.2))
+            button=GenBitmapTextButton(self, 1, wx.Bitmap(settings.IMAGE_PATH+'stl_icon_1.png'), recent)
+            length=len(settings.recentFiles)
+            length=length+.00
+            if length==1:
+                button.SetBestSize((w/1.02, h/1.11))
                 button.SetBezelWidth(w/70)
-                top_butt_list.append(button)
-                if (i==1):
-                    button=GenBitmapTextButton(self, 1, wx.Bitmap(settings.IMAGE_PATH+'stl_icon_1.png'), recent)
-                    button.SetBestSize( (w/1+.1,  h/2.2))
-                    button.SetBezelWidth(w/70)
-                    bottom_butt_list.append(button)
-            if(i<2):
-                button=GenBitmapTextButton(self, 1, wx.Bitmap(settings.IMAGE_PATH+'stl_icon_1.png'), recent)
-                button.SetBestSize( (w/min(2, len(settings.recentFiles))+.1,  h/2.2))
+                self.master_sizer.Add(button)
+
+            elif length%2==0:
+                button.SetBestSize((w/(min(length/2, 2)+.01),  h/2.2))
                 button.SetBezelWidth(w/70)
-                j+=1
-                #top_sizer.Add(button, wx.EXPAND)
-                self.top_butt_list.append(button)
+
+                if i<length/2:
+                        self.top_sizer.Add(button, wx.EXPAND)
+                else:
+                    self.bottom_sizer.Add(button, wx.EXPAND)
             else:
-                button=GenBitmapTextButton(self, 1, wx.Bitmap(settings.IMAGE_PATH+'stl_icon_1.png'), recent)
-                button.SetBestSize((w/max(1, len(settings.recentFiles)-j),  h/2.2 ))
                 button.SetBezelWidth(w/70)
-                #bottom_sizer.Add(button, wx.EXPAND)
-                self.bottom_butt_list.append(button)
+
+                if i<(length/2.0+.5):
+                    button.SetBestSize((w/(min(length/2.0 +.5, 3)+.01),  h/2.2))
+                    self.top_sizer.Add(button)
+                else:
+                    button.SetBestSize((w/(min(length/2.0 -.5, 3)+.01),  h/2.2))
+                    self.bottom_sizer.Add(button)
             i+=1
-        top_sizer.AddMany(self.top_butt_list)
-        bottom_sizer.AddMany(self.bottom_butt_list)
-        master_sizer.Add(top_sizer, 1, wx.EXPAND)
-        master_sizer.Add(bottom_sizer, 1, wx.EXPAND)
-        self.SetSizer(master_sizer)
+
+        if length>1:
+            self.master_sizer.Add(self.top_sizer, 1, wx.EXPAND)
+            self.master_sizer.Add(self.bottom_sizer, 1, wx.EXPAND)
+        self.SetSizer(self.master_sizer)
+
+
+
 
 if __name__ == '__main__':
     app = wx.App()
