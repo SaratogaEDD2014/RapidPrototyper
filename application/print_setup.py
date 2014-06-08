@@ -26,12 +26,11 @@ class STLViewer(wx.Panel):
 
         self.Bind(wx.EVT_BUTTON, self.on_print, self.controls.pbutt)
         self.Bind(wx.EVT_BUTTON, self.on_cancel, self.controls.cbutt)
+        self.Bind(wx.EVT_BUTTON, self.on_add_part, self.controls.add_part_butt)
 
         self.Bind(wx.EVT_BUTTON, self.scale, self.controls.scale_butt)
         self.Bind(wx.EVT_BUTTON, self.rotate, self.controls.rot_butt)
-        self.Bind(wx.EVT_COMBOBOX, self.offset, self.controls.off_x)
-        self.Bind(wx.EVT_COMBOBOX, self.offset, self.controls.off_y)
-        self.Bind(wx.EVT_COMBOBOX, self.offset, self.controls.off_z)
+        self.Bind(wx.EVT_BUTTON, self.offset, self.controls.off_butt)
 
         self.viewer = None
         self.SendSizeEvent()
@@ -54,9 +53,10 @@ class STLViewer(wx.Panel):
         self.update_model()
 
     def offset(self, event):
-        settings.OFFSET_X = self.controls.off_x.GetValue()
-        settings.OFFSET_Y = self.controls.off_y.GetValue()
-        settings.OFFSET_Z = self.controls.off_z.GetValue()
+        offset = edit_offset()
+        settings.OFFSET_X = offset[0]
+        settings.OFFSET_Y = offset[1]
+        settings.OFFSET_Z = offset[2]
         if self.part_frame != None:
             self.part_frame.pos = (settings.OFFSET_X, settings.OFFSET_Y, settings.OFFSET_Z)
 
