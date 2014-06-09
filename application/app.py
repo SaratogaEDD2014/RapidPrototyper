@@ -37,6 +37,7 @@ class ProtoFrame(window):
         settings.set_view = self.set_view
         settings.main_window = self.win
         settings.main_v_window = self
+        settings.setup_visual()
         settings.set_view(self.menu)
         splash.wait(1)
         splash.say_name()
@@ -45,6 +46,7 @@ class ProtoFrame(window):
         if settings.icon_view==False:
             pass#self.win.Maximize()
         splash.say_bye()
+        settings.show_visual()
 
     def on_paint(self, event):
         event.Skip(True)

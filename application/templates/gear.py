@@ -16,7 +16,7 @@ import application.util.editors as editors
 import application.util.app_util as app_util
 from numpy import *
 from application.util.convert_stl import *
-from application.part_viewer import *
+from application.print_setup import *
 from application.bubble_menu import DynamicButtonRect
 
 shapes=['trapezoid','triangle', 'rectangle','sprocket']

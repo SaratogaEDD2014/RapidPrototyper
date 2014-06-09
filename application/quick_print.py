@@ -1,6 +1,6 @@
 import wx
 import application.settings as settings
-from part_viewer import *
+from print_setup import *
 
 class QuickPrint(wx.Panel):
     def __init__(self, parent, stl_file="", id=-1, pos=(0,40), size=wx.Size(800,440)):

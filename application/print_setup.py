@@ -63,29 +63,6 @@ class STLViewer(wx.Panel):
     def Show(self, visible):
         super(STLViewer, self).Show(visible)
         if visible:
-            if settings.display_part:
-                if self.viewer == None:
-                    w = settings.main_v_window
-                    background = color_to_ones(settings.defaultBackground)
-                    foreground = color_to_ones(settings.defaultForeground)
-                    self.display = display(window=w, x=0, y=settings.toolbar_h, width=(settings.app_w*2)/3, height=settings.app_h, up=(0,0,1), forward=vector(-1,-1,-1), background=background, foreground=foreground)
-                    self.base_frame = frame()
-                    self.part_frame = frame()
-                    build_l, build_w, build_h = settings.BUILD_AREA
-                    build_z = .02
-                    self.x_axis = arrow(pos=(0,0,0), axis=(int(build_l*1.2),0,0), shaftwidth=.02, headwidth=.08,color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
-                    self.x_label = label(text='X', xoffset=1, yoffset= 1, space=0.2, pos=(int(build_l*1.2),0,0), box=False, frame=self.base_frame)
-                    self.y_axis = arrow(pos=(0,0,0), axis=(0,int(build_w*1.2),0), shaftwidth=.02, headwidth=.08, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
-                    self.y_label = label(text='y', xoffset=1, yoffset= 0, space=0.2, pos=(0,int(build_w*1.2),0), box=False, frame=self.base_frame)
-                    self.z_axis = arrow(pos=(0,0,0), axis=(0,0,int(build_h*1.2)), shaftwidth=.02, headwidth=.08, color=color_to_ones(settings.defaultAccent), opacity=.5, frame=self.base_frame,fixedwidth = True)
-                    self.z_label = label(text='Z', xoffset=1, yoffset= 1, space=0.2, pos=(0,0,int(build_h*1.2)), box=False, frame=self.base_frame)
-                    self.platform = box(pos=(build_l/2, build_w/2, -build_z/2),
-                        length=build_l, width=build_z, height=build_w, opacity=0.2,
-                        color=color_to_ones(settings.secondBackground), frame=self.base_frame)
-                    w.panel.SetSize(((settings.app_w*2)/3,settings.app_h))
-                    w.win.SendSizeEvent()
-                settings.display_part = False
-                #self.display.autocenter =True
                 if self.file != "":
                     self.update_model()
                     self.title = label(text=self.title_name, xoffset=0, z=build_h*.75, line=0, pos=(0,0), opacity=0.5)

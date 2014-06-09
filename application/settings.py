@@ -1,4 +1,5 @@
 import wx
+from nested_visual import *
 
 cfg= wx.Config('config')
 temp_app = wx.App()
@@ -15,8 +16,11 @@ def set_user_name(name):
     cfg.Write('user_name',name)
 PATH = ''   #to be set in app.py
 IMAGE_PATH = ''#to Be set in app.py
-main_window=None
-display_part=True
+main_window = None
+main_v_window = None
+visual_ready = False
+visual_showing = False
+display = None
 debug = True
 if debug:
     import os
@@ -26,7 +30,6 @@ if debug:
     PATH = PATH[:PATH.rfind("application")+12]
     IMAGE_PATH = PATH + 'appearance/'
     USER_PATH = PATH +'examples/'
-
 
 #Runtime information
 prev_page=[]
@@ -138,6 +141,42 @@ y_factor = lambda: unit_factors[get_units()]*SCALE_Y
 z_factor = lambda: unit_factors[get_units()]*SCALE_Z
 build_bmps = [] #Will hold the list of build bitmaps, so we won't need to re-create them from directory
 
+def setup_visual():
+    global visual_ready, display
+    if visual_ready:
+        background = color_to_ones(defaultBackground)
+        foreground = color_to_ones(defaultForeground)
+        display = display(window=main_window, x=0, y=toolbar_h, width=(app_w*2)/3, height=app_h, up=(0,0,1), forward=vector(-1,-1,-1), background=background, foreground=foreground)
+        display.base_frame = frame() #May be useful for future positioning
+        display.parts = [] #Will hold a list of parts
+        build_l, build_w, build_h = BUILD_AREA
+        build_z = .02
+        display.x_axis = arrow(pos=(0,0,0), axis=(int(build_l*1.2),0,0), shaftwidth=.02, headwidth=.08,color=color_to_ones(defaultAccent), opacity=.5, frame=display.base_frame,fixedwidth = True)
+        display.x_label = label(text='X', xoffset=1, yoffset= 1, space=0.2, pos=(int(build_l*1.2),0,0), box=False, frame=display.base_frame)
+        display.y_axis = arrow(pos=(0,0,0), axis=(0,int(build_w*1.2),0), shaftwidth=.02, headwidth=.08, color=color_to_ones(defaultAccent), opacity=.5, frame=display.base_frame,fixedwidth = True)
+        display.y_label = label(text='y', xoffset=1, yoffset= 0, space=0.2, pos=(0,int(build_w*1.2),0), box=False, frame=display.base_frame)
+        display.z_axis = arrow(pos=(0,0,0), axis=(0,0,int(build_h*1.2)), shaftwidth=.02, headwidth=.08, color=color_to_ones(defaultAccent), opacity=.5, frame=display.base_frame,fixedwidth = True)
+        display.z_label = label(text='Z', xoffset=1, yoffset= 1, space=0.2, pos=(0,0,int(build_h*1.2)), box=False, frame=display.base_frame)
+        display.platform = box(pos=(build_l/2, build_w/2, -build_z/2),
+                                length=build_l, width=build_z, height=build_w, opacity=0.2,
+                                color=color_to_ones(secondBackground), frame=base_frame)
+        visual_ready = True
+def show_visual():
+    global show_visual
+    if not visual_ready:
+        setup_visual()
+    main_v_window.panel.SetSize(((app_w*2)/3,app_h))
+    main_v_window.panel.Show()
+    main_v_window.win.SendSizeEvent()
+    show_visual = True
+    while show_visual:
+        rate(100)
+def hide_visual():
+    show_visual = False
+    if visual_ready:
+        #otherwise you don't need to do anything
+        main_v_window.panel.SetSize((1,1))
+        main_v_window.win.SendSizeEvent()
 
 #UI------------------------------------------------------------------------
 def get_resolution():
@@ -326,4 +365,5 @@ def get_property_color(key, defaults=[0,0,0]):
     blue=cfg.ReadInt(key+'B', defaults[2])
     return wx.Colour(red, green, blue)
 
+show_visual()
 temp_app.Destroy()
