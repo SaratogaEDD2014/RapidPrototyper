@@ -63,13 +63,12 @@ class STLViewer(wx.Panel):
     def Show(self, visible):
         super(STLViewer, self).Show(visible)
         if visible:
-                if self.file != "":
-                    self.update_model()
-                    self.title = label(text=self.title_name, xoffset=0, z=build_h*.75, line=0, pos=(0,0), opacity=0.5)
-                    while not settings.display_part:
-                        rate(100)
-
+            settings.show_visual()
+            if self.file != "":
+                self.title = label(text=self.title_name, xoffset=0, z=build_h*.75, line=0, pos=(0,0), opacity=0.5)
+                self.update_model()
         else:
+            settings.hide_visual
             settings.display_part=True
     def destroy_model(self):
         if self.model != None:
@@ -78,14 +77,18 @@ class STLViewer(wx.Panel):
             del self.model
             self.model = None
 
+    def on_add_part(self, event):
+        try:
+            self.file = select_stl()
+            self.update_model()
+        except IOError:
+            dlg = wx.MessageDialog(self, 'Error: Not a valid filename.', 'Error Opening File', wx.OK|wx.ICON_INFORMATION)
+            dlg.ShowModal()
+            dlg.Destroy()
+
     def update_model(self):
-        if self.display != None:
-            if self.model != None:
-                self.destroy_model()
-            self.model = PartFile(str(self.file), self.part_frame)
-            self.model.generate_faces()
-            #self.model.faces.smooth()
-            self.display.autocenter = True
+        settings.show_visual()
+        settings.environment.add_part_to_display(str(self.file))
     def on_print(self, event):
         dialog = wx.ProgressDialog("Processing "+self.title_name+":", "Process is 10% complete.", 100, self)
         self.model.process_from_faces(dialog)
@@ -100,3 +103,14 @@ class STLViewer(wx.Panel):
         self.destroy_model()
         settings.main_v_window.panel.SetSize((1,1))  #Makes display invisible, invoking the private _destroy removes whole window, not just display
         settings.goto_prev_page()
+
+
+def select_stl():
+    dlg = wx.FileDialog(None, message="Choose a file", defaultDir=settings.USER_PATH,
+            wildcard='*.stl',style=wx.OPEN | wx.CHANGE_DIR)
+    if dlg.ShowModal() == wx.ID_OK:
+        name = dlg.GetPath()
+        return name
+    else:
+        return None
+    dlg.Destroy()

@@ -14,6 +14,7 @@ import wx
 import application.splash_screen
 import main_menu
 import proto_toolbar
+import application.util.visual_environment as ve
 from nested_visual import *
 
 class ProtoFrame(window):
@@ -37,7 +38,11 @@ class ProtoFrame(window):
         settings.set_view = self.set_view
         settings.main_window = self.win
         settings.main_v_window = self
-        settings.setup_visual()
+        self.panel.SetSize((1,1)) #hides display environment while being created
+        settings.environment = ve.PartEnvironment(settings.main_window, build_area=settings.BUILD_AREA,
+                                    fore=settings.defaultForeground, back=settings.defaultBackground,
+                                    h=settings.app_h-settings.toolbar_h, w=settings.app_w*2/3, accent=settings.defaultAccent)
+        settings.environment.setup()
         settings.set_view(self.menu)
         splash.wait(1)
         splash.say_name()
@@ -46,7 +51,6 @@ class ProtoFrame(window):
         if settings.icon_view==False:
             pass#self.win.Maximize()
         splash.say_bye()
-        settings.show_visual()
 
     def on_paint(self, event):
         event.Skip(True)

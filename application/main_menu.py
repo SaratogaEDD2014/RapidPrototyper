@@ -4,7 +4,7 @@
 # Created:     16/10/2013
 #-------------------------------------------------------------------------------
 from bubble_menu import *
-import quick_print
+import print_setup
 import template_chooser
 import open_recent
 import advanced_setup
@@ -18,10 +18,10 @@ class MainMenu(DynamicBubbleMenu):
         self.imagePath=settings.IMAGE_PATH+"Main/"
         self.parent=parent
 
-        self.quickPrintView=quick_print.QuickPrint(self.parent)
-        self.advanced_setup_view=advanced_setup.AdvancedSetup(self.parent)
-        self.templatesView=template_chooser.TemplateChooser(self.parent)
-        self.openRecentView=open_recent.OpenRecent(self.parent)
+        self.quickPrintView = print_setup.STLViewer(self.parent)
+        self.advanced_setup_view = advanced_setup.AdvancedSetup(self.parent)
+        self.templatesView = template_chooser.TemplateChooser(self.parent)
+        self.openRecentView = open_recent.OpenRecent(self.parent)
         self.settings_view = settings_editor.SettingsEditor(self.parent)
         self.wireless_view = None
 

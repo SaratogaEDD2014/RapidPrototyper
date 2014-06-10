@@ -1,5 +1,5 @@
 import wx
-from nested_visual import *
+#import application.util.visual_environment as ve
 
 cfg= wx.Config('config')
 temp_app = wx.App()
@@ -20,7 +20,8 @@ main_window = None
 main_v_window = None
 visual_ready = False
 visual_showing = False
-display = None
+disp = None
+environment = object() #Holds a axes, base area, labels, etc for part viewer
 debug = True
 if debug:
     import os
@@ -141,43 +142,47 @@ y_factor = lambda: unit_factors[get_units()]*SCALE_Y
 z_factor = lambda: unit_factors[get_units()]*SCALE_Z
 build_bmps = [] #Will hold the list of build bitmaps, so we won't need to re-create them from directory
 
-def setup_visual():
-    global visual_ready, display
-    if visual_ready:
-        background = color_to_ones(defaultBackground)
-        foreground = color_to_ones(defaultForeground)
-        display = display(window=main_window, x=0, y=toolbar_h, width=(app_w*2)/3, height=app_h, up=(0,0,1), forward=vector(-1,-1,-1), background=background, foreground=foreground)
-        display.base_frame = frame() #May be useful for future positioning
-        display.parts = [] #Will hold a list of parts
-        build_l, build_w, build_h = BUILD_AREA
-        build_z = .02
-        display.x_axis = arrow(pos=(0,0,0), axis=(int(build_l*1.2),0,0), shaftwidth=.02, headwidth=.08,color=color_to_ones(defaultAccent), opacity=.5, frame=display.base_frame,fixedwidth = True)
-        display.x_label = label(text='X', xoffset=1, yoffset= 1, space=0.2, pos=(int(build_l*1.2),0,0), box=False, frame=display.base_frame)
-        display.y_axis = arrow(pos=(0,0,0), axis=(0,int(build_w*1.2),0), shaftwidth=.02, headwidth=.08, color=color_to_ones(defaultAccent), opacity=.5, frame=display.base_frame,fixedwidth = True)
-        display.y_label = label(text='y', xoffset=1, yoffset= 0, space=0.2, pos=(0,int(build_w*1.2),0), box=False, frame=display.base_frame)
-        display.z_axis = arrow(pos=(0,0,0), axis=(0,0,int(build_h*1.2)), shaftwidth=.02, headwidth=.08, color=color_to_ones(defaultAccent), opacity=.5, frame=display.base_frame,fixedwidth = True)
-        display.z_label = label(text='Z', xoffset=1, yoffset= 1, space=0.2, pos=(0,0,int(build_h*1.2)), box=False, frame=display.base_frame)
-        display.platform = box(pos=(build_l/2, build_w/2, -build_z/2),
-                                length=build_l, width=build_z, height=build_w, opacity=0.2,
-                                color=color_to_ones(secondBackground), frame=base_frame)
-        visual_ready = True
+##def setup_visual():
+##    global environment
+##    #environment = ve.PartEnvironment(main_window, BUILD_AREA, defaultForeground, defaultBackground, h=app_h, w=app_w, accent=defaultAccent)
+##    #environment.setup()
+####    global visual_ready, disp, environment
+####    if visual_ready:
+####        background = color_to_ones(defaultBackground)
+####        foreground = color_to_ones(defaultForeground)
+####        disp = display(window=main_window, x=0, y=toolbar_h, width=(app_w*2)/3, height=app_h, up=(0,0,1), forward=vector(-1,-1,-1), background=background, foreground=foreground)
+####        disp.select()
+####        environment.base_frame = frame() #May be useful for future positioning
+####        environment.parts = [] #Will hold a list of parts
+####        build_l, build_w, build_h = BUILD_AREA
+####        build_z = .02
+####        environment.x_axis = arrow(pos=(0,0,0), axis=(int(build_l*1.2),0,0), shaftwidth=.02, headwidth=.08,color=color_to_ones(defaultAccent), opacity=.5, frame=environment.base_frame,fixedwidth = True)
+####        environment.x_label = label(text='X', xoffset=1, yoffset= 1, space=0.2, pos=(int(build_l*1.2),0,0), box=False, frame=environment.base_frame)
+####        environment.y_axis = arrow(pos=(0,0,0), axis=(0,int(build_w*1.2),0), shaftwidth=.02, headwidth=.08, color=color_to_ones(defaultAccent), opacity=.5, frame=environment.base_frame,fixedwidth = True)
+####        environment.y_label = label(text='y', xoffset=1, yoffset= 0, space=0.2, pos=(0,int(build_w*1.2),0), box=False, frame=environment.base_frame)
+####        environment.z_axis = arrow(pos=(0,0,0), axis=(0,0,int(build_h*1.2)), shaftwidth=.02, headwidth=.08, color=color_to_ones(defaultAccent), opacity=.5, frame=environment.base_frame,fixedwidth = True)
+####        environment.z_label = label(text='Z', xoffset=1, yoffset= 1, space=0.2, pos=(0,0,int(build_h*1.2)), box=False, frame=environment.base_frame)
+####        environment.platform = box(pos=(build_l/2, build_w/2, -build_z/2),
+####                                length=build_l, width=build_z, height=build_w, opacity=0.2,
+####                                color=color_to_ones(secondBackground), frame=environment.base_frame)
+####        visual_ready = True
 def show_visual():
-    global show_visual
-    if not visual_ready:
-        setup_visual()
-    main_v_window.panel.SetSize(((app_w*2)/3,app_h))
-    main_v_window.panel.Show()
-    main_v_window.win.SendSizeEvent()
-    show_visual = True
-    while show_visual:
-        rate(100)
+    global visual_showing, environment
+    if environment != None:
+        main_v_window.panel.SetPosition((0, toolbar_h))
+        main_v_window.panel.SetSize(((app_w*2)/3,app_h))
+        main_v_window.win.SendSizeEvent()
+        visual_showing = True
+        environment.display.select()
+        environment.stay_active()
 def hide_visual():
-    show_visual = False
-    if visual_ready:
+    global environment
+    visual_showing = False
+    if environment != None:
         #otherwise you don't need to do anything
         main_v_window.panel.SetSize((1,1))
         main_v_window.win.SendSizeEvent()
-
+        environment.display.visible = False
 #UI------------------------------------------------------------------------
 def get_resolution():
     return (cfg.ReadInt('projw', defaultVal=1280), cfg.ReadInt('projh', defaultVal=800))
@@ -365,5 +370,4 @@ def get_property_color(key, defaults=[0,0,0]):
     blue=cfg.ReadInt(key+'B', defaults[2])
     return wx.Colour(red, green, blue)
 
-show_visual()
 temp_app.Destroy()
