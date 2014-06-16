@@ -36,7 +36,7 @@ class SettingsEditor(wx.Panel):
         master_sizer = wx.FlexGridSizer(0,1)
         content_sizer = wx.GridSizer(1,0, hgap=self.GetSize()[1]/16)
         col1 = wx.GridSizer(0,1, vgap=self.GetSize()[0]/16)
-        col2 = wx.GridSizer(0,1, vgap=self.GetSize()[0]/16)
+        col2 = wx.GridSizer(0,1, vgap=self.GetSize()[0]/32)
 
         #Add Base Depth and Support Depth
         #Column 1: the visual appearance stuff
@@ -76,6 +76,9 @@ class SettingsEditor(wx.Panel):
         self.layer_cure_time = LabeledEditor(self, -1, settings.get_layer_cure_time(),
                                   (0,1), .001, precision=1,name="Layer Cure Time",
                                   text_color=settings.defaultForeground)
+        self.base_depth = LabeledEditor(self, -1, settings.get_base_depth(),
+                                  (0,1), .001, precision=1, name="Base Depth",
+                                  text_color=settings.defaultForeground)
 
         col2.Add(technical_title, flag=wx.EXPAND)
         col2.Add(self.unit_selector, flag=wx.EXPAND)
@@ -83,6 +86,7 @@ class SettingsEditor(wx.Panel):
         col2.Add(self.y_resolution, flag=wx.EXPAND)
         col2.Add(self.x_resolution, flag=wx.EXPAND)
         col2.Add(self.layer_cure_time, flag=wx.EXPAND)
+        col2.Add(self.base_depth, flag=wx.EXPAND)
         col2.AddMany([wx.Panel(self) for i in range(1)])
         content_sizer.Add(col1, flag=wx.EXPAND)
         content_sizer.Add(col2, flag=wx.EXPAND)
@@ -103,6 +107,7 @@ class SettingsEditor(wx.Panel):
         self.Bind(wx.EVT_COMBOBOX, self.edit_layer_cure_time, self.layer_cure_time)
         self.Bind(wx.EVT_COMBOBOX, self.edit_name, self.print_name)
         self.Bind(wx.EVT_COMBOBOX, self.edit_user_name, self.user_name)
+        self.Bind(wx.EVT_COMBOBOX, self.edit_base_depth, self.base_depth)
 
         #self.Bind(wx.EVT_COMBOBOX, self.edit)
 
@@ -124,6 +129,9 @@ class SettingsEditor(wx.Panel):
     def edit_user_name(self, event):
         event.Skip()
         settings.set_user_name(self.user_name.GetValue())
+    def edit_base_depth(self, event):
+        event.Skip()
+        settings.set_base_depth(self.base_depth.GetValue())
 def main():
     app = wx.App()
     frm = wx.Frame(None, size=(settings.app_w, settings.app_h))

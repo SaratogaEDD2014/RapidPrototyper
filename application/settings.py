@@ -99,10 +99,14 @@ def get_layer_depth():
     return cfg.ReadFloat('layerDepth', defaultVal=.012)
 def get_layer_cure_time():
     return cfg.ReadInt('layerCureTime', defaultVal=2)
+def get_base_depth():
+    return cfg.ReadFloat('baseDepth')
 def set_layer_cure_time(time):
     cfg.WriteInt('layerCureTime',time)
 def set_layer_depth(depth):
     cfg.WriteFloat('layerDepth', depth)
+def set_base_depth(depth):
+    cfg.WriteFloat('baseDepth',depth)
 
 base_depth = .125 #Height of pad that rests below part
 ##_off_x = 0.0
