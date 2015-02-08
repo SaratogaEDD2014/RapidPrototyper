@@ -122,10 +122,7 @@ class DynamicDataDisplay(wx.Window):
 
     def on_paint(self, event):
         event.Skip(True)
-        if sys.platform.count('win')>0:
-            dc = wx.PaintDC(self)
-        else:
-            dc = wx.ClientDC(self)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
+        dc = wx.ClientDC(self)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
         if self.align == wx.ALIGN_LEFT:
@@ -179,10 +176,7 @@ class LabeledEditor(wx.Window):
 
     def on_paint(self, event):
         event.Skip(True)
-        if sys.platform.count('win')>0:
-            dc = wx.PaintDC(self.label)
-        else:
-            dc = wx.ClientDC(self.label)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
+        dc = wx.ClientDC(self.label)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
         draw_text_left(self.label, self.name, .65, dc=dc, color=self._text_color)
@@ -297,10 +291,7 @@ class DynamicComboBox(wx.Window):
 
     def on_paint(self, event):
         event.Skip(True)
-        if sys.platform.count('win')>0:
-            dc = wx.PaintDC(self.label)
-        else:
-            dc = wx.ClientDC(self.label)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
+        dc = wx.ClientDC(self.label)#On OSX a wxPaintDC does not work here. I am still trying to figure out why
         dc.SetBackground(wx.Brush(self.GetBackgroundColour()))
         dc.Clear()
         draw_text_left(self.label, self.name, .65, dc=dc, color=self._text_color)
@@ -387,7 +378,7 @@ class LabeledCheckbox(wx.Window):
         self.Refresh()
     def on_paint(self, event):
         event.Skip()
-        dc = wx.PaintDC(self.label)
+        dc = wx.ClientDC(self.label)
         draw_text_left(self.label, self.name, .65, dc=dc, color=self._text_color)
     def on_click(self, event):
         self.post()
