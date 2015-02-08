@@ -1,6 +1,6 @@
 EDD Rapid Prototyper
 ===
-![alt tag](https://raw.github.com/SaratogaEDD2014/RapidPrototyper/Printer.JPG)
+![alt tag](https://raw.githubusercontent.com/SaratogaEDD2014/RapidPrototyper/master/Printer.JPG)
 
 Project Overview:
 The capabilities of 3D printers are expanding every day, but they have yet to break out into a mass market. The main problem with current 3D printers is that they are heavily based on industrial and commercial models designed for professional engineers. Unfortunately, when cheaper models started being produced, they retained many of their industrial features. In order to enable more makers, tinkerers and artists to utilize 3D printing, we have set out to improve the usability of 3D printers. There are new companies pitching a bigger, better, cheaper 3D printers every week, but all are ill-suited for everyday use. The target market of 3D printers has changed; we intend to recreate the user experience with these machines to correspond with this change.
